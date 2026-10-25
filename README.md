@@ -75,7 +75,7 @@ pnpm run deploy   # build → 下書きが出ていないかの確認 → 公開
 ```sh
 pnpm install      # 依存パッケージを入れる
 pnpm run dev      # 手元で確認（http://localhost:4321）
-pnpm run build    # dist/ にサイトを作る
+pnpm run build    # dist/ にサイトを作り、続けて Pagefind の検索用データ（dist/pagefind）を作る
 pnpm run preview  # 作ったサイトを手元で確認
 pnpm run check:drafts  # build のあと、下書きが dist/ に出ていないか確かめる
 pnpm run deploy   # build・下書きの確認をしてから Cloudflare に公開（wrangler deploy）
