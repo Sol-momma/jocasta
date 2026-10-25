@@ -9,8 +9,9 @@
 </head>
 <body>
   <!-- Sveltia CMS（無料・MIT）。保存すると GitHub の main にコミットされる -->
-  <script src="https://unpkg.com/@sveltia/cms@0.252.0/dist/sveltia-cms.js"></script>
-  <!-- 右側のプレビューに、サイトと同じ文字・箇条書きの見た目を当てる（下書きはここで確かめる） -->
-  <script>CMS.registerPreviewStyle('/admin/preview.css');</script>
+  <!-- integrity は npm の同じ版から計算した値。版を上げるときは integrity も計算し直す（docs/admin-security.md） -->
+  <script src="https://unpkg.com/@sveltia/cms@0.252.0/dist/sveltia-cms.js" integrity="sha384-1lhFs8+tXG4MV80L+/4enmKGio3aT9qrPGfM8/OTuo7Td7z+PW/8eOZBUXgXwRRc" crossorigin="anonymous"></script>
+  <!-- 右側のプレビューの見た目を当てる。CSP でインラインのスクリプトを禁じているので別ファイルにする -->
+  <script src="/admin/init.js"></script>
 </body>
 </html>
