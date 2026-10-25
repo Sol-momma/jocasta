@@ -115,5 +115,21 @@ const sample = `- 問題の種類
       </li>
     </ul>
   </div>
+  <div class="prose">
+    <h2>5. 囲み（メモ・ヒント・注意）</h2>
+    <ul>
+      <li>引用（<code>&gt;</code>）の1行目に <code>[!NOTE]</code> <code>[!TIP]</code> <code>[!WARNING]</code> のどれかを書く（GitHub と同じ書き方）
+        <ul><li>1行目の残りに文字を書くと、それが見出しになる（書かなければ「メモ」「ヒント」「注意」）</li></ul>
+      </li>
+    </ul>
+    <pre><code>&gt; [!NOTE]
+&gt; 本文。2行目以降も &gt; を付ける
+
+&gt; [!WARNING] 締め切りに注意
+&gt; 見出しを変えた例</code></pre>
+    <aside class="callout callout-note" role="note"><p class="callout-title">メモ</p><p>本文。2行目以降も &gt; を付ける</p></aside>
+    <aside class="callout callout-tip" role="note"><p class="callout-title">ヒント</p><p>ヒントはリンクの色の線になる</p></aside>
+    <aside class="callout callout-warning" role="note"><p class="callout-title">締め切りに注意</p><p>見出しを変えた例</p></aside>
+  </div>
   <p class="back"><a href="/">← 一覧へ</a></p>
 </Base>
