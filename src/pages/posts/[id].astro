@@ -3,6 +3,7 @@ import Base from '../../layouts/Base.astro';
 import Toc from '../../components/Toc.astro';
 import ReadingProgress from '../../components/ReadingProgress.astro';
 import { getCollection, render } from 'astro:content';
+import { editUrl } from '../../lib/github';
 export async function getStaticPaths() {
   const posts = await getCollection('posts', (p) => !p.data.draft);
   return posts.map((post) => ({ params: { id: post.id }, props: { post } }));
@@ -17,4 +18,5 @@ const { Content, headings } = await render(post);
   <h1>{post.data.title}</h1>
   <div class="prose"><Content /></div>
   <p class="back"><a href="/">← 一覧へ</a></p>
+  <p class="gh"><a class="gh-link" href={editUrl(post.id)} rel="nofollow">編集</a></p>
 </Base>
