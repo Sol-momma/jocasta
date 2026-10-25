@@ -1,11 +1,12 @@
 ---
-const { title } = Astro.props;
+const { title, noindex = false } = Astro.props;
 ---
 <!doctype html>
 <html lang="ja">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
+{noindex && <meta name="robots" content="noindex, nofollow" />}
 <title>{title ? `${title} | Jocasta` : 'Jocasta — TOEIC 学習ノート'}</title>
 <style is:global>
   :root { --fg:#1a1a1a; --muted:#8a8a8a; --line:#ececec; --bg:#fff; --link:#1a1a1a; }
@@ -43,12 +44,20 @@ const { title } = Astro.props;
   .prose li.has-children > .tog::before { content:"▾"; }
   .prose li.collapsed > .tog::before { content:"▸"; }
   .prose li.collapsed > ul, .prose li.collapsed > ol { display:none; }
+.alert { margin:1.6em 0; padding:.7em 1em; border-left:3px solid #9a6700; background:#fbf8f1; font-size:.92rem; }
+  .alert-title { font-weight:600; color:#9a6700; margin:0 0 .2em; }
+  .alert p { margin:.2em 0; }
+  pre { background:#f6f6f6; padding:.9em 1em; border-radius:4px; overflow-x:auto; font-size:.85rem; line-height:1.6; }
+  pre code { background:none; padding:0; }
+  .pair { display:grid; grid-template-columns:1fr 1fr; gap:16px; align-items:start; }
+  .pair > div > .label { color:var(--muted); font-size:.78rem; margin:0 0 .3em; }
+  @media (max-width:560px) { .pair { grid-template-columns:1fr; } }
 </style>
 </head>
 <body>
 <header><div class="wrap"><a href="/">Jocasta</a><p>TOEIC の間違いを記録する学習ノート</p></div></header>
 <main><div class="wrap"><slot /></div></main>
-<footer><div class="wrap">問題文は掲載せず、自作の似た例文で解説しています。</div></footer>
+<footer><div class="wrap">問題文は掲載せず、自作の似た例文で解説しています。<span class="guide-link"> ・ <a href="/guide/">書き方</a></span></div></footer>
 <script>
 document.querySelectorAll('.prose li').forEach((li) => {
   if (!li.querySelector(':scope > ul, :scope > ol')) return;
