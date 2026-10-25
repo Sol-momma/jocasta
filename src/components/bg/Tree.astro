@@ -1,0 +1,33 @@
+---
+// 背景「木」（このブログのオリジナル）。画面の下の角から幹が立ち上がり、少し曲がりながら伸びて、
+// 先で2本（ときどき3本）に分かれる。分かれるたびに短く細くなり、決まった段数で止まる。
+// 先に全部の線分と「描く時刻」を作っておき、時刻までの線分だけを描く。
+---
+<script is:inline>
+(window.BG = window.BG || {}).tree = function (c) {
+  var segs = [], SPEED = 70, maxDepth = c.small ? 6 : 8; // 1秒に伸びる長さ(px)。スマホは段数を減らす
+  function grow(x, y, a, len, depth, t) {
+    var bend = (c.rnd() - 0.5) * 0.05, n = Math.max(2, Math.round(len / 8)), d = len / n;
+    for (var i = 0; i < n; i++) {
+      var nx = x + Math.cos(a) * d, ny = y + Math.sin(a) * d;
+      segs.push([x, y, nx, ny, Math.max(0.6, 2.4 - depth * 0.25), t]);
+      x = nx; y = ny; a += bend; t += d / SPEED * 1000;
+    }
+    if (depth >= maxDepth) return;
+    var k = c.rnd() < 0.3 ? 3 : 2, sp = 0.38 + c.rnd() * 0.32; // 左右に約22〜40度開く
+    for (var j = 0; j < k; j++) {
+      var off = k === 2 ? (j ? sp : -sp) : (j - 1) * sp;
+      grow(x, y, a + off + (c.rnd() - 0.5) * 0.15, len * (0.66 + c.rnd() * 0.12), depth + 1, t);
+    }
+  }
+  var trunk = Math.min(c.H * 0.22, c.small ? 90 : 150);
+  grow(c.W + 4, c.H + 4, -Math.PI / 2 - 0.45, trunk, 0, 0); // 右下から左上へ
+  if (!c.small) grow(-4, c.H + 4, -Math.PI / 2 + 0.4, trunk * 0.85, 0, 600); // 左下から右上へ（少し遅れて）
+  var dur = 0; segs.forEach(function (s) { if (s[5] > dur) dur = s[5]; });
+  return { dur: dur, draw: function (e) {
+    var g = c.ctx; g.strokeStyle = c.line; g.lineCap = 'round';
+    for (var i = 0; i < segs.length; i++) { var s = segs[i]; if (s[5] > e) continue;
+      g.lineWidth = s[4]; g.beginPath(); g.moveTo(s[0], s[1]); g.lineTo(s[2], s[3]); g.stroke(); }
+  } };
+};
+</script>

@@ -1,6 +1,7 @@
 ---
 // wide: 記事ページだけ PC 幅（1100px 以上）で画面の横幅いっぱいの組み方にする
-import PlumTree from '../components/PlumTree.astro';
+import Background from '../components/Background.astro';
+import { backgrounds } from '../lib/backgrounds';
 // description / image: OGP用。image は記事なら /og/<記事名>.png、なければ共通画像
 const { title, noindex = false, wide = false, description, image = '/og/default.png' } = Astro.props;
 const siteName = 'Jocasta';
@@ -18,9 +19,20 @@ const imageUrl = new URL(image, Astro.site);
 <script is:inline>
   // 保存済みの配色を描画の前に当て、白が一瞬出るのを防ぐ
   try { var t = localStorage.getItem('theme'); if (t) document.documentElement.dataset.theme = t; } catch (e) {}
-  // 背景の木のオン・オフ（最初はオン。"0" のときだけ消す）
-  try { if (localStorage.getItem('plum') === '0') document.documentElement.dataset.plum = '0'; } catch (e) {}
 </script>
+<script is:inline set:html={`
+  // 背景を決める。localStorage の bg：なし・空=ランダム（最初の設定）、"off"=出さない、それ以外=その背景に固定。
+  // ランダムはページを開くたびに選び、直前と同じものは避ける。前の「背景の木」をオフにしていた人は "off" として扱う
+  (function () {
+    var ids = ${JSON.stringify(backgrounds.map((b) => b.id))}, d = document.documentElement.dataset, m = '', prev = '';
+    try { m = localStorage.getItem('bg') || (localStorage.getItem('plum') === '0' ? 'off' : ''); prev = sessionStorage.getItem('bgLast') || ''; } catch (e) {}
+    if (m === 'off') { d.bg = 'none'; return; }
+    if (ids.indexOf(m) >= 0) { d.bg = m; return; }
+    var c = ids.filter(function (i) { return i !== prev; }); if (!c.length) c = ids;
+    d.bg = c[Math.floor(Math.random() * c.length)];
+    try { sessionStorage.setItem('bgLast', d.bg); } catch (e) {}
+  })();
+`} />
 <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
 <link rel="canonical" href={new URL(Astro.url.pathname, Astro.site).href} />
 <title>{pageTitle}</title>
@@ -50,7 +62,7 @@ const imageUrl = new URL(image, Astro.site);
   /* 配色（読む人が「表示」の設定で選ぶ）。html の data-theme で切り替え、色はすべてここの変数にまとめる。空=白（最初の設定）。
      文字の色は地の色に対して WCAG AA（本文4.5:1以上）を満たす値にしている */
   :root { --code-bg:#f6f6f6; --quote:#666; --alert:#9a6700; --alert-bg:#fbf8f1; --ruler-bg:#f4f2ec; --pattern:none; color-scheme:light;
-    /* 背景の木の線の色。配色ごとに文字の薄い色から作るので、どの配色でも本文より十分薄い */
+    /* 背景の絵（木・山など）の線の色。配色ごとに文字の薄い色から作るので、どの配色でも本文より十分薄い */
     --plum:color-mix(in srgb, var(--muted) 12%, transparent); }
   /* 目に優しい黒：真っ黒ではなく少し明るい濃い灰色 */
   [data-theme=dark] { --fg:#e4e4e2; --muted:#a3a3a0; --line:#3d3e42; --bg:#1f2023; --link:#82b1ff; --link-visited:#a8c3ee;
@@ -221,7 +233,7 @@ const imageUrl = new URL(image, Astro.site);
 </style>
 </head>
 <body class:list={[{ 'is-wide': wide }]}>
-<PlumTree />
+<Background />
 <header><div class="wrap"><a href="/">Jocasta</a></div></header>
 <main><div class="wrap"><slot /></div></main>
 <footer><div class="wrap"><p class="copy">&copy; 2026 Jocasta</p><nav class="ft-links" aria-label="フィードとリンク">
