@@ -1,19 +1,25 @@
 ---
-// 読み進みバーの見た目を選ぶ小さな切り替え。編集リンクの隣に置く。選んだ値は localStorage の rp に保存。
+// 読み進みバーの見た目を選ぶ小さな切り替え。編集リンクの隣に置く。選んだ値は localStorage の rp、紙吹雪のオン・オフは rpc に保存。
 ---
 <label class="rp-pick">バー<select id="rp-pick">
   <option value="">線</option><option value="ruler">目盛り</option><option value="cat">猫</option>
   <option value="spiral">らせん</option><option value="arrow">矢印</option><option value="pct">数字</option>
-</select></label>
+  <option value="train">電車</option><option value="rocket">ロケット</option><option value="candle">ろうそく</option>
+  <option value="pixel">ドット絵</option><option value="neon">ネオン</option>
+</select></label><label class="rp-pick">紙吹雪<input type="checkbox" id="rp-cf"></label>
 <style is:global>
   /* 押せる範囲は44px以上。目立たせない */
   .rp-pick { display:inline-flex; align-items:center; gap:.3em; min-height:44px; margin-left:1em; color:var(--muted); font-size:.8rem; }
   .rp-pick select { min-height:44px; min-width:44px; font:inherit; color:inherit; background:none; border:0; cursor:pointer; }
+  .rp-pick input { width:14px; height:14px; margin:0; accent-color:var(--muted); cursor:pointer; }
 </style>
 <script is:inline>
   (function () {
     var s = document.getElementById('rp-pick'), d = document.documentElement.dataset;
     s.value = d.rp || '';
     s.onchange = function () { d.rp = s.value; try { localStorage.setItem('rp', s.value); } catch (e) {} };
+    var c = document.getElementById('rp-cf');
+    c.checked = d.rpc === '1';
+    c.onchange = function () { d.rpc = c.checked ? '1' : ''; try { localStorage.setItem('rpc', d.rpc); } catch (e) {} dispatchEvent(new Event('rp-cf')); };
   })();
 </script>

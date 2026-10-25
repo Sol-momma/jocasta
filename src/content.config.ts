@@ -6,8 +6,9 @@ const posts = defineCollection({
   schema: z.object({
     title: z.string(),
     date: z.coerce.date(),
-    part: z.string().optional(), // 例: "Part 5"（TOEIC以外の記事では空でよい）
-    questionType: z.string().optional(), // 種類
+    theme: z.string().optional(), // 記事のテーマ（例: "toeic"）。名前は src/lib/themes.ts
+    part: z.string().optional(), // TOEIC の記事だけ。例: "Part 5"
+    questionType: z.string().optional(), // TOEIC の記事だけ。問題の種類
     tags: z.array(z.string()).default([]),
     sample: z.boolean().default(false),
     draft: z.boolean().default(false),

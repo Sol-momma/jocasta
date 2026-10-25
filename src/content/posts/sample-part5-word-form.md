@@ -1,6 +1,7 @@
 ---
 title: "【サンプル】Part 5 品詞問題：動詞を修飾するのは副詞"
 date: 2026-10-25
+theme: "toeic"
 part: "Part 5"
 questionType: "品詞"
 tags: ["品詞", "副詞"]

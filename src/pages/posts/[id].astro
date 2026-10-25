@@ -5,17 +5,21 @@ import ReadingProgress from '../../components/ReadingProgress.astro';
 import ReadingProgressPicker from '../../components/ReadingProgressPicker.astro';
 import { getCollection, render } from 'astro:content';
 import { editUrl } from '../../lib/github';
+import { themeLabel, themeUrl } from '../../lib/themes';
 export async function getStaticPaths() {
   const posts = await getCollection('posts', (p) => !p.data.draft);
   return posts.map((post) => ({ params: { id: post.id }, props: { post } }));
 }
 const { post } = Astro.props;
 const { Content, headings } = await render(post);
+const d = post.data;
+// 日付のあとに並べる補足（空のものは出さない）
+const extras = [d.part, d.questionType].filter(Boolean);
 ---
 <Base title={post.data.title}>
   <ReadingProgress />
   <Toc headings={headings} />
-  <p class="meta">{[post.data.date.toISOString().slice(0, 10).replaceAll('-', '.'), post.data.part, post.data.questionType].filter(Boolean).join(' ・ ')}{post.data.sample && <span class="badge">サンプル</span>}</p>
+  <p class="meta">{d.date.toISOString().slice(0, 10).replaceAll('-', '.')}{d.theme && <> ・ <a class="theme" href={themeUrl(d.theme)}>{themeLabel(d.theme)}</a></>}{extras.map((x) => <> ・ {x}</>)}{d.sample && <span class="badge">サンプル</span>}</p>
   <h1>{post.data.title}</h1>
   <div class="prose"><Content /></div>
   <p class="back"><a href="/">← 一覧へ</a></p>

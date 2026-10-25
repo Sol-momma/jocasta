@@ -8,32 +8,47 @@ const { title, noindex = false } = Astro.props;
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 {noindex && <meta name="robots" content="noindex, nofollow" />}
-<title>{title ? `${title} | Jocasta` : 'Jocasta — TOEIC 学習ノート'}</title>
+<title>{title ? `${title} | Jocasta` : 'Jocasta — 学習ノート'}</title>
 <style is:global>
-  :root { --fg:#1a1a1a; --muted:#8a8a8a; --line:#ececec; --bg:#fff; --link:#1a1a1a; }
+  /* 参考: borischerny.com の「白に近い地・黒に近い文字・青いリンク・見出しは細め・広めの段落間」。書体は本文も見出しもゴシック */
+  :root { --fg:#151515; --muted:#7c7c7c; --line:#e6e6e6; --bg:#fcfcfb; --link:#2463c4; --link-visited:#1c4f9c;
+    --sans:"Hiragino Sans","Noto Sans JP","Noto Sans CJK JP",system-ui,sans-serif; --gap:28px; }
   * { box-sizing: border-box; }
   body { margin:0; background:var(--bg); color:var(--fg);
-    font-family: "Hiragino Sans","Noto Sans JP",system-ui,sans-serif; line-height:1.9; font-size:16px; -webkit-font-smoothing:antialiased; }
-  .wrap { max-width: 600px; margin: 0 auto; padding: 0 24px; }
-  header { padding:56px 0 8px; }
-  header a { color:var(--fg); text-decoration:none; font-weight:600; font-size:1rem; }
-  header p { margin:0; color:var(--muted); font-size:.85rem; }
-  main { padding: 32px 0 80px; }
-  a { color: var(--link); text-underline-offset:3px; text-decoration-color:#c8c8c8; }
-  a:hover { text-decoration-color: var(--fg); }
-  h1 { font-size:1.35rem; line-height:1.5; font-weight:600; margin:.2em 0 1.2em; }
-  h2 { font-size:1.02rem; font-weight:600; margin-top:2.4em; }
-  blockquote { margin:1em 0; padding:0 0 0 1em; border-left:2px solid var(--line); color:#555; }
-  code { background:#f4f4f4; padding:.1em .3em; border-radius:3px; font-size:.92em; }
-  .meta { color:var(--muted); font-size:.82rem; letter-spacing:.02em; font-variant-numeric:tabular-nums; }
+    font-family:var(--sans); line-height:1.6; font-size:16px; -webkit-font-smoothing:antialiased; font-kerning:normal; }
+  .wrap { max-width: 720px; margin: 0 auto; padding: 0 20px; }
+  header { padding:32px 0 0; }
+  header a { color:var(--fg); text-decoration:none; font-weight:400; font-size:1.25rem; letter-spacing:.01em; }
+  header p { margin:.2em 0 0; color:var(--muted); font-size:.85rem; }
+  main { padding: 40px 0 72px; }
+  a { color: var(--link); text-decoration:none; }
+  a:visited { color: var(--link-visited); }
+  a:hover { color: var(--fg); text-decoration:underline; text-underline-offset:3px; }
+  h1, h2, h3 { font-weight:400; }
+  h1 { font-size:1.75rem; font-weight:500; line-height:1.4; margin:.1em 0 .4em; }
+  h2 { font-size:1.3rem; line-height:1.5; margin:2em 0 .6em; }
+  h3 { font-size:1.1rem; margin:1.6em 0 .5em; }
+  .prose { font-size:17px; line-height:1.9; text-rendering:optimizeLegibility; }
+  .prose p, .prose blockquote, .prose pre { margin:0 0 var(--gap); }
+  blockquote { margin:1em 0; padding:0 0 0 1em; border-left:3px solid var(--line); color:#666; }
+  code { border:1px solid var(--line); background:none; padding:0 .3em; border-radius:3px; font-size:.88em; }
+  .meta { color:var(--muted); font-size:.875rem; letter-spacing:.02em; font-variant-numeric:tabular-nums; margin:0 0 var(--gap); }
   .badge { display:inline-block; color:var(--muted); font-size:.72rem; border:1px solid var(--line); padding:0 .45em; border-radius:3px; margin-left:.5em; }
-  footer { padding:24px 0 48px; color:var(--muted); font-size:.8rem; }
+  footer { padding:24px 0 48px; color:var(--muted); font-size:.8rem; border-top:1px solid var(--line); }
+  footer .wrap { padding-top:0; }
+  .list-heading { font-size:1.6rem; margin:0 0 var(--gap); }
   ol.posts { list-style:none; padding:0; margin:0; }
-  ol.posts li { margin:0 0 3.2em; }
-  ol.posts h2 { margin:.15em 0 .4em; font-size:1.05rem; }
-  ol.posts h2 a { text-decoration:none; }
-  ol.posts p { margin:0 0 .5em; color:#444; }
-  .more { font-size:.85rem; color:var(--muted); }
+  ol.posts li { margin:0 0 var(--gap); }
+  ol.posts .meta { margin:0; font-size:.85rem; }
+  ol.posts h2 { margin:.1em 0 0; font-size:1.3rem; font-weight:500; line-height:1.45; }
+  ol.posts h2 a { display:block; }
+  /* テーマ名。一覧と記事に控えめに出す */
+  .theme { color:var(--muted); }
+  a.theme:visited { color:var(--muted); }
+  /* テーマで絞り込むリンクの並び。押せる範囲は44px以上 */
+  nav.themes { display:flex; flex-wrap:wrap; gap:0 1.2em; margin:-.6em 0 var(--gap); font-size:.9rem; }
+  nav.themes a { display:inline-flex; align-items:center; min-height:44px; }
+  nav.themes a[aria-current="page"] { color:var(--fg); text-decoration:underline; text-underline-offset:4px; }
   .back { margin-top:3em; font-size:.85rem; }
   /* GitHub で編集・新規作成するリンク。目立たせず、押せる範囲は44px以上にする */
   .gh-link { display:inline-flex; align-items:center; min-height:44px; min-width:44px; color:var(--muted); font-size:.8rem; }
@@ -59,9 +74,9 @@ const { title, noindex = false } = Astro.props;
 </style>
 </head>
 <body>
-<header><div class="wrap"><a href="/">Jocasta</a><p>TOEIC の間違いを記録する学習ノート</p></div></header>
+<header><div class="wrap"><a href="/">Jocasta</a><p>いろいろなテーマの学習ノート</p></div></header>
 <main><div class="wrap"><slot /></div></main>
-<footer><div class="wrap">問題文は掲載せず、自作の似た例文で解説しています。<span class="guide-link"> ・ <a href="/guide/">書き方</a></span><span class="gh"> ・ <a class="gh-link" href={newPostUrl()} rel="nofollow">新しい記事</a></span></div></footer>
+<footer><div class="wrap">TOEIC の記事は問題文を掲載せず、自作の似た例文で解説しています。<span class="guide-link"> ・ <a href="/guide/">書き方</a></span><span class="gh"> ・ <a class="gh-link" href={newPostUrl()} rel="nofollow">新しい記事</a></span></div></footer>
 <script>
 document.querySelectorAll('.prose li').forEach((li) => {
   if (!li.querySelector(':scope > ul, :scope > ol')) return;

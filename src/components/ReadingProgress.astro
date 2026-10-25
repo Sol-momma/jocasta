@@ -1,12 +1,14 @@
 ---
 // 記事ページ用の読み進みバー。CSS scroll-driven animations が基本、未対応ブラウザは小さなJSで代替。
-// 見た目は html の data-rp で切り替える（空=今の線 / ruler / cat / spiral / arrow / pct）。
+// 見た目は html の data-rp で切り替える（空=今の線 / ruler / cat / spiral / arrow / pct / train / rocket / candle / pixel / neon）。
+// 紙吹雪は data-rpc=1 で別にオン・オフ（どの見た目とも組み合わせられる）。
 ---
 <script is:inline>
   // 描画前に保存済みの見た目を当て、一瞬だけ別の見た目が出るのを防ぐ
-  try { document.documentElement.dataset.rp = localStorage.getItem('rp') || ''; } catch (e) {}
+  try { document.documentElement.dataset.rp = localStorage.getItem('rp') || '';
+    document.documentElement.dataset.rpc = localStorage.getItem('rpc') || ''; } catch (e) {}
 </script>
-<div class="reading-progress" aria-hidden="true"><div class="reading-progress__bar"></div><span class="rp-head"><svg class="rp-cat" viewBox="0 0 20 12"><path d="M3 9V5l3-2h7l1-2 1 2 1-2 1 2v3l-2 1H6M4 9v2M7 8v3M12 8v3M15 8v3M3 5 1 3"/></svg><svg class="rp-sp" viewBox="0 0 12 12"><path d="M6 6a1 1 0 0 1 2 0 2 2 0 0 1-4 0 3 3 0 0 1 6 0 4 4 0 0 1-8 0"/></svg></span></div>
+<div class="reading-progress" aria-hidden="true"><div class="reading-progress__bar"></div><span class="rp-head"><svg class="rp-cat" viewBox="0 0 20 12"><path d="M3 9V5l3-2h7l1-2 1 2 1-2 1 2v3l-2 1H6M4 9v2M7 8v3M12 8v3M15 8v3M3 5 1 3"/></svg><svg class="rp-sp" viewBox="0 0 12 12"><path d="M6 6a1 1 0 0 1 2 0 2 2 0 0 1-4 0 3 3 0 0 1 6 0 4 4 0 0 1-8 0"/></svg><svg class="rp-tr" viewBox="0 0 30 14"><path d="M2 10V4h17V2h7v8zM5 6h3v2H5zm6 0h3v2h-3zm11-2h2v3h-2z"/><circle cx="7" cy="11.5" r="1.5"/><circle cx="22" cy="11.5" r="1.5"/></svg><svg class="rp-rk" viewBox="0 0 24 12"><path class="rp-fl" d="M5 5 0 6l5 1z"/><path d="M5 4h11l6 2-6 2H5zM7 4 5 1M7 8l-2 3"/></svg><svg class="rp-px" viewBox="0 0 8 8"><path d="M3 0h2v2H3zM2 2h4v3H2z"/><path class="rp-f1" d="M1 5h1v3H1zm5 0h1v3H6z"/><path class="rp-f2" d="M3 5h2v3H3z"/></svg></span></div>
 <style is:global>
   @property --rp { syntax:'<number>'; inherits:true; initial-value:0; }
   @property --pc { syntax:'<integer>'; inherits:true; initial-value:0; }
@@ -24,17 +26,48 @@
     display:block; position:absolute; top:0; left:calc(var(--rp) * 100%); transform:translateX(-100%); color:var(--fg); opacity:.75; }
   .rp-head svg { fill:none; stroke:currentColor; stroke-width:1.2; stroke-linecap:round; stroke-linejoin:round; }
   [data-rp=cat] .reading-progress__bar, [data-rp=spiral] .reading-progress__bar { opacity:.35; }
-  [data-rp=cat] .rp-cat { display:block; width:24px; height:14px; margin-top:2px; animation:rp-walk .4s steps(2) infinite; }
+  [data-rp=cat] .rp-cat { display:block; width:40px; height:24px; margin-top:2px; animation:rp-walk .4s steps(2) infinite; }
   @keyframes rp-walk { 50% { transform:translateY(-1px); } }
   [data-rp=spiral] .rp-sp { display:block; width:14px; height:14px; margin-top:-6px; transform:rotate(calc(var(--rp) * 30turn)); }
   [data-rp=arrow] .rp-head { width:0; height:0; margin-top:-3px; border:4px solid transparent; border-left:7px solid currentColor; transform:none; }
   [data-rp=pct] .reading-progress__bar { opacity:.25; }
-  [data-rp=pct] .rp-head { left:auto; right:8px; transform:none; top:4px; font-size:.7rem; color:var(--muted); font-variant-numeric:tabular-nums; counter-reset:p var(--pc); }
+  [data-rp=pct] .rp-head { position:fixed; left:auto; top:auto; right:16px; bottom:16px; transform:none; font-size:.75rem; color:var(--muted); font-variant-numeric:tabular-nums; counter-reset:p var(--pc); }
   [data-rp=pct] .rp-head::after { content:counter(p) "%"; }
+  /* 追加の見た目。動きは選ばれたときだけ付く */
+  [data-rp=train] .rp-head, [data-rp=rocket] .rp-head, [data-rp=pixel] .rp-head, [data-rp=candle] .rp-head {
+    display:block; position:absolute; top:0; left:calc(var(--rp) * 100%); transform:translateX(-100%); color:var(--fg); opacity:.8; }
+  /* 電車：20%ごとの駅と右端の終点 */
+  [data-rp=train] .reading-progress { height:6px; background:repeating-linear-gradient(90deg,var(--muted) 0 2px,transparent 0 20%); }
+  [data-rp=train] .reading-progress::after { content:''; position:absolute; right:0; top:0; width:4px; height:10px; background:var(--fg); }
+  [data-rp=train] .reading-progress__bar { height:2px; }
+  [data-rp=train] .rp-tr { display:block; width:34px; height:16px; margin-top:4px; animation:rp-walk .3s steps(2) infinite; }
+  /* ロケット：炎がゆれる */
+  [data-rp=rocket] .rp-rk { display:block; width:32px; height:16px; margin-top:0; }
+  [data-rp=rocket] .rp-fl { fill:currentColor; transform-origin:5px 6px; animation:rp-fire .15s steps(2) infinite alternate; }
+  @keyframes rp-fire { to { transform:scaleX(.5); } }
+  /* ドット絵：足を2コマで動かし、ときどき跳ぶ */
+  [data-rp=pixel] .rp-px { display:block; width:20px; height:20px; margin-top:2px; fill:currentColor; stroke:none; shape-rendering:crispEdges; animation:rp-jump 1.6s steps(8) infinite; }
+  [data-rp=pixel] .rp-f2 { animation:rp-step .3s steps(1) infinite; }
+  [data-rp=pixel] .rp-f1 { animation:rp-step .3s steps(1) infinite reverse; }
+  @keyframes rp-step { 50% { opacity:0; } }
+  @keyframes rp-jump { 75% { transform:none; } 85% { transform:translateY(-6px); } }
+  /* ろうそく：左下に立ち、読むほど短くなる */
+  [data-rp=candle] .rp-head { position:fixed; top:auto; left:16px; bottom:16px; transform:none; width:8px; height:calc(4px + (1 - var(--rp)) * 44px); border:1.2px solid; border-radius:1px; }
+  [data-rp=candle] .rp-head::before { content:''; position:absolute; left:0; bottom:100%; width:6px; height:10px; margin-bottom:2px; background:currentColor; border-radius:50% 50% 50% 50%/60% 60% 40% 40%; transform-origin:50% 100%; animation:rp-flick .4s infinite alternate; }
+  @keyframes rp-flick { to { transform:scale(.8,1.1); } }
+  /* ネオン：光る線。色がゆっくり変わる */
+  [data-rp=neon] .reading-progress__bar { height:3px; opacity:1; color:#0ee; background:currentColor; box-shadow:0 0 6px 1px currentColor; animation:rp-neon 6s infinite alternate; }
+  @keyframes rp-neon { 50% { color:#3f6; } to { color:#fb3; } }
+  /* 紙吹雪 */
+  .rp-cf { position:fixed; top:-12px; width:6px; height:10px; z-index:101; pointer-events:none; animation:rp-fall 2.6s ease-in forwards; }
+  @keyframes rp-fall { to { transform:translate(var(--dx),105vh) rotate(720deg); } }
   @media (prefers-reduced-motion: reduce) {
     .reading-progress__bar { transition:none; }
     .rp-cat { animation:none !important; }
     .rp-sp { transform:none !important; }
+    /* 新しい見た目と紙吹雪は止まった絵にする */
+    .rp-head, .rp-head *, .rp-head::before, .reading-progress__bar, .rp-cf { animation:none !important; }
+    .rp-cf { top:0; transform:translateY(var(--y)); }
   }
 </style>
 <script is:inline>
@@ -55,5 +88,26 @@
     addEventListener('scroll', onScroll, { passive: true });
     addEventListener('resize', onScroll);
     update();
+  })();
+</script>
+<script is:inline>
+  // 紙吹雪：オンのときだけ、最後まで読んだら一度だけ舞う
+  (function () {
+    var d = document.documentElement, done = false;
+    function check() {
+      if (done || d.dataset.rpc !== '1') return;
+      if (d.scrollTop + d.clientHeight < d.scrollHeight - 4) return;
+      done = true;
+      var c = ['#e4572e', '#29a3a3', '#f3a712', '#4caf50', '#3d7fd9'];
+      for (var i = 0; i < 40; i++) {
+        var e = document.createElement('i');
+        e.className = 'rp-cf';
+        e.style.cssText = 'left:' + Math.random() * 100 + 'vw;background:' + c[i % 5] + ';--dx:' + (Math.random() * 120 - 60) + 'px;--y:' + Math.random() * 90 + 'vh;animation-delay:' + Math.random() * .6 + 's';
+        document.body.appendChild(e);
+        setTimeout(e.remove.bind(e), 3500);
+      }
+    }
+    addEventListener('scroll', check, { passive: true });
+    addEventListener('rp-cf', function () { done = false; check(); });
   })();
 </script>

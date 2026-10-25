@@ -1,0 +1,22 @@
+---
+// 記事一覧（日付・印・タイトルだけ）と、テーマで絞り込むリンク。トップとテーマ別ページで使う
+import { themeLabel, themeUrl } from '../lib/themes';
+import type { CollectionEntry } from 'astro:content';
+interface Props { posts: CollectionEntry<'posts'>[]; themes: string[]; current?: string }
+const { posts, themes, current } = Astro.props;
+const fmt = (d: Date) => d.toISOString().slice(0, 10).replaceAll('-', '.');
+---
+{themes.length > 0 && (
+  <nav class="themes" aria-label="テーマで絞り込む">
+    <a href="/" aria-current={current ? undefined : 'page'}>すべて</a>
+    {themes.map((t) => <a href={themeUrl(t)} aria-current={current === t ? 'page' : undefined}>{themeLabel(t)}</a>)}
+  </nav>
+)}
+<ol class="posts">
+  {posts.map((p) => (
+    <li>
+      <div class="meta">{fmt(p.data.date)}{p.data.theme && !current && <> ・ <span class="theme">{themeLabel(p.data.theme)}</span></>}{p.data.sample && <span class="badge">サンプル</span>}</div>
+      <h2><a href={`/posts/${p.id}/`}>{p.data.title}</a></h2>
+    </li>
+  ))}
+</ol>

@@ -31,7 +31,7 @@ const sample = `- 問題の種類
       <li>ファイル名（スラッグ）がそのままURLになる
         <ul><li>英小文字とハイフン：<code>part5-because-of</code> → <code>/posts/part5-because-of/</code></li></ul>
       </li>
-      <li>テーマは自由（TOEIC、読書メモ、開発メモなど）。「分類」「種類」は空でもよい</li>
+      <li>テーマは自由（TOEIC、読書メモ、開発メモなど）。「テーマ」で一覧を分けられる。「Part」「問題の種類」はTOEICの記事だけ</li>
     </ul>
 
     <h2>2. TOEICの記事：見出し4つと記入例</h2>
@@ -110,7 +110,7 @@ const sample = `- 問題の種類
           <li>新しい記事は「下書き」がオンの状態で始まる → 書いて保存（まだ公開されない）</li>
           <li>中身を確かめる（TOEICなら問題文が入っていないかも）</li>
           <li>「下書き」をオフにして保存 → <code>draft: false</code> がコミットされる</li>
-          <li>サイトへの反映は <code>npm run deploy</code>（自動デプロイを入れたら不要）</li>
+          <li>サイトへの反映は <code>pnpm run deploy</code>（自動デプロイを入れたら不要）</li>
         </ul>
       </li>
     </ul>

@@ -38,8 +38,9 @@ collections:
       - { name: draft, label: 下書き（オフにすると公開）, widget: boolean, default: true }
       - { name: date, label: 日付, widget: datetime, type: date, format: YYYY-MM-DD, default: "{{now}}" }
       - { name: tags, label: タグ, widget: list, required: false }
-      - { name: part, label: "分類（例：Part 5／読書メモ）", widget: string, required: false }
-      - { name: questionType, label: "種類（例：品詞）", widget: string, required: false }
+      - { name: theme, label: "テーマ（例：toeic／reading。英小文字）", widget: string, required: false }
+      - { name: part, label: "Part（TOEICの記事だけ。例：Part 5）", widget: string, required: false }
+      - { name: questionType, label: "問題の種類（TOEICの記事だけ。例：品詞）", widget: string, required: false }
       - { name: sample, label: サンプル, widget: boolean, default: false, required: false }
       - name: body
         label: 本文
