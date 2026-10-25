@@ -1,15 +1,16 @@
 ---
+import { isVisible } from '../../lib/drafts';
 import Base from '../../layouts/Base.astro';
 import { getCollection, render } from 'astro:content';
 export async function getStaticPaths() {
-  const posts = await getCollection('posts', (p) => !p.data.draft);
+  const posts = await getCollection('posts', isVisible);
   return posts.map((post) => ({ params: { id: post.id }, props: { post } }));
 }
 const { post } = Astro.props;
 const { Content } = await render(post);
 ---
 <Base title={post.data.title}>
-  <p class="meta">{post.data.date.toISOString().slice(0, 10).replaceAll('-', '.')} ・ {post.data.part} ・ {post.data.questionType}{post.data.sample && <span class="badge">サンプル</span>}</p>
+  <p class="meta">{post.data.date.toISOString().slice(0, 10).replaceAll('-', '.')} ・ {post.data.part} ・ {post.data.questionType}{post.data.sample && <span class="badge">サンプル</span>}{post.data.draft && <span class="badge">下書き</span>}</p>
   <h1>{post.data.title}</h1>
   <div class="prose"><Content /></div>
   <p class="back"><a href="/">← 一覧へ</a></p>

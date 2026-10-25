@@ -107,7 +107,38 @@ const sample = `- 問題の種類
         <ul>
           <li>自分で中身を確かめる（問題文が入っていないかも）</li>
           <li><code>draft: false</code> にする</li>
-          <li><code>npm run deploy</code> を実行</li>
+          <li>PR をマージすると自動で公開される（GitHub Actions）</li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+
+  <div class="prose">
+    <h2>5. スマホから書く</h2>
+    <ul>
+      <li>書く
+        <ul>
+          <li>スマホのブラウザで github.com/Sol-momma/jocasta を開く（GitHub アプリからでも可）</li>
+          <li><code>src/content/posts</code> を開き、「Add file → Create new file」</li>
+          <li>ファイル名は <code>英小文字-ハイフン.md</code>。中身は <code>templates/post.md</code> をコピーし、<code>draft: true</code> のまま書く</li>
+        </ul>
+      </li>
+      <li>保存
+        <ul>
+          <li>「Commit changes」で「Create a new branch」を選び、そのまま PR を作る</li>
+        </ul>
+      </li>
+      <li>下書きを確かめる
+        <ul>
+          <li>1〜2分で PR に「プレビュー」のコメントが付く。URL を開くと下書き記事も「下書き」印つきで見られる</li>
+          <li>直したらまた同じブランチにコミットすると、プレビューも更新される</li>
+          <li>プレビュー URL は知っていれば誰でも開ける（検索には出ない）</li>
+        </ul>
+      </li>
+      <li>公開する
+        <ul>
+          <li>PR 上で <code>draft: false</code> に直してコミットし、「Merge」</li>
+          <li>マージ後に自動でビルドして公開される</li>
         </ul>
       </li>
     </ul>
