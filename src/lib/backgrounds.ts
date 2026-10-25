@@ -1,0 +1,6 @@
+// 背景の一覧。id は src/components/bg/ の各ファイルが window.BG に登録する名前。
+// ランダム（最初の設定）はここにあるものから選ぶ。「表示」の設定の選択肢もここから作る。
+export const backgrounds = [
+  { id: 'tree', name: '木' },
+  { id: 'mountain', name: '山' },
+];
