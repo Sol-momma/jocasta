@@ -13,10 +13,11 @@ const items = Astro.props.headings.filter((h) => h.depth >= 2 && h.depth <= 3);
   </nav>
 )}
 <style is:global>
-  .toc { position:fixed; top:16px; right:16px; z-index:90; font-size:.8rem; line-height:1.5; text-align:right; }
-  .toc__toggle { font:inherit; color:var(--muted); background:var(--bg); border:1px solid var(--line); border-radius:3px; padding:.15em .6em; cursor:pointer; }
+  /* 目次ボタンは固定ヘッダーの右端の中に置き、下の読み進みバーと重ならないようにする */
+  .toc { position:fixed; top:calc((var(--hdr) - 26px) / 2); right:16px; z-index:101; font-size:.8rem; line-height:1.5; text-align:right; }
+  .toc__toggle { font:inherit; min-height:26px; color:var(--muted); background:var(--bg); border:1px solid var(--line); border-radius:3px; padding:.15em .6em; cursor:pointer; }
   .toc__toggle:hover, .toc[data-open="true"] .toc__toggle { color:var(--fg); }
-  .toc__list { display:none; list-style:none; margin:.6em 0 0; padding:.6em .9em; text-align:left; width:13rem; max-height:70vh; overflow:auto; background:var(--bg); border-left:1px solid var(--line); }
+  .toc__list { display:none; list-style:none; margin:calc((var(--hdr) - 26px) / 2 + var(--rpb) + 8px) 0 0; padding:.6em .9em; text-align:left; width:13rem; max-height:70vh; overflow:auto; background:var(--bg); border-left:1px solid var(--line); }
   .toc[data-open="true"] .toc__list { display:block; }
   .toc__list li { margin:.25em 0; }
   .toc__list li.d3 { padding-left:.9em; }
@@ -26,7 +27,6 @@ const items = Astro.props.headings.filter((h) => h.depth >= 2 && h.depth <= 3);
   @media (max-width: 1099px) {
     .toc__list { border:1px solid var(--line); border-radius:3px; box-shadow:0 2px 8px rgba(0,0,0,.06); }
   }
-  html { scroll-padding-top: 16px; }
 </style>
 <script is:inline>
   document.addEventListener('DOMContentLoaded', function () {
