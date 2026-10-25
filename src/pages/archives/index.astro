@@ -1,0 +1,35 @@
+---
+// 全記事のアーカイブ（/archives/）。年→月の順に、日付とタイトルだけを新しい順で並べる
+import Base from '../../layouts/Base.astro';
+import { publishedPosts } from '../../lib/posts';
+import { groupByYearMonth } from '../../lib/archive.mjs';
+const years = groupByYearMonth(await publishedPosts());
+const day = (d: Date) => d.toISOString().slice(5, 10).replace('-', '.');
+---
+<Base title="アーカイブ">
+  <h2 class="list-heading">アーカイブ</h2>
+  {years.map(({ year, months }) => (
+    <section class="ar-year" aria-labelledby={`ar${year}`}>
+      <h3 id={`ar${year}`}>{year}</h3>
+      {months.map(({ month, posts }) => (
+        <section class="ar-month" aria-label={`${year}年${month}月`}>
+          <h4>{month}月<span class="ar-count">{posts.length}</span></h4>
+          <ul>
+            {posts.map((p) => <li><time datetime={p.data.date.toISOString()}>{day(p.data.date)}</time><a href={`/posts/${p.id}/`}>{p.data.title}</a></li>)}
+          </ul>
+        </section>
+      ))}
+    </section>
+  ))}
+</Base>
+<style>
+  .ar-year { margin:0 0 2rem; }
+  .ar-year h3 { margin:0 0 .5rem; font-size:1.25rem; color:var(--muted); font-weight:600; }
+  .ar-month h4 { margin:1rem 0 .25rem; font-size:.95rem; font-weight:600; }
+  .ar-count { margin-left:.5rem; color:var(--muted); font-size:.8rem; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; }
+  .ar-month ul { list-style:none; margin:0; padding:0; }
+  .ar-month li { display:flex; gap:1rem; align-items:baseline; min-height:44px; padding:.25rem 0; }
+  .ar-month time { flex:none; color:var(--muted); font-size:.85rem; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; }
+  .ar-month a { color:var(--fg); text-decoration:none; overflow-wrap:anywhere; }
+  .ar-month a:hover, .ar-month a:focus-visible { color:var(--link); text-decoration:underline; text-underline-offset:3px; }
+</style>

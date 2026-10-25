@@ -8,5 +8,6 @@ const posts = await publishedPosts();
 <Base>
   <h2 class="list-heading">記事</h2>
   <PostList posts={posts} themes={usedThemes(posts)} />
+  <p class="meta"><a href="/archives/">年・月ごとのアーカイブ</a></p>
   <ReadingProgressPicker slot="footer" />
 </Base>
