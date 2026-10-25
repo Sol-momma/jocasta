@@ -4,8 +4,13 @@
 // 共通の約束：描き終わったら止める・上限25秒・動きを減らす設定では描き終わった絵だけ・スマホでは描く量を減らす。
 import Tree from './bg/Tree.astro';
 import Mountain from './bg/Mountain.astro';
+import Wave from './bg/Wave.astro';
+import Star from './bg/Star.astro';
+import Rain from './bg/Rain.astro';
+import Cloud from './bg/Cloud.astro';
+import City from './bg/City.astro';
 ---
-<Tree /><Mountain />
+<Tree /><Mountain /><Wave /><Star /><Rain /><Cloud /><City />
 <canvas id="bg" aria-hidden="true"></canvas>
 <style is:global>
   #bg { position:fixed; inset:0; width:100%; height:100%; z-index:-1; pointer-events:none; }

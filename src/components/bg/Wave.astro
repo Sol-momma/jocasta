@@ -1,0 +1,20 @@
+---
+// 背景「波」。画面の下のほうに細い波線が何本か、左から右へ描かれ、そのあとゆっくり横に揺れて止まる。
+---
+<script is:inline>
+(window.BG = window.BG || {}).wave = function (c) {
+  var n = c.small ? 4 : 6, ls = [], i; // スマホは本数を減らす
+  for (i = 0; i < n; i++) ls.push({ y: c.H * (0.62 + i * 0.06), amp: 4 + c.rnd() * 6, k: (0.006 + c.rnd() * 0.006), ph: c.rnd() * 6.28, v: 0.25 + c.rnd() * 0.3, a: 0.5 + i / n * 0.5 });
+  return { dur: 14000, draw: function (e) {
+    var g = c.ctx, p = Math.min(1, e / 5000), step = c.small ? 8 : 6;
+    g.strokeStyle = c.line; g.lineWidth = 1;
+    ls.forEach(function (l, j) {
+      var end = c.W * Math.max(0, Math.min(1, p * 1.5 - j * 0.08)); if (end <= 0) return;
+      g.globalAlpha = l.a; g.beginPath();
+      for (var x = 0; x <= end; x += step) { var y = l.y + Math.sin(x * l.k + l.ph + e / 1000 * l.v) * l.amp; x ? g.lineTo(x, y) : g.moveTo(x, y); }
+      g.stroke();
+    });
+    g.globalAlpha = 1;
+  } };
+};
+</script>
