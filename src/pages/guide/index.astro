@@ -1,0 +1,116 @@
+---
+import Base from '../../layouts/Base.astro';
+const sample = `- 問題の種類
+  - Part 5
+    - 前置詞と接続詞
+- 見分け方
+  - 空所の後ろを見る
+    - 主語＋動詞 → 接続詞
+    - 名詞だけ → 前置詞`;
+---
+<Base title="記事の書き方" noindex>
+  <p class="meta">自分用メモ ・ 一覧には出しません</p>
+  <h1>記事の書き方</h1>
+
+  <div class="alert" role="note">
+    <p class="alert-title">注意（著作権）</p>
+    <p>問題文や選択肢は載せない。書くのは<strong>本の名前と問題番号だけ</strong>（例：「公式問題集 Vol.X Test 1 No.105」）。</p>
+    <p>例文は必ず自分で作る。</p>
+  </div>
+
+  <div class="prose">
+    <h2>1. ファイルの置き場所</h2>
+    <ul>
+      <li><code>templates/post.md</code> をコピーする
+        <ul>
+          <li>コピー先：<code>src/content/posts/&lt;英小文字-ハイフン&gt;.md</code>
+            <ul><li>例：<code>part5-because-of.md</code></li></ul>
+          </li>
+        </ul>
+      </li>
+      <li>ファイル名がそのままURLになる
+        <ul><li><code>part5-because-of.md</code> → <code>/posts/part5-because-of/</code></li></ul>
+      </li>
+    </ul>
+
+    <h2>2. 見出し4つと記入例</h2>
+    <ul>
+      <li>問題の種類：どのPartの、どのタイプの問題か
+        <ul>
+          <li>記入例
+            <ul><li>Part 5</li><li>前置詞と接続詞（because / because of）</li><li>出典：（本の名前）No.（番号）</li></ul>
+          </li>
+        </ul>
+      </li>
+      <li>自分の答え：自作の似た例文と、選んだ答え・正解
+        <ul>
+          <li>記入例
+            <ul>
+              <li>自作の例文：The meeting was postponed ___ the heavy snow.</li>
+              <li>選んだ答え：because</li>
+              <li>正解：because of</li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+      <li>なぜ間違えたか：勘違いしたことと、その理由
+        <ul>
+          <li>記入例
+            <ul>
+              <li>「〜のせいで」という意味だけで選んだ
+                <ul><li>後ろが名詞（the heavy snow）だけなのを見ていなかった</li></ul>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+      <li>見分け方：次に同じタイプを見たときのチェック
+        <ul>
+          <li>記入例
+            <ul>
+              <li>空所の後ろの形を見る
+                <ul><li>主語＋動詞がある → because（接続詞）</li><li>名詞だけ → because of（前置詞）</li></ul>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+    </ul>
+
+    <h2>3. 入れ子の書き方</h2>
+    <ul>
+      <li>行頭に半角スペース2つを足すと、1段深くなる
+        <ul><li>タブや全角スペースは使わない</li><li>子のある項目は ▾ で折りたためる</li></ul>
+      </li>
+    </ul>
+  </div>
+  <div class="pair">
+    <div><p class="label">書き方（Markdown）</p><pre><code>{sample}</code></pre></div>
+    <div class="prose"><p class="label">表示</p>
+      <ul>
+        <li>問題の種類<ul><li>Part 5<ul><li>前置詞と接続詞</li></ul></li></ul></li>
+        <li>見分け方<ul><li>空所の後ろを見る<ul><li>主語＋動詞 → 接続詞</li><li>名詞だけ → 前置詞</li></ul></li></ul></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="prose">
+    <h2>4. 下書きと公開</h2>
+    <ul>
+      <li><code>draft: true</code>：下書き
+        <ul><li>一覧にも記事ページにも出ない（ビルドに含まれない）</li></ul>
+      </li>
+      <li><code>draft: false</code>：公開
+        <ul><li>一覧に出て、<code>/posts/&lt;名前&gt;/</code> で見られる</li></ul>
+      </li>
+      <li>公開の手順
+        <ul>
+          <li>自分で中身を確かめる（問題文が入っていないかも）</li>
+          <li><code>draft: false</code> にする</li>
+          <li><code>npm run deploy</code> を実行</li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+  <p class="back"><a href="/">← 一覧へ</a></p>
+</Base>
