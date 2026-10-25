@@ -1,0 +1,25 @@
+---
+// 背景「蝶」。輪郭だけの蝶が2〜3匹、ふわふわと曲線を描いて飛び、通った跡に点線が薄く残る。
+---
+<script is:inline>
+(window.BG = window.BG || {}).butterfly = function (c) {
+  var bs = [], n = c.small ? 2 : 3, i;
+  for (i = 0; i < n; i++) bs.push({ x: c.rnd() * c.W * 0.6, y: c.H * (0.3 + c.rnd() * 0.5), ax: 25 + c.rnd() * 25, v: 14 + c.rnd() * 10, ph: c.rnd() * 6.28 });
+  function pos(b, t) { return [b.x + b.v * t + Math.sin(t * 0.9 + b.ph) * b.ax, b.y + Math.sin(t * 0.6 + b.ph) * 40 - t * 3]; }
+  return { dur: 15000, draw: function (e) {
+    var g = c.ctx, t = e / 1000; g.strokeStyle = c.line; g.lineWidth = 1;
+    bs.forEach(function (b) {
+      g.setLineDash([2, 6]); g.beginPath(); // 飛んだ跡
+      for (var k = Math.max(0, t - 4); k <= t; k += 0.1) { var q = pos(b, k); k === Math.max(0, t - 4) ? g.moveTo(q[0], q[1]) : g.lineTo(q[0], q[1]); }
+      g.stroke(); g.setLineDash([]);
+      var p = pos(b, t), o = 0.35 + 0.65 * Math.abs(Math.sin(e / 160 + b.ph)); // 羽の開き
+      g.beginPath();
+      [-1, 1].forEach(function (sd) {
+        g.ellipse(p[0] + sd * 5 * o, p[1] - 3, 5 * o, 4, 0, 0, 6.29);
+        g.moveTo(p[0] + sd * 4 * o + 3 * o, p[1] + 3); g.ellipse(p[0] + sd * 4 * o, p[1] + 3, 3 * o, 2.5, 0, 0, 6.29);
+      });
+      g.moveTo(p[0], p[1] - 5); g.lineTo(p[0], p[1] + 5); g.stroke();
+    });
+  } };
+};
+</script>

@@ -122,6 +122,6 @@ pnpm run deploy   # build・下書きの確認をしてから Cloudflare に公�
 
 ## 背景の絵
 
-- 背景（木・山・波・星空・雨・雲・街）は `src/components/bg/` にあるこのブログのオリジナルです（以前は antfu.me の ArtPlum.vue を書き直した木を使っていましたが、作り直して元のコードは使っていません）。
+- 背景（木・山・波・星空・雨・雲・街・鳥・魚・蝶・猫・落ち葉・花）は `src/components/bg/` にあるこのブログのオリジナルです（以前は antfu.me の ArtPlum.vue を書き直した木を使っていましたが、作り直して元のコードは使っていません）。
 - 「表示」の設定で「ランダム（最初の設定）」「どれか1つに固定」「なし」を選べます。ランダムはページを開くたびに変わります。
 - 新しい背景を足すときは、`src/components/bg/` にファイルを作って `window.BG` に登録し、`src/lib/backgrounds.ts` と `src/components/Background.astro` に足します。

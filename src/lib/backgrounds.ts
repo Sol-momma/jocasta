@@ -8,4 +8,10 @@ export const backgrounds = [
   { id: 'rain', name: '雨' },
   { id: 'cloud', name: '雲' },
   { id: 'city', name: '街' },
+  { id: 'bird', name: '鳥' },
+  { id: 'fish', name: '魚' },
+  { id: 'butterfly', name: '蝶' },
+  { id: 'cat', name: '猫' },
+  { id: 'leaf', name: '落ち葉' },
+  { id: 'flower', name: '花' },
 ];

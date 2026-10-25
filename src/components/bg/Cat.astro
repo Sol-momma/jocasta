@@ -1,0 +1,24 @@
+---
+// 背景「猫」。画面の下の線の上を、輪郭だけの猫が一匹ゆっくり歩いてきて、途中で座って止まる。
+---
+<script is:inline>
+(window.BG = window.BG || {}).cat = function (c) {
+  var y0 = c.H - 4, stop = c.W * (0.6 + c.rnd() * 0.25), s = c.small ? 0.8 : 1, WALK = 12000;
+  return { dur: WALK + 2000, draw: function (e) {
+    var g = c.ctx, p = Math.min(1, e / WALK), x = -60 + (stop + 60) * p, sit = Math.max(0, Math.min(1, (e - WALK) / 1500)), st = Math.sin(e / 220) * (1 - p >= 0.001 ? 1 : 0);
+    g.strokeStyle = c.line; g.lineWidth = 1.2; g.lineCap = 'round';
+    g.beginPath(); g.moveTo(0, y0); g.lineTo(c.W, y0); g.stroke(); // 地面
+    var by = y0 - (22 - sit * 4) * s, rear = x - 26 * s;
+    g.beginPath();
+    g.ellipse(x - 12 * s, by, 18 * s, (9 + sit * 3) * s, -sit * 0.5, 0, 6.29); // 体（座ると後ろが下がる）
+    g.moveTo(x + 15 * s, by - 13 * s); g.arc(x + 9 * s, by - 13 * s, 6 * s, 0, 6.29); // 頭
+    g.moveTo(x + 5 * s, by - 17 * s); g.lineTo(x + 6 * s, by - 24 * s); g.lineTo(x + 9 * s, by - 19 * s); // 耳
+    g.moveTo(x + 10 * s, by - 18 * s); g.lineTo(x + 13 * s, by - 24 * s); g.lineTo(x + 14 * s, by - 17 * s);
+    var sw = st * 5 * s * (1 - sit); // 足（歩くときは前後に振る）
+    g.moveTo(x - 2 * s, by + 7 * s); g.lineTo(x - 2 * s + sw, y0); g.moveTo(x - 6 * s, by + 7 * s); g.lineTo(x - 6 * s - sw, y0);
+    if (sit < 1) { g.moveTo(rear + 6 * s, by + 7 * s); g.lineTo(rear + 6 * s - sw, y0); g.moveTo(rear + 10 * s, by + 7 * s); g.lineTo(rear + 10 * s + sw, y0); }
+    g.moveTo(rear, by); g.quadraticCurveTo(rear - 14 * s, by - 6 * s - Math.sin(e / 700) * 6 * s, rear - 10 * s, by - 22 * s); // しっぽ
+    g.stroke();
+  } };
+};
+</script>

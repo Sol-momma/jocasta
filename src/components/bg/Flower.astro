@@ -1,0 +1,21 @@
+---
+// 背景「花」。画面の下から細い茎が伸び、先で花びらが一枚ずつ開いて止まる。
+---
+<script is:inline>
+(window.BG = window.BG || {}).flower = function (c) {
+  var fs = [], n = c.small ? 4 : 8, i;
+  for (i = 0; i < n; i++) fs.push({ x: c.W * (i + 0.3 + c.rnd() * 0.4) / n, h: c.H * (0.1 + c.rnd() * 0.18), b: (c.rnd() - 0.5) * 30, t: c.rnd() * 3000, p: 5 + Math.floor(c.rnd() * 2), r: 6 + c.rnd() * 5 });
+  return { dur: 11000, draw: function (e) {
+    var g = c.ctx; g.strokeStyle = c.line; g.lineWidth = 1;
+    fs.forEach(function (f) {
+      var k = Math.max(0, Math.min(1, (e - f.t) / 4000)); if (!k) return;
+      var y0 = c.H, tx = f.x + f.b * k, ty = y0 - f.h * k;
+      g.beginPath(); g.moveTo(f.x, y0); g.quadraticCurveTo(f.x, y0 - f.h * k * 0.6, tx, ty); g.stroke(); // 茎
+      if (k > 0.5) { g.beginPath(); g.ellipse(f.x + 6, y0 - f.h * 0.3, 7, 3, -0.5, 0, 6.29); g.stroke(); } // 葉
+      var o = Math.max(0, Math.min(1, (e - f.t - 4000) / 2500)); // 花びら
+      for (var j = 0; j < f.p; j++) { if (j / f.p > o) break;
+        var a = j / f.p * 6.283 - 1.57; g.beginPath(); g.ellipse(tx + Math.cos(a) * f.r, ty + Math.sin(a) * f.r, f.r, f.r * 0.5, a, 0, 6.29); g.stroke(); }
+    });
+  } };
+};
+</script>
