@@ -4,7 +4,7 @@
 <script is:inline>
 (window.BG = window.BG || {}).butterfly = function (c) {
   var bs = [], n = c.small ? 2 : 3, i;
-  for (i = 0; i < n; i++) bs.push({ x: c.rnd() * c.W * 0.6, y: c.H * (0.3 + c.rnd() * 0.5), ax: 25 + c.rnd() * 25, v: 14 + c.rnd() * 10, ph: c.rnd() * 6.28 });
+  for (i = 0; i < n; i++) bs.push({ x: c.rnd() * c.W * 0.6, y: c.H * (0.45 + c.rnd() * 0.35), ax: 25 + c.rnd() * 25, v: c.W * (0.015 + c.rnd() * 0.015), ph: c.rnd() * 6.28 });
   function pos(b, t) { return [b.x + b.v * t + Math.sin(t * 0.9 + b.ph) * b.ax, b.y + Math.sin(t * 0.6 + b.ph) * 40 - t * 3]; }
   return { dur: 15000, draw: function (e) {
     var g = c.ctx, t = e / 1000; g.strokeStyle = c.line; g.lineWidth = 1;

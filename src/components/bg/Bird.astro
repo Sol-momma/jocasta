@@ -6,9 +6,9 @@
   var bs = [], n = c.small ? 7 : 13, cy = c.H * (0.2 + c.rnd() * 0.25), i; // スマホは羽数を減らす
   for (i = 0; i < n; i++) { var r = Math.ceil(i / 2), s = i % 2 ? 1 : -1; // V字の隊列
     bs.push({ dx: -r * 22 + c.rnd() * 6, dy: s * r * 12 + c.rnd() * 6, w: 6 + c.rnd() * 3, ph: c.rnd() * 6.28 }); }
-  var DUR = 18000, span = c.W + 400;
+  var DUR = 18000, span = c.W * 0.65 + 120; // 最後は画面の右寄りで止まる
   return { dur: DUR, draw: function (e) {
-    var g = c.ctx, x0 = -120 + span * Math.min(1, e / DUR) * 0.75, fl;
+    var g = c.ctx, x0 = -120 + span * Math.min(1, e / DUR), fl;
     g.strokeStyle = c.line; g.lineWidth = 1.2; g.beginPath();
     bs.forEach(function (b) { var x = x0 + b.dx, y = cy + b.dy + Math.sin(e / 1400 + b.ph) * 3;
       fl = Math.sin(e / 180 + b.ph) * b.w * 0.5; // 羽ばたき（翼の先が上下する）
