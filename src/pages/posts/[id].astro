@@ -15,7 +15,7 @@ const { Content, headings } = await render(post);
 <Base title={post.data.title}>
   <ReadingProgress />
   <Toc headings={headings} />
-  <p class="meta">{post.data.date.toISOString().slice(0, 10).replaceAll('-', '.')} ・ {post.data.part} ・ {post.data.questionType}{post.data.sample && <span class="badge">サンプル</span>}</p>
+  <p class="meta">{[post.data.date.toISOString().slice(0, 10).replaceAll('-', '.'), post.data.part, post.data.questionType].filter(Boolean).join(' ・ ')}{post.data.sample && <span class="badge">サンプル</span>}</p>
   <h1>{post.data.title}</h1>
   <div class="prose"><Content /></div>
   <p class="back"><a href="/">← 一覧へ</a></p>
