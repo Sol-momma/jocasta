@@ -2,6 +2,7 @@
 // 新しいテーマを足すときはここに1行足す。表にない値はそのまま名前として出す
 export const THEMES: Record<string, string> = {
   toeic: 'TOEIC',
+  internship: 'インターン',
 };
 
 export const themeLabel = (theme: string) => THEMES[theme] ?? theme;
