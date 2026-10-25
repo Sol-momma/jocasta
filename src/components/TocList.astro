@@ -1,0 +1,14 @@
+---
+// 目次の入れ子リスト。子を持つ項目の中に、同じ部品で次の段の ol を入れる。
+import type { TocNode } from '../lib/toc';
+interface Props { nodes: TocNode[]; id?: string; class?: string }
+const { nodes, id, class: cls } = Astro.props;
+---
+<ol class={cls ?? 'toc__sub'} id={id}>
+  {nodes.map((n) => (
+    <li class={`d${n.depth}`}>
+      <a href={`#${n.slug}`}>{n.text}</a>
+      {n.children.length > 0 && <Astro.self nodes={n.children} />}
+    </li>
+  ))}
+</ol>
