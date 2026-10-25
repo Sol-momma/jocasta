@@ -1,22 +1,46 @@
 ---
 // 記事ページ用の読み進みバー。CSS scroll-driven animations が基本、未対応ブラウザは小さなJSで代替。
+// 見た目は html の data-rp で切り替える（空=今の線 / ruler / cat / spiral / arrow / pct）。
 ---
-<div class="reading-progress" aria-hidden="true"><div class="reading-progress__bar"></div></div>
+<script is:inline>
+  // 描画前に保存済みの見た目を当て、一瞬だけ別の見た目が出るのを防ぐ
+  try { document.documentElement.dataset.rp = localStorage.getItem('rp') || ''; } catch (e) {}
+</script>
+<div class="reading-progress" aria-hidden="true"><div class="reading-progress__bar"></div><span class="rp-head"><svg class="rp-cat" viewBox="0 0 20 12"><path d="M3 9V5l3-2h7l1-2 1 2 1-2 1 2v3l-2 1H6M4 9v2M7 8v3M12 8v3M15 8v3M3 5 1 3"/></svg><svg class="rp-sp" viewBox="0 0 12 12"><path d="M6 6a1 1 0 0 1 2 0 2 2 0 0 1-4 0 3 3 0 0 1 6 0 4 4 0 0 1-8 0"/></svg></span></div>
 <style is:global>
+  @property --rp { syntax:'<number>'; inherits:true; initial-value:0; }
+  @property --pc { syntax:'<integer>'; inherits:true; initial-value:0; }
   .reading-progress { position:fixed; top:0; left:0; right:0; height:2px; z-index:100; pointer-events:none; }
   .reading-progress__bar { height:100%; background:var(--fg); opacity:.75; transform-origin:0 50%; transform:scaleX(var(--rp, 0)); }
   @supports (animation-timeline: scroll()) {
-    .reading-progress__bar { animation: rp-grow linear both; animation-duration: auto; animation-timeline: scroll(root block); }
-    @keyframes rp-grow { from { transform:scaleX(0); } to { transform:scaleX(1); } }
+    .reading-progress { animation: rp-grow linear both; animation-duration: auto; animation-timeline: scroll(root block); }
+    @keyframes rp-grow { from { --rp:0; --pc:0; } to { --rp:1; --pc:100; } }
   }
+  .rp-head, .rp-head svg { display:none; }
+  /* ここから選べる見た目。色は今の線と同じ1色 */
+  [data-rp=ruler] .reading-progress__bar { height:7px; transform:none; clip-path:inset(0 calc((1 - var(--rp)) * 100%) 0 0);
+    background:linear-gradient(var(--fg),var(--fg)) 0 0/100% 1px no-repeat, repeating-linear-gradient(90deg,var(--fg) 0 1px,transparent 0 10%) 0 0/100% 7px, repeating-linear-gradient(90deg,var(--fg) 0 1px,transparent 0 1%) 0 0/100% 4px no-repeat; }
+  [data-rp=cat] .rp-head, [data-rp=spiral] .rp-head, [data-rp=arrow] .rp-head, [data-rp=pct] .rp-head {
+    display:block; position:absolute; top:0; left:calc(var(--rp) * 100%); transform:translateX(-100%); color:var(--fg); opacity:.75; }
+  .rp-head svg { fill:none; stroke:currentColor; stroke-width:1.2; stroke-linecap:round; stroke-linejoin:round; }
+  [data-rp=cat] .reading-progress__bar, [data-rp=spiral] .reading-progress__bar { opacity:.35; }
+  [data-rp=cat] .rp-cat { display:block; width:24px; height:14px; margin-top:2px; animation:rp-walk .4s steps(2) infinite; }
+  @keyframes rp-walk { 50% { transform:translateY(-1px); } }
+  [data-rp=spiral] .rp-sp { display:block; width:14px; height:14px; margin-top:-6px; transform:rotate(calc(var(--rp) * 30turn)); }
+  [data-rp=arrow] .rp-head { width:0; height:0; margin-top:-3px; border:4px solid transparent; border-left:7px solid currentColor; transform:none; }
+  [data-rp=pct] .reading-progress__bar { opacity:.25; }
+  [data-rp=pct] .rp-head { left:auto; right:8px; transform:none; top:4px; font-size:.7rem; color:var(--muted); font-variant-numeric:tabular-nums; counter-reset:p var(--pc); }
+  [data-rp=pct] .rp-head::after { content:counter(p) "%"; }
   @media (prefers-reduced-motion: reduce) {
     .reading-progress__bar { transition:none; }
+    .rp-cat { animation:none !important; }
+    .rp-sp { transform:none !important; }
   }
 </style>
 <script is:inline>
   (function () {
     if (window.CSS && CSS.supports && CSS.supports('animation-timeline: scroll()')) return;
-    var bar = document.querySelector('.reading-progress__bar');
+    var bar = document.querySelector('.reading-progress');
     if (!bar) return;
     var queued = false;
     function update() {
@@ -25,6 +49,7 @@
       var max = el.scrollHeight - el.clientHeight;
       var p = max > 0 ? Math.min(1, Math.max(0, el.scrollTop / max)) : 0;
       bar.style.setProperty('--rp', p);
+      bar.style.setProperty('--pc', Math.round(p * 100));
     }
     function onScroll() { if (!queued) { queued = true; requestAnimationFrame(update); } }
     addEventListener('scroll', onScroll, { passive: true });
