@@ -3,7 +3,8 @@
 ---
 <script is:inline>
 (window.BG = window.BG || {}).cat = function (c) {
-  var y0 = c.H - 4, stop = c.W * (0.6 + c.rnd() * 0.25), s = c.small ? 0.8 : 1, WALK = 12000;
+  var y0 = c.H - (c.foot || 0) - 4, // 固定フッターの上を歩く
+     stop = c.W * (0.6 + c.rnd() * 0.25), s = c.small ? 0.8 : 1, WALK = 12000;
   return { dur: WALK + 2000, draw: function (e) {
     var g = c.ctx, p = Math.min(1, e / WALK), x = -60 + (stop + 60) * p, sit = Math.max(0, Math.min(1, (e - WALK) / 1500)), st = Math.sin(e / 220) * (1 - p >= 0.001 ? 1 : 0);
     g.strokeStyle = c.line; g.lineWidth = 1.2; g.lineCap = 'round';

@@ -50,7 +50,8 @@ import Flower from './bg/Flower.astro';
     W = innerWidth; H = innerHeight;
     cv.width = W * dpr; cv.height = H * dpr;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    sc = f({ ctx: ctx, W: W, H: H, small: W < 600, rnd: prng(seed),
+    var ft = document.querySelector('body > footer'), foot = ft ? ft.getBoundingClientRect().height : 0; // 固定フッターの高さ（下に着く絵はこの上に置く）
+    sc = f({ ctx: ctx, W: W, H: H, foot: foot, small: W < 600, rnd: prng(seed),
       line: cs.getPropertyValue('--plum').trim() || 'rgba(136,136,136,.15)', bg: cs.getPropertyValue('--bg').trim() || '#fff' });
     t0 = 0; last = 0;
     // 画面が重くてコマが遅れても、上限時間がきたら必ず描き終わりの絵にして止める
