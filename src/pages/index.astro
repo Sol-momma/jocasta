@@ -1,18 +1,10 @@
 ---
 import Base from '../layouts/Base.astro';
-import { getCollection } from 'astro:content';
-const posts = (await getCollection('posts', (p) => !p.data.draft))
-  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
-const fmt = (d: Date) => d.toISOString().slice(0, 10).replaceAll('-', '.');
+import PostList from '../components/PostList.astro';
+import { publishedPosts, usedThemes } from '../lib/posts';
+const posts = await publishedPosts();
 ---
 <Base>
   <h2 class="list-heading">記事</h2>
-  <ol class="posts">
-    {posts.map((p) => (
-      <li>
-        <div class="meta">{fmt(p.data.date)}{p.data.sample && <span class="badge">サンプル</span>}</div>
-        <h2><a href={`/posts/${p.id}/`}>{p.data.title}</a></h2>
-      </li>
-    ))}
-  </ol>
+  <PostList posts={posts} themes={usedThemes(posts)} />
 </Base>
