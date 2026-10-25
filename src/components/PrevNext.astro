@@ -1,0 +1,22 @@
+---
+// 記事の最後に出す「前の記事」「次の記事」。選び方は src/lib/adjacent.mjs
+import type { CollectionEntry } from 'astro:content';
+interface Props { prev?: CollectionEntry<'posts'>; next?: CollectionEntry<'posts'> }
+const { prev, next } = Astro.props;
+---
+{(prev || next) && (
+  <nav class="prev-next" aria-label="前後の記事">
+    {prev ? <a class="pn pn-prev" href={`/posts/${prev.id}/`} rel="prev"><span class="pn-label">← 前の記事</span><span class="pn-title">{prev.data.title}</span></a> : <span />}
+    {next ? <a class="pn pn-next" href={`/posts/${next.id}/`} rel="next"><span class="pn-label">次の記事 →</span><span class="pn-title">{next.data.title}</span></a> : <span />}
+  </nav>
+)}
+<style>
+  .prev-next { display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin:1.5rem 0; }
+  .pn { display:flex; flex-direction:column; gap:.25rem; padding:.75rem 1rem; min-height:44px; border:1px solid var(--border, color-mix(in srgb, var(--muted) 30%, transparent)); border-radius:8px; color:var(--fg); text-decoration:none; }
+  .pn-next { text-align:right; }
+  .pn:hover .pn-title, .pn:focus-visible .pn-title { color:var(--link); text-decoration:underline; text-underline-offset:3px; }
+  .pn:focus-visible { outline:2px solid var(--link); outline-offset:2px; }
+  .pn-label { color:var(--muted); font-size:.8rem; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; }
+  .pn-title { overflow-wrap:anywhere; }
+  @media (max-width:480px) { .prev-next { grid-template-columns:1fr; } .pn-next { text-align:left; } }
+</style>
