@@ -88,7 +88,7 @@ pnpm run deploy   # build・下書きの確認をしてから Cloudflare に公�
 ```text
 .
 ├── .github/workflows/ci.yml   # PR ごとに build と deploy の試運転
-├── docs/                      # README の画像
+├── docs/                      # README の画像・参考にしたブログの一覧
 ├── src/
 │   ├── components/            # 記事一覧・目次・読み進みバー
 │   ├── content/posts/         # 記事（Markdown）
@@ -111,3 +111,7 @@ pnpm run deploy   # build・下書きの確認をしてから Cloudflare に公�
 - [wrangler](https://developers.cloudflare.com/workers/wrangler/): Cloudflare に公開するコマンド
 - [pnpm](https://pnpm.io/): パッケージ管理
 - GitHub Actions: PR ごとの build 確認
+
+## 参考にしたブログ
+
+見た目や読みやすさで参考にしたブログは [docs/references.md](docs/references.md) にまとめています。記事ページの形は [Naoya Tech](https://naoya-tech.com)、フッターは [maguro.dev](https://maguro.dev) を参考にしました。
