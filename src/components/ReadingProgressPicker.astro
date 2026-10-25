@@ -20,7 +20,7 @@ import { backgrounds } from '../lib/backgrounds';
   <option value="spiral">らせん</option><option value="arrow">矢印</option><option value="pct">数字</option>
   <option value="train">電車</option><option value="rocket">ロケット</option><option value="candle">ろうそく</option>
   <option value="pixel">ドット絵</option><option value="neon">ネオン</option><option value="snake">ヘビ</option>
-</select></label><label class="rp-pick">紙吹雪<input type="checkbox" id="rp-cf"></label><label class="rp-pick">背景<select id="bg-pick"><option value="">ランダム</option>{backgrounds.map((b) => <option value={b.id}>{b.name}</option>)}<option value="off">なし</option></select></label>
+</select></label><label class="rp-pick">バーを出す<input type="checkbox" id="rp-on"></label><label class="rp-pick">紙吹雪<input type="checkbox" id="rp-cf"></label><label class="rp-pick">背景<select id="bg-pick"><option value="">ランダム</option>{backgrounds.map((b) => <option value={b.id}>{b.name}</option>)}<option value="off">なし</option></select></label>
 <div class="th-pick" role="radiogroup" aria-labelledby="th-label"><span id="th-label" class="th-label">配色</span>
 {themes.map((t) => <button type="button" role="radio" aria-checked="false" class="th-opt" data-t={t.id}><span class={`th-sw th-sw-${t.id || 'white'}`} style={`background-color:${t.bg};color:${t.fg}`} aria-hidden="true"><i></i></span>{t.name}</button>)}
 </div>
@@ -55,6 +55,10 @@ import { backgrounds } from '../lib/backgrounds';
     var s = document.getElementById('rp-pick'), d = document.documentElement.dataset;
     s.value = d.rp || '';
     s.onchange = function () { d.rp = s.value; try { localStorage.setItem('rp', s.value); } catch (e) {} };
+    // バーのオン・オフ（rpo。ホームの「設定」と同じ保存先）
+    var on = document.getElementById('rp-on');
+    on.checked = d.rpo !== 'off';
+    on.onchange = function () { d.rpo = on.checked ? '' : 'off'; try { localStorage.setItem('rpo', d.rpo); } catch (e) {} };
     var c = document.getElementById('rp-cf');
     c.checked = d.rpc === '1';
     c.onchange = function () { d.rpc = c.checked ? '1' : ''; try { localStorage.setItem('rpc', d.rpc); } catch (e) {} dispatchEvent(new Event('rp-cf')); };
