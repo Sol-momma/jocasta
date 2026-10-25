@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build && pagefind --site dist",
+    "build": "node scripts/fetch-link-cards.mjs && astro build && pagefind --site dist",
     "preview": "astro preview",
     "deploy": "pnpm run build && node scripts/check-drafts.mjs && wrangler deploy",
     "check:drafts": "node scripts/check-drafts.mjs",
@@ -20,6 +20,7 @@
     "satori": "^0.63.2"
   },
   "devDependencies": {
+    "@astrojs/markdown-satteri": "0.4.5",
     "pagefind": "^1.5.2",
     "shiki": "4.5.0",
     "wrangler": "^4.152.0"
