@@ -12,6 +12,7 @@ const tags = tagCounts(await publishedPosts());
       {tags.map(({ tag, count }) => <li><a href={tagUrl(tag)}><span aria-hidden="true">#</span>{tag}<span class="tag-count">{count}</span></a></li>)}
     </ul>
   )}
+  <p class="meta"><a href="/archives/">年・月ごとのアーカイブ</a></p>
 </Base>
 <style>
   .tag-index { list-style:none; margin:0; padding:0; display:flex; flex-wrap:wrap; gap:.5rem; }
