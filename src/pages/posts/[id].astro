@@ -1,14 +1,18 @@
 ---
 import Base from '../../layouts/Base.astro';
+import Toc from '../../components/Toc.astro';
+import ReadingProgress from '../../components/ReadingProgress.astro';
 import { getCollection, render } from 'astro:content';
 export async function getStaticPaths() {
   const posts = await getCollection('posts', (p) => !p.data.draft);
   return posts.map((post) => ({ params: { id: post.id }, props: { post } }));
 }
 const { post } = Astro.props;
-const { Content } = await render(post);
+const { Content, headings } = await render(post);
 ---
 <Base title={post.data.title}>
+  <ReadingProgress />
+  <Toc headings={headings} />
   <p class="meta">{post.data.date.toISOString().slice(0, 10).replaceAll('-', '.')} ・ {post.data.part} ・ {post.data.questionType}{post.data.sample && <span class="badge">サンプル</span>}</p>
   <h1>{post.data.title}</h1>
   <div class="prose"><Content /></div>

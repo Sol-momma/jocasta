@@ -1,0 +1,72 @@
+---
+// 記事の目次。見出し(h2/h3)から自動生成。開閉状態は localStorage に保存（PC幅とスマホ幅で別々、スマホは既定で閉じる）。
+import type { MarkdownHeading } from 'astro';
+interface Props { headings: MarkdownHeading[] }
+const items = Astro.props.headings.filter((h) => h.depth >= 2 && h.depth <= 3);
+---
+{items.length > 0 && (
+  <nav class="toc" aria-label="目次" data-open="false">
+    <button class="toc__toggle" type="button" aria-expanded="false" aria-controls="toc-list">目次</button>
+    <ol class="toc__list" id="toc-list">
+      {items.map((h) => <li class={`d${h.depth}`}><a href={`#${h.slug}`}>{h.text}</a></li>)}
+    </ol>
+  </nav>
+)}
+<style is:global>
+  .toc { position:fixed; top:16px; right:16px; z-index:90; font-size:.8rem; line-height:1.5; text-align:right; }
+  .toc__toggle { font:inherit; color:var(--muted); background:var(--bg); border:1px solid var(--line); border-radius:3px; padding:.15em .6em; cursor:pointer; }
+  .toc__toggle:hover, .toc[data-open="true"] .toc__toggle { color:var(--fg); }
+  .toc__list { display:none; list-style:none; margin:.6em 0 0; padding:.6em .9em; text-align:left; width:13rem; max-height:70vh; overflow:auto; background:var(--bg); border-left:1px solid var(--line); }
+  .toc[data-open="true"] .toc__list { display:block; }
+  .toc__list li { margin:.25em 0; }
+  .toc__list li.d3 { padding-left:.9em; }
+  .toc__list a { color:var(--muted); text-decoration:none; }
+  .toc__list a:hover { color:var(--fg); }
+  .toc__list a.is-active { color:var(--fg); font-weight:600; }
+  @media (max-width: 1099px) {
+    .toc__list { border:1px solid var(--line); border-radius:3px; box-shadow:0 2px 8px rgba(0,0,0,.06); }
+  }
+  html { scroll-padding-top: 16px; }
+</style>
+<script is:inline>
+  document.addEventListener('DOMContentLoaded', function () {
+    var nav = document.querySelector('.toc');
+    if (!nav) return;
+    var btn = nav.querySelector('.toc__toggle');
+    var wide = matchMedia('(min-width: 1100px)');
+    function key() { return wide.matches ? 'toc-open-wide' : 'toc-open-narrow'; }
+    function read() {
+      var v = null; try { v = localStorage.getItem(key()); } catch (e) {}
+      return v === null ? wide.matches : v === '1';
+    }
+    function set(open, save) {
+      nav.dataset.open = String(open);
+      btn.setAttribute('aria-expanded', String(open));
+      if (save) { try { localStorage.setItem(key(), open ? '1' : '0'); } catch (e) {} }
+    }
+    set(read(), false);
+    btn.addEventListener('click', function () { set(nav.dataset.open !== 'true', true); });
+    wide.addEventListener('change', function () { set(read(), false); });
+    nav.addEventListener('click', function (e) {
+      if (e.target.closest('a') && !wide.matches) set(false, false);
+    });
+    if (!('IntersectionObserver' in window)) return;
+    var links = {};
+    nav.querySelectorAll('.toc__list a').forEach(function (a) { links[decodeURIComponent(a.hash.slice(1))] = a; });
+    var heads = Object.keys(links).map(function (id) { return document.getElementById(id); }).filter(Boolean);
+    var visible = new Set();
+    function mark() {
+      var cur = heads.find(function (h) { return visible.has(h); });
+      if (!cur) {
+        cur = null;
+        heads.forEach(function (h) { if (h.getBoundingClientRect().top < 80) cur = h; });
+      }
+      Object.keys(links).forEach(function (id) { links[id].classList.toggle('is-active', !!cur && cur.id === id); });
+    }
+    var io = new IntersectionObserver(function (es) {
+      es.forEach(function (e) { e.isIntersecting ? visible.add(e.target) : visible.delete(e.target); });
+      mark();
+    }, { rootMargin: '0px 0px -60% 0px' });
+    heads.forEach(function (h) { io.observe(h); });
+  });
+</script>
