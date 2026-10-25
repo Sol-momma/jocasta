@@ -1,8 +1,8 @@
 ---
-// 読み進みバーの見た目と紙吹雪の切り替え。固定フッターの右端に「表示」を置き、押すと上に小さな設定が開く。
+// 読み進みバーの見た目と紙吹雪の切り替え。固定フッターの右端に「表示」アイコンを置き、押すと上に小さな設定が開く。
 // 選んだ値は localStorage の rp、紙吹雪のオン・オフは rpc に保存。
 ---
-<details class="rp-menu"><summary>表示</summary><div class="rp-pop">
+<details class="rp-menu"><summary aria-label="表示の設定" title="表示"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h4M12 17h8" /><circle cx="16" cy="7" r="2" /><circle cx="10" cy="17" r="2" /></svg></summary><div class="rp-pop">
 <label class="rp-pick">バー<select id="rp-pick">
   <option value="">線</option><option value="ruler">目盛り</option><option value="cat">猫</option>
   <option value="spiral">らせん</option><option value="arrow">矢印</option><option value="pct">数字</option>
@@ -12,8 +12,10 @@
 </div></details>
 <style is:global>
   /* 目立たせない。押せる範囲は44px以上（フッターより高い分は上下に均等にはみ出させ、見た目の高さは変えない） */
-  .rp-menu { flex:none; position:relative; margin-left:auto; padding-left:.8em; color:var(--muted); font-size:.8rem; }
-  .rp-menu summary { display:flex; align-items:center; justify-content:center; height:44px; min-width:44px; margin:calc((var(--ftr) - 44px) / 2) 0; list-style:none; cursor:pointer; }
+  .rp-menu { flex:none; position:relative; color:var(--muted); font-size:.8rem; }
+  .rp-menu summary svg { width:18px; height:18px; fill:none; stroke:currentColor; stroke-width:1.5; stroke-linecap:round; stroke-linejoin:round; }
+  @media (max-width:560px) { .rp-menu summary svg { width:16px; height:16px; } }
+  .rp-menu summary { display:flex; align-items:center; justify-content:center; height:44px; width:44px; margin:calc((var(--ftr) - 44px) / 2) 0; list-style:none; cursor:pointer; }
   .rp-menu summary::-webkit-details-marker { display:none; }
   .rp-menu[open] summary { color:var(--fg); }
   /* 開いた設定は「数字」の%表示と「先頭へ戻る」ボタンより上に出して重ならないようにする */

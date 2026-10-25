@@ -1,5 +1,5 @@
 // 下書き（draft: true）の記事が、ビルド結果 dist/ のどこにも出ていないか確かめる。
-// 見るもの：記事ページのフォルダ、記事のURL（/posts/<名前>/）、タイトルの文字列。
+// 見るもの：記事ページのフォルダ、記事のURL（/posts/<名前>/）、タイトルの文字列。RSS（dist/rss.xml）も含む。
 // 使い方：pnpm run build のあとに node scripts/check-drafts.mjs（pnpm run deploy でも自動で走る）
 import { readdirSync, readFileSync, statSync, existsSync } from 'node:fs';
 import { join, extname, basename } from 'node:path';
@@ -35,6 +35,9 @@ for (const d of drafts) {
     for (const n of needles) if (body.includes(n)) problems.push(`${d.slug}: ${p} に「${n}」がある`);
   }
 }
+
+// RSS フィードがあり、下書きが入っていないこと（上のループで dist/rss.xml も見ている）
+if (!existsSync(join(distDir, 'rss.xml'))) problems.push('dist/rss.xml がない');
 
 console.log(`下書き ${drafts.length} 件、dist のファイル ${textFiles.length} 件を確認`);
 if (problems.length) { console.error(problems.join('\n')); process.exit(1); }
