@@ -29,7 +29,7 @@ const nums = Array.from({ length: 31 }, (_, i) => i);
   /* 定規：本物の30cm定規のように、地の色の板に目盛りと数字。読むほど左から見える範囲が伸びる */
   .rp-ruler { display:none; }
   [data-rp=ruler] .reading-progress { height:var(--rpb); }
-  [data-rp=ruler] .reading-progress__bar { opacity:1; background:#f4f2ec; border-bottom:1px solid var(--fg); transform:none; clip-path:inset(0 calc((1 - var(--rp)) * 100%) 0 0); }
+  [data-rp=ruler] .reading-progress__bar { opacity:1; background:var(--ruler-bg); border-bottom:1px solid var(--fg); transform:none; clip-path:inset(0 calc((1 - var(--rp)) * 100%) 0 0); }
   [data-rp=ruler] .rp-ruler { display:block; position:relative; height:100%; color:var(--fg); }
   .rp-ruler svg { display:block; width:100%; height:12px; }
   .rp-ruler path { stroke:currentColor; stroke-width:1px; vector-effect:non-scaling-stroke; }
