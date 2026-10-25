@@ -1,0 +1,7 @@
+---
+// 「> cd ..」リンク（押すと記事の一覧へ）。記事ページの上部と本文末で同じ部品を使う
+// back: true のとき data-back を付け、同じサイトから来たならブラウザの戻るにする
+interface Props { class?: string; back?: boolean }
+const { class: cls = 'cd-back', back = false } = Astro.props;
+---
+<p class={cls}><a class="cd-link" href="/" data-back={back ? '' : undefined}><span class="cd-gt" aria-hidden="true">&gt;</span><code>cd ..</code><span class="sr-only">記事の一覧へ戻る</span></a></p>

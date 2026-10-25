@@ -113,9 +113,8 @@ const { title, noindex = false, wide = false } = Astro.props;
   nav.themes { display:flex; flex-wrap:wrap; gap:0 1.2em; margin:-.6em 0 var(--gap); font-size:.9rem; }
   nav.themes a { display:inline-flex; align-items:center; min-height:44px; }
   nav.themes a[aria-current="page"] { color:var(--fg); text-decoration:underline; text-underline-offset:4px; }
-  /* 記事ページ：タイトル上の「戻る」、タイトル下の日付と編集、本文下のタグ、先頭へ戻るボタン。アイコンは線のSVG */
-  .post-back { margin:0 0 .2em; font-size:.85rem; }
-  .post-back a { display:inline-flex; align-items:center; gap:.2em; min-height:44px; color:var(--muted); }
+  /* 記事ページ：タイトル上の「> cd ..」（見た目は本文末の .cd-link と同じ）、タイトル下の日付と編集、本文下のタグ、先頭へ戻るボタン。アイコンは線のSVG */
+  .post-back { margin:0 0 .2em; }
   .post svg { width:1.15em; height:1.15em; flex:none; fill:none; stroke:currentColor; stroke-width:1.6; stroke-linecap:round; stroke-linejoin:round; }
   .post h1 { margin-top:0; }
   .post-meta { display:flex; flex-wrap:wrap; align-items:center; gap:0 .6em; }
