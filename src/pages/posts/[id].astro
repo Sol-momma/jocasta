@@ -2,6 +2,7 @@
 import CdBack from '../../components/CdBack.astro';
 import Base from '../../layouts/Base.astro';
 import CodeCopy from '../../components/CodeCopy.astro';
+import ImageZoom from '../../components/ImageZoom.astro';
 import Toc from '../../components/Toc.astro';
 import ReadingProgress from '../../components/ReadingProgress.astro';
 import ReadingProgressPicker from '../../components/ReadingProgressPicker.astro';
@@ -62,6 +63,7 @@ const tags = [
   <button class="to-top" type="button" aria-label="ページの先頭へ戻る" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 15l6-6 6 6" /></svg></button>
   </div>
   <CodeCopy />
+  <ImageZoom />
   <ReadingProgressPicker slot="footer" />
 </Base>
 <script>
