@@ -8,31 +8,38 @@ const { title } = Astro.props;
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>{title ? `${title} | Jocasta` : 'Jocasta — TOEIC 学習ノート'}</title>
 <style is:global>
-  :root { --fg:#222; --muted:#666; --line:#e4e1da; --bg:#faf9f6; --accent:#2f5d50; }
+  :root { --fg:#1a1a1a; --muted:#8a8a8a; --line:#ececec; --bg:#fff; --link:#1a1a1a; }
   * { box-sizing: border-box; }
   body { margin:0; background:var(--bg); color:var(--fg);
-    font-family: "Hiragino Sans","Noto Sans JP",system-ui,sans-serif; line-height:1.85; font-size:17px; }
-  .wrap { max-width: 720px; margin: 0 auto; padding: 0 20px; }
-  header { border-bottom:1px solid var(--line); padding:20px 0; }
-  header a { color:var(--fg); text-decoration:none; font-weight:700; font-size:1.15rem; }
-  header p { margin:2px 0 0; color:var(--muted); font-size:.9rem; }
-  main { padding: 32px 0 64px; }
-  a { color: var(--accent); }
-  h1 { font-size:1.6rem; line-height:1.4; }
-  h2 { font-size:1.2rem; margin-top:2.2em; padding-bottom:.3em; border-bottom:1px solid var(--line); }
-  blockquote { margin:1em 0; padding:.6em 1em; border-left:3px solid var(--accent); background:#f1efe9; }
-  code { background:#efede7; padding:.1em .3em; border-radius:3px; }
-  .meta { color:var(--muted); font-size:.9rem; }
-  .badge { display:inline-block; border:1px solid var(--muted); color:var(--muted); font-size:.75rem; padding:0 .5em; border-radius:3px; margin-left:.4em; }
-  footer { border-top:1px solid var(--line); padding:20px 0; color:var(--muted); font-size:.85rem; }
-  ul.posts { list-style:none; padding:0; } ul.posts li { padding:14px 0; border-bottom:1px solid var(--line); }
+    font-family: "Hiragino Sans","Noto Sans JP",system-ui,sans-serif; line-height:1.9; font-size:16px; -webkit-font-smoothing:antialiased; }
+  .wrap { max-width: 600px; margin: 0 auto; padding: 0 24px; }
+  header { padding:56px 0 8px; }
+  header a { color:var(--fg); text-decoration:none; font-weight:600; font-size:1rem; }
+  header p { margin:0; color:var(--muted); font-size:.85rem; }
+  main { padding: 32px 0 80px; }
+  a { color: var(--link); text-underline-offset:3px; text-decoration-color:#c8c8c8; }
+  a:hover { text-decoration-color: var(--fg); }
+  h1 { font-size:1.35rem; line-height:1.5; font-weight:600; margin:.2em 0 1.2em; }
+  h2 { font-size:1.02rem; font-weight:600; margin-top:2.4em; }
+  blockquote { margin:1em 0; padding:0 0 0 1em; border-left:2px solid var(--line); color:#555; }
+  code { background:#f4f4f4; padding:.1em .3em; border-radius:3px; font-size:.92em; }
+  .meta { color:var(--muted); font-size:.82rem; letter-spacing:.02em; font-variant-numeric:tabular-nums; }
+  .badge { display:inline-block; color:var(--muted); font-size:.72rem; border:1px solid var(--line); padding:0 .45em; border-radius:3px; margin-left:.5em; }
+  footer { padding:24px 0 48px; color:var(--muted); font-size:.8rem; }
+  ol.posts { list-style:none; padding:0; margin:0; }
+  ol.posts li { margin:0 0 3.2em; }
+  ol.posts h2 { margin:.15em 0 .4em; font-size:1.05rem; }
+  ol.posts h2 a { text-decoration:none; }
+  ol.posts p { margin:0 0 .5em; color:#444; }
+  .more { font-size:.85rem; color:var(--muted); }
+  .back { margin-top:3em; font-size:.85rem; }
   .prose ul, .prose ol { padding-left: 1.4em; margin: .3em 0; }
   .prose ul ul, .prose ul ul ul { list-style: disc; }
   .prose li::marker { color: var(--muted); }
-  .prose li { margin: .25em 0; line-height:1.75; }
+  .prose li { margin: .25em 0; line-height:1.8; }
   .prose li > ul, .prose li > ol { margin-left: .15em; padding-left: 1.1em; border-left: 1px solid var(--line); }
   .prose li.has-children { list-style: none; position: relative; }
-  .prose li.has-children > .tog { position:absolute; left:-1.3em; top:.15em; width:1.1em; height:1.1em; border:0; background:none; padding:0; cursor:pointer; color:var(--muted); font-size:.8rem; line-height:1.1em; }
+  .prose li.has-children > .tog { position:absolute; left:-1.3em; top:.2em; width:1.1em; height:1.1em; border:0; background:none; padding:0; cursor:pointer; color:var(--muted); font-size:.8rem; line-height:1.1em; }
   .prose li.has-children > .tog::before { content:"▾"; }
   .prose li.collapsed > .tog::before { content:"▸"; }
   .prose li.collapsed > ul, .prose li.collapsed > ol { display:none; }
