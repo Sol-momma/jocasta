@@ -1,14 +1,9 @@
-# Jocasta
+# [Jocasta](https://blog.sol-momma.com)
+Markdown で書いた記事を Astro で静的なページにし、Cloudflare Workers で公開しています。
 
-いろいろなテーマの学習記録を書く、日本語の個人ブログです。Markdown で書いた記事を Astro で静的なページにし、Cloudflare Workers で公開しています。
+> **English summary:** My blog. Posts are written in Markdown, built into a static site with Astro, and served from Cloudflare Workers. Run it locally with `pnpm install` and `pnpm run dev`.
 
-> **English summary:** Jocasta is a Japanese-language study blog by Sol-momma. Posts are written in Markdown, built into a static site with Astro, and served from Cloudflare Workers. Run it locally with `pnpm install` and `pnpm run dev`.
 
-公開URL: https://blog.sol-momma.com
-
-![トップページ](docs/images/home.png)
-
-![記事ページ](docs/images/post.png)
 
 ## できること
 
@@ -81,12 +76,6 @@ pnpm test         # 単体テスト
 ├── tests/                # 単体テスト
 └── wrangler.jsonc        # Cloudflare Workers の設定
 ```
-
-## 参考にしたブログ
-
-見た目や読みやすさで参考にしたブログの一覧は [docs/references.md](docs/references.md) にあります。記事ページの形は [Naoya Tech](https://naoya-tech.com)、フッターと年ごとの記事一覧は [maguro.dev](https://maguro.dev)、文字・色・余白は [Boris Cherny's Blog](https://borischerny.com) を参考にしました。
-
-背景の絵（`src/components/bg/`）はこのブログのために作ったものです。以前は [antfu.me](https://antfu.me) の ArtPlum を書き直した木を使っていましたが、今は作り直していて元のコードは使っていません。
 
 ## ライセンス
 
