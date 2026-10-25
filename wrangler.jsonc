@@ -2,7 +2,5 @@
   "name": "jocasta",
   "compatibility_date": "2026-10-01",
   "assets": { "directory": "./dist", "not_found_handling": "404-page" },
-  // 本番に出す前に、その版をプレビューURLで確かめるため
-  "preview_urls": true,
   "routes": [{ "pattern": "blog.sol-momma.com", "custom_domain": true }]
 }
