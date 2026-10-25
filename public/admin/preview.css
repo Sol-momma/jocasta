@@ -1,0 +1,20 @@
+/* /admin のプレビュー用。src/layouts/Base.astro の本文まわりの見た目を写したもの。Base.astro を変えたらここも合わせる */
+:root { --fg:#151515; --muted:#7c7c7c; --line:#e6e6e6; --bg:#fcfcfb; --link:#2463c4;
+  --sans:"Hiragino Sans","Noto Sans JP","Noto Sans CJK JP",system-ui,sans-serif; --gap:28px; }
+body { background:var(--bg); color:var(--fg); font-family:var(--sans); font-size:17px; line-height:1.9; -webkit-font-smoothing:antialiased; }
+a { color:var(--link); text-decoration:none; }
+h1, h2, h3 { font-weight:400; }
+h1 { font-size:1.75rem; font-weight:500; line-height:1.4; }
+h2 { font-size:1.3rem; line-height:1.5; margin:2em 0 .6em; }
+h3 { font-size:1.1rem; margin:1.6em 0 .5em; }
+p, blockquote, pre { margin:0 0 var(--gap); }
+blockquote { padding:0 0 0 1em; border-left:3px solid var(--line); color:#666; margin-left:0; }
+code { border:1px solid var(--line); background:none; padding:0 .3em; border-radius:3px; font-size:.88em; }
+pre { background:#f6f6f6; padding:.9em 1em; border-radius:4px; overflow-x:auto; font-size:.85rem; line-height:1.6; }
+pre code { border:0; padding:0; }
+ul, ol { padding-left:1.4em; margin:.3em 0; }
+ul ul, ul ul ul { list-style:disc; }
+li::marker { color:var(--muted); }
+li { margin:.25em 0; line-height:1.8; }
+li > ul, li > ol { margin-left:.15em; padding-left:1.1em; border-left:1px solid var(--line); }
+img { max-width:100%; }

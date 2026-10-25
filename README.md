@@ -10,8 +10,29 @@
 
 ### 1. /admin 編集画面
 
-> [!NOTE]
-> 準備中です。ブラウザから記事を書ける編集画面（`/admin`）を作っています。それまでは下の Markdown の手順で書いてください。
+ブラウザで https://blog.sol-momma.com/admin/ を開くと、記事を書けます。保存すると GitHub の `main` に直接コミットされます。
+
+**ログインする（トークン）**
+
+1. GitHub で「Fine-grained personal access token」を作ります。対象のリポジトリは `Sol-momma/jocasta` だけにし、「Contents」を「Read and write」にします。
+2. `/admin` で「トークンでログイン」を押し、作ったトークンを貼ります。
+3. トークンの値は README・記事・チャットに書きません。なくしたら GitHub で作り直します。
+
+**下書きと公開を切り替える**
+
+- 「下書き」は入力欄の一番上にあります。新しい記事は、はじめからオン（下書き）です。
+- オンのまま保存すると `draft: true` になります。一覧・記事ページ・テーマ一覧のどこにも出ません。
+- 書きかけの見た目は、編集画面の右側のプレビューで確かめます。サイトに近い文字と箇条書きで表示されます。
+- 公開するときは「下書き」をオフにして保存します（`draft: false`）。
+
+**保存したあと**
+
+保存しただけでは本番は変わりません。手元で `main` を取り込み、`pnpm run deploy` を実行すると本番に出ます。
+
+```sh
+git pull
+pnpm run deploy   # build → 下書きが出ていないかの確認 → 公開
+```
 
 ### 2. Markdown で書く
 
@@ -52,7 +73,8 @@ pnpm install      # 依存パッケージを入れる
 pnpm run dev      # 手元で確認（http://localhost:4321）
 pnpm run build    # dist/ にサイトを作る
 pnpm run preview  # 作ったサイトを手元で確認
-pnpm run deploy   # build してから Cloudflare に公開（wrangler deploy）
+pnpm run check:drafts  # build のあと、下書きが dist/ に出ていないか確かめる
+pnpm run deploy   # build・下書きの確認をしてから Cloudflare に公開（wrangler deploy）
 ```
 
 > [!WARNING]
@@ -74,6 +96,7 @@ pnpm run deploy   # build してから Cloudflare に公開（wrangler deploy）
 │   ├── layouts/Base.astro     # 全ページ共通の枠
 │   ├── lib/                   # テーマ名・記事の並べ方・GitHub へのリンク
 │   └── pages/                 # URL ごとのページ（/、/posts/、/themes/、/guide/）
+├── scripts/check-drafts.mjs   # 下書きが dist/ に出ていないか確かめる
 ├── templates/post.md          # 記事のひな形
 ├── astro.config.mjs
 ├── wrangler.jsonc             # Cloudflare Workers の設定（カスタムドメインもここ）
