@@ -27,9 +27,5 @@ document.querySelectorAll<HTMLButtonElement>('.code-copy').forEach((btn) => {
   .astro-code .line.hl { display:inline-block; min-width:100%; box-shadow:inset 3px 0 0 var(--link); background:color-mix(in srgb, var(--fg) 8%, transparent); }
   .code-copy { position:absolute; top:.35em; right:.35em; min-height:32px; padding:0 .7em; border:1px solid var(--line); border-radius:4px; background:var(--bg); color:var(--muted); font-size:.75rem; cursor:pointer; opacity:.85; }
   .code-copy:hover, .code-copy:focus-visible { opacity:1; color:var(--fg); }
-  /* 広い画面では本文より左へ広げる（Base.astro の pre と同じ幅）。枠ごと広げ、中の pre は枠に合わせる */
-  @media (min-width:1100px) {
-    .post .prose .code-block { --ext:min(240px, (100vw - 756px - 176px) / 2 - 48px); width:calc(100% + var(--ext)); margin-left:calc(-1 * var(--ext)); }
-    .post .prose .code-block pre { width:100%; margin-left:0; }
-  }
+  /* 本文が目次の手前まで広がったので、コードの枠も本文と同じ幅にそろえる（左へはみ出させない） */
 </style>
