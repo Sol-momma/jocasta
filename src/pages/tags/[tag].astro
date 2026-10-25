@@ -1,0 +1,17 @@
+---
+// タグごとの記事一覧（/tags/<タグ>/）。新しい順
+import Base from '../../layouts/Base.astro';
+import PostList from '../../components/PostList.astro';
+import { publishedPosts } from '../../lib/posts';
+import { tagCounts } from '../../lib/tags.mjs';
+export async function getStaticPaths() {
+  const posts = await publishedPosts();
+  return tagCounts(posts).map(({ tag }) => ({ params: { tag }, props: { tag, posts: posts.filter((p) => p.data.tags.includes(tag)) } }));
+}
+const { tag, posts } = Astro.props;
+---
+<Base title={`#${tag}`}>
+  <h2 class="list-heading">#{tag} の記事</h2>
+  <PostList posts={posts} themes={[]} />
+  <p class="meta"><a href="/tags/">タグの一覧へ</a></p>
+</Base>

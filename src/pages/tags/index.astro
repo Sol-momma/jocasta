@@ -1,0 +1,21 @@
+---
+// 全タグの一覧（/tags/）。タグ名と記事数を並べる
+import Base from '../../layouts/Base.astro';
+import { publishedPosts } from '../../lib/posts';
+import { tagCounts, tagUrl } from '../../lib/tags.mjs';
+const tags = tagCounts(await publishedPosts());
+---
+<Base title="タグ">
+  <h2 class="list-heading">タグ</h2>
+  {tags.length === 0 ? <p class="meta">まだタグはありません。</p> : (
+    <ul class="tag-index">
+      {tags.map(({ tag, count }) => <li><a href={tagUrl(tag)}><span aria-hidden="true">#</span>{tag}<span class="tag-count">{count}</span></a></li>)}
+    </ul>
+  )}
+</Base>
+<style>
+  .tag-index { list-style:none; margin:0; padding:0; display:flex; flex-wrap:wrap; gap:.5rem; }
+  .tag-index a { display:inline-flex; align-items:center; gap:.35rem; min-height:44px; padding:0 .75rem; border:1px solid var(--border, color-mix(in srgb, var(--muted) 30%, transparent)); border-radius:8px; color:var(--fg); text-decoration:none; }
+  .tag-index a:hover, .tag-index a:focus-visible { color:var(--link); }
+  .tag-count { color:var(--muted); font-size:.8rem; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; }
+</style>

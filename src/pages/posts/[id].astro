@@ -13,6 +13,7 @@ import { relatedPosts } from '../../lib/related';
 import { postMinutes } from '../../lib/reading-time.mjs';
 import { editUrl } from '../../lib/github';
 import { themeLabel, themeUrl } from '../../lib/themes';
+import { tagUrl } from '../../lib/tags.mjs';
 export async function getStaticPaths() {
   const posts = await getCollection('posts', (p) => !p.data.draft);
   return posts.map((post) => ({ params: { id: post.id }, props: { post, related: relatedPosts(post, posts), ...adjacentPosts(post, posts) } }));
@@ -24,10 +25,13 @@ const minutes = postMinutes(post.body);
 const d = post.data;
 // 日付のあとに並べる補足（空のものは出さない）
 const extras = [d.part, d.questionType].filter(Boolean);
-// 本文の下に並べるタグ。テーマ名を先頭にし、押すとそのテーマの一覧へ飛ぶ（タグごとの一覧ページはまだない）
+// 本文の下に並べるタグ。テーマ名を先頭にし、テーマはテーマの一覧、ほかのタグは /tags/<タグ>/ へ飛ぶ
 // 「Markdownをコピー」で渡す元の Markdown。frontmatter は出さず、タイトルと本文だけにする（下書きはページ自体を作らない）
 const markdown = `# ${d.title}\n\n${(post.body ?? '').trim()}\n`;
-const tags = [...new Set([d.theme && themeLabel(d.theme), ...(d.tags ?? [])].filter(Boolean))] as string[];
+const tags = [
+  ...(d.theme ? [{ label: themeLabel(d.theme), href: themeUrl(d.theme) }] : []),
+  ...[...new Set(d.tags ?? [])].filter((t) => !d.theme || t !== themeLabel(d.theme)).map((t) => ({ label: t, href: tagUrl(t) })),
+];
 ---
 <Base title={post.data.title} description={d.description} image={`/og/${post.id}.png`} noindex={post.data.sample} wide>
   <div class="post">
@@ -43,7 +47,7 @@ const tags = [...new Set([d.theme && themeLabel(d.theme), ...(d.tags ?? [])].fil
     <a class="pm-item pm-edit" href={editUrl(post.id)} rel="nofollow"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z" /><path d="M13.5 6.5l4 4" /></svg>編集</a>
   </p>
   <div class="post-bar">
-    <ul class="post-tags">{tags.map((t) => <li><a href={themeUrl(d.theme ?? t)}><span aria-hidden="true">#</span>{t}</a></li>)}</ul>
+    <ul class="post-tags">{tags.map((t) => <li><a href={t.href}><span aria-hidden="true">#</span>{t.label}</a></li>)}</ul>
     <button class="md-copy" type="button" data-md={markdown}><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2" /><path d="M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3" /></svg><span>Markdownをコピー</span></button>
   </div>
   {d.description && <p class="post-desc">{d.description}</p>}
