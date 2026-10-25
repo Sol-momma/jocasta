@@ -4,6 +4,7 @@ import { satteri } from '@astrojs/markdown-satteri';
 import { linkCardPlugin } from './src/lib/link-card.mjs';
 import { codeMeta } from './src/lib/code-meta.mjs';
 import { calloutPlugin } from './src/lib/callout.mjs';
+import { mermaidPlugin } from './src/lib/mermaid.mjs';
 import { readdirSync, readFileSync } from 'node:fs';
 
 // 下書きはページ自体を作らないのでサイトマップにも入らない。編集画面・書き方ガイド（noindex）・404 は除く
@@ -17,9 +18,10 @@ export default defineConfig({
   output: 'static',
   integrations: [sitemap({ filter: (page) => { const path = new URL(page).pathname; return !excluded.some((p) => path.startsWith(p)) && !samplePaths.includes(path); } })],
   markdown: {
+    // ```mermaid の図を、前もって作った SVG にする（src/lib/mermaid.mjs）
     // 「> [!NOTE]」などの引用を囲みにする（src/lib/callout.mjs）
     // URLだけの行をリンクカードにする（OGP は scripts/fetch-link-cards.mjs がビルド前に取り、data/link-cards.json にためる）
-    processor: satteri({ mdastPlugins: [linkCardPlugin, calloutPlugin] }),
+    processor: satteri({ mdastPlugins: [linkCardPlugin, calloutPlugin, mermaidPlugin] }),
     shikiConfig: {
       // 配色ごとにコードの色を変える。どれを使うかは Base.astro の data-theme で選ぶ（背景は各配色の --code-bg）
       themes: { light: 'github-light', dark: 'github-dark', kanagawa: 'kanagawa-wave', dracula: 'dracula' },

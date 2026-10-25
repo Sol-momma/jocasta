@@ -7,6 +7,11 @@ const sample = `- 問題の種類
   - 空所の後ろを見る
     - 主語＋動詞 → 接続詞
     - 名詞だけ → 前置詞`;
+import { readFileSync } from 'node:fs';
+import { mermaidKey, figureHtml, CACHE } from '../../lib/mermaid.mjs';
+// Mermaid の見本の図（中身は _mermaid-example.mmd、SVG は data/mermaid.json）
+const mermaidSrc = readFileSync('src/pages/guide/_mermaid-example.mmd', 'utf8');
+const mermaidSvg = JSON.parse(readFileSync(CACHE, 'utf8'))[mermaidKey(mermaidSrc)];
 ---
 <Base title="記事の書き方" noindex>
   <p class="meta">自分用メモ ・ 一覧には出しません</p>
@@ -130,6 +135,18 @@ const sample = `- 問題の種類
     <aside class="callout callout-note" role="note"><p class="callout-title">メモ</p><p>本文。2行目以降も &gt; を付ける</p></aside>
     <aside class="callout callout-tip" role="note"><p class="callout-title">ヒント</p><p>ヒントはリンクの色の線になる</p></aside>
     <aside class="callout callout-warning" role="note"><p class="callout-title">締め切りに注意</p><p>見出しを変えた例</p></aside>
+  </div>
+  <div class="prose">
+    <h2>6. 図（Mermaid）</h2>
+    <ul>
+      <li>コードブロックの言語に <code>mermaid</code> と書くと図になる</li>
+      <li>書いたら手元で <code>pnpm run mermaid</code> を流し、できた <code>data/mermaid.json</code> も一緒にコミットする
+        <ul><li>流していない図は、ふつうのコードブロックのまま出る（ページでは JS を読まない）</li></ul>
+      </li>
+    </ul>
+    <pre><code>```mermaid
+{mermaidSrc}```</code></pre>
+    {mermaidSvg && <Fragment set:html={figureHtml(mermaidSvg)} />}
   </div>
   <p class="back"><a href="/">← 一覧へ</a></p>
 </Base>

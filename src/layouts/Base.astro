@@ -206,6 +206,12 @@ const imageUrl = new URL(image, Astro.site);
 .alert { margin:1.6em 0; padding:.7em 1em; border-left:3px solid var(--alert); background:var(--alert-bg); font-size:.92rem; }
   .alert-title { font-weight:600; color:var(--alert); margin:0 0 .2em; }
   .alert p { margin:.2em 0; }
+  /* Mermaid の図（src/lib/mermaid.mjs）。明るい配色では明るい用、暗い配色では暗い用の SVG を見せる。横に長い図は横に送れる */
+  .mermaid { margin:1.6em 0; overflow-x:auto; }
+  .mermaid svg { max-width:100%; height:auto; }
+  .mermaid-dark { display:none; }
+  :is([data-theme=dark],[data-theme=chalk],[data-theme=kanagawa],[data-theme=dracula]) .mermaid-light { display:none; }
+  :is([data-theme=dark],[data-theme=chalk],[data-theme=kanagawa],[data-theme=dracula]) .mermaid-dark { display:block; }
   /* 記事の囲み（> [!NOTE] / [!TIP] / [!WARNING]、src/lib/callout.mjs）。メモは灰・ヒントはリンク色の線だけ、注意は上の .alert と同じ色 */
   .callout { margin:1.6em 0; padding:.7em 1em; border-left:3px solid var(--muted); font-size:.92rem; }
   .callout-title { font-weight:600; margin:0 0 .2em; color:var(--muted); }
