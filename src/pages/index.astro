@@ -1,6 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 import SiteSearch from '../components/SiteSearch.astro';
+import HomeSettings from '../components/HomeSettings.astro';
 import PostList from '../components/PostList.astro';
 import { publishedPosts, usedThemes } from '../lib/posts';
 const posts = await publishedPosts();
@@ -9,4 +10,5 @@ const posts = await publishedPosts();
   <h2 class="list-heading">記事</h2>
   <SiteSearch />
   <PostList posts={posts} themes={usedThemes(posts)} />
+  <HomeSettings />
 </Base>
