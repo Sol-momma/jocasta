@@ -1,0 +1,22 @@
+---
+// 記事中の画像をクリックで拡大する。画像のない記事では拡大の処理を読み込まない（src/lib/image-zoom.ts）
+---
+<script>
+import { ZOOM_SELECTOR } from '../lib/image-zoom-selector';
+const imgs = [...document.querySelectorAll<HTMLImageElement>(ZOOM_SELECTOR)];
+if (imgs.length) import('../lib/image-zoom').then((m) => m.setupImageZoom(imgs));
+</script>
+<style is:global>
+  .prose img.zoomable { cursor:zoom-in; }
+  .prose img.zoomable:focus-visible { outline:2px solid var(--link); outline-offset:2px; }
+  /* 拡大の画面。ヘッダー・フッター・読み進みバーより上に出す（dialog はいちばん上の層に出る） */
+  dialog.img-zoom { max-width:none; max-height:none; width:100vw; height:100dvh; margin:0; padding:16px; border:0; background:transparent; display:none; align-items:center; justify-content:center; cursor:zoom-out; }
+  dialog.img-zoom[open] { display:flex; }
+  dialog.img-zoom::backdrop { background:color-mix(in srgb, var(--bg) 92%, transparent); }
+  dialog.img-zoom img { max-width:100%; max-height:calc(100dvh - 32px); width:auto; height:auto; object-fit:contain; }
+  .img-zoom-close { position:fixed; top:12px; right:12px; min-width:44px; min-height:44px; padding:0 12px; border:1px solid var(--line); border-radius:8px; background:var(--bg); color:var(--fg); font:inherit; font-size:.85rem; cursor:pointer; }
+  @media (prefers-reduced-motion: no-preference) {
+    dialog.img-zoom[open] img { animation:img-zoom-in .15s ease-out; }
+    @keyframes img-zoom-in { from { transform:scale(.96); opacity:.6; } }
+  }
+</style>
