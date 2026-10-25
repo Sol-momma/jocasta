@@ -1,0 +1,27 @@
+---
+// 記事の下に出す関連記事（2〜3本）。選び方は src/lib/related.ts
+import type { CollectionEntry } from 'astro:content';
+interface Props { posts: CollectionEntry<'posts'>[] }
+const { posts } = Astro.props;
+const fmt = (d: Date) => d.toISOString().slice(0, 10);
+---
+{posts.length > 0 && (
+  <nav class="related" aria-labelledby="related-h">
+    <h2 id="related-h">関連する記事</h2>
+    <ul>
+      {posts.map((p) => (
+        <li><a href={`/posts/${p.id}/`}><span class="r-title">{p.data.title}</span><time datetime={p.data.date.toISOString()}>{fmt(p.data.date)}</time></a></li>
+      ))}
+    </ul>
+  </nav>
+)}
+<style>
+  .related { margin:3rem 0 1.5rem; padding-top:1.5rem; border-top:1px solid var(--border, color-mix(in srgb, var(--muted) 30%, transparent)); }
+  .related h2 { margin:0 0 .75rem; font-size:1rem; font-weight:600; color:var(--muted); }
+  .related ul { list-style:none; margin:0; padding:0; }
+  .related a { display:flex; justify-content:space-between; align-items:baseline; gap:1rem; padding:.5rem 0; min-height:44px; color:var(--fg); text-decoration:none; }
+  .related a:hover .r-title { color:var(--link); text-decoration:underline; text-underline-offset:3px; }
+  .r-title { overflow-wrap:anywhere; }
+  .related time { color:var(--muted); font-size:.85rem; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; flex-shrink:0; }
+  @media (max-width:480px) { .related a { flex-direction:column; gap:.25rem; } }
+</style>
