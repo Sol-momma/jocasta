@@ -115,3 +115,7 @@ pnpm run deploy   # build・下書きの確認をしてから Cloudflare に公�
 ## 参考にしたブログ
 
 見た目や読みやすさで参考にしたブログは [docs/references.md](docs/references.md) にまとめています。記事ページの形は [Naoya Tech](https://naoya-tech.com)、フッターは [maguro.dev](https://maguro.dev) を参考にしました。
+
+## 使わせてもらったコード
+
+- 背景の木（`src/components/PlumTree.astro`）は、Anthony Fu さんの [antfu.me](https://github.com/antfu/antfu.me) の `src/components/ArtPlum.vue` をもとに書き直したものです。元のコードは MIT License（Copyright (c) 2020-2021 Anthony Fu）で、全文を [licenses/antfu.me-MIT.txt](licenses/antfu.me-MIT.txt) に置いています。

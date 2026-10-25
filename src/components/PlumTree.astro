@@ -1,0 +1,74 @@
+---
+// 背景の木（画面の端から細い枝がゆっくり伸びて広がる）。
+// 元: Anthony Fu「antfu.me」の src/components/ArtPlum.vue（MIT License, Copyright (c) 2020-2021 Anthony Fu）
+//   https://github.com/antfu/antfu.me/blob/main/src/components/ArtPlum.vue
+// Vue から素の JS に書き直し、色を CSS 変数 --plum に、伸びきったら止める・動きを減らす設定では一度に描く・
+// 「表示」の設定（html の data-plum="0"）で消せる、を足した。
+---
+<canvas id="plum" aria-hidden="true"></canvas>
+<style is:global>
+  #plum { position:fixed; inset:0; width:100%; height:100%; z-index:-1; pointer-events:none; }
+  [data-plum="0"] #plum { display:none; }
+  @media print { #plum { display:none; } }
+</style>
+<script is:inline>
+/*! Plum tree — based on antfu.me ArtPlum.vue, MIT License (c) 2020-2021 Anthony Fu */
+(function () {
+  var cv = document.getElementById('plum'); if (!cv || !cv.getContext) return;
+  var ctx = cv.getContext('2d'), root = document.documentElement;
+  var R180 = Math.PI, R90 = Math.PI / 2, R15 = Math.PI / 12, MIN_BRANCH = 30, LEN = 6, INTERVAL = 1000 / 40;
+  var reduce = matchMedia('(prefers-reduced-motion: reduce)');
+  var W = 0, H = 0, seed = (Math.random() * 2 ** 31) | 0, rnd, steps = [], raf = 0, last = 0;
+  // 同じ seed なら同じ木になる乱数（配色を変えたとき同じ形で描き直すため）
+  function mulberry(a) { return function () { a |= 0; a = (a + 0x6D2B79F5) | 0; var t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
+  function step(x, y, rad, counter) {
+    var len = rnd() * LEN; counter.v++;
+    var nx = x + len * Math.cos(rad), ny = y + len * Math.sin(rad);
+    ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(nx, ny); ctx.stroke();
+    var r1 = rad + rnd() * R15, r2 = rad - rnd() * R15;
+    if (nx < -100 || nx > W + 100 || ny < -100 || ny > H + 100) return;
+    var rate = counter.v <= MIN_BRANCH ? 0.8 : 0.5;
+    if (rnd() < rate) steps.push(function () { step(nx, ny, r1, counter); });
+    if (rnd() < rate) steps.push(function () { step(nx, ny, r2, counter); });
+  }
+  function tick() {
+    var prev = steps; steps = [];
+    prev.forEach(function (f) { if (rnd() < 0.5) steps.push(f); else f(); });
+  }
+  function frame(t) {
+    raf = 0;
+    if (t - last >= INTERVAL) { last = t; tick(); }
+    if (steps.length) raf = requestAnimationFrame(frame); // 伸びきったら止める
+  }
+  function start(animate) {
+    if (raf) cancelAnimationFrame(raf), raf = 0;
+    if (root.dataset.plum === '0') return;
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+    W = innerWidth; H = innerHeight;
+    cv.width = W * dpr; cv.height = H * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, W, H);
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = getComputedStyle(root).getPropertyValue('--plum').trim() || 'rgba(136,136,136,.15)';
+    rnd = mulberry(seed);
+    var mid = function () { return rnd() * 0.6 + 0.2; };
+    var a = { v: 0 }, b = { v: 0 }, c = { v: 0 }, d = { v: 0 };
+    var x1 = mid() * W, x2 = mid() * W, y1 = mid() * H, y2 = mid() * H;
+    steps = [
+      function () { step(x1, -5, R90, a); },
+      function () { step(x2, H + 5, -R90, b); },
+      function () { step(-5, y1, 0, c); },
+      function () { step(W + 5, y2, R180, d); }
+    ];
+    if (W < 500) steps = steps.slice(0, 2);
+    if (animate && !reduce.matches) { raf = requestAnimationFrame(frame); return; }
+    while (steps.length) tick(); // 動きを減らす設定・描き直しでは伸びきった絵を一度に描く
+  }
+  start(true);
+  // 配色・オンオフが変わったら同じ形で描き直す
+  new MutationObserver(function () { start(false); }).observe(root, { attributes: true, attributeFilter: ['data-theme', 'data-plum'] });
+  // 幅が変わったときだけ描き直す（スマホのアドレスバーの出入りでは描き直さない）
+  var lw = innerWidth, to;
+  addEventListener('resize', function () { if (innerWidth === lw) return; lw = innerWidth; clearTimeout(to); to = setTimeout(function () { start(false); }, 200); });
+})();
+</script>
