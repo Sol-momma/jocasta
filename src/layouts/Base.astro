@@ -81,7 +81,7 @@ const { title, noindex = false, wide = false } = Astro.props;
   a:visited { color: var(--link-visited); }
   a:hover { color: var(--fg); text-decoration:underline; text-underline-offset:3px; }
   h1, h2, h3 { font-weight:400; }
-  h1 { font-size:1.75rem; font-weight:500; line-height:1.4; margin:.1em 0 .4em; }
+  h1 { font-size:1.75rem; font-weight:700; line-height:1.4; margin:.1em 0 .4em; }
   h2 { font-size:1.3rem; line-height:1.5; margin:2em 0 .6em; }
   h3 { font-size:1.1rem; margin:1.6em 0 .5em; }
   .prose { font-size:17px; line-height:1.9; text-rendering:optimizeLegibility; }
@@ -127,8 +127,28 @@ const { title, noindex = false, wide = false } = Astro.props;
   .pm-item { display:inline-flex; align-items:center; gap:.35em; }
   a.pm-edit, a.pm-edit:visited { min-height:44px; color:var(--muted); }
   .post-note { margin:2.4em 0 0; color:var(--muted); font-size:.8rem; line-height:1.7; }
-  .post-tags { display:flex; flex-wrap:wrap; gap:0 1.2em; list-style:none; margin:3em 0 0; padding:1.2em 0 0; border-top:1px dashed var(--line); font-size:.85rem; }
-  .post-tags a { display:inline-flex; align-items:center; gap:.15em; min-height:44px; color:var(--muted); }
+  /* 参考: azukiazusa.dev の記事の上部。イラスト → タイトル → 日付 → 左にタグ・右にコピー → 要約 → 本文 */
+  .post-hero { margin:0 0 1em; text-align:center; }
+  .post-hero img { max-height:320px; width:auto; }
+  .post-bar { display:flex; align-items:center; justify-content:space-between; gap:8px; margin:-.8em 0 1.2em; }
+  .post-tags { display:flex; flex-wrap:wrap; gap:0 .6em; list-style:none; margin:0; padding:0; font-size:.8rem; min-width:0; }
+  .post-tags a { display:inline-flex; align-items:center; gap:.1em; min-height:44px; color:var(--muted); }
+  .md-copy { flex:none; display:inline-flex; align-items:center; gap:.35em; min-height:36px; padding:0 .8em; font:inherit; font-size:.78rem; color:var(--muted); background:var(--bg); border:1px solid var(--line); border-radius:4px; cursor:pointer; }
+  .md-copy:hover { color:var(--fg); }
+  .md-copy svg { width:1em; height:1em; }
+  .post-desc { margin:0 0 var(--gap); color:var(--muted); line-height:1.8; }
+  /* 参考: antfu.me の記事末尾「> cd ..」。等幅、「>」は薄い灰色、「cd ..」はコードのような小さな背景。押すと一覧へ */
+  .cd-back { margin:2.4em 0 0; }
+  .cd-link, .cd-link:visited { display:inline-flex; align-items:center; gap:.6em; min-height:44px; min-width:44px; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:.9rem; color:var(--muted); }
+  .cd-link .cd-gt { opacity:.6; }
+  .cd-link code { border:0; background:var(--code-bg); color:var(--fg); padding:.1em .4em; border-radius:3px; font-size:1em; }
+  .cd-link:hover { text-decoration:none; } .cd-link:hover code { color:var(--link); }
+  .sr-only { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; }
+  /* 本文の見出し。前に薄い「##」「###」を付ける（::before なので目次やコピーには入らない）。h2 の下に細い線 */
+  .prose h2 { padding-bottom:.25em; border-bottom:1px solid var(--line); }
+  .prose h2::before, .prose h3::before { color:var(--muted); opacity:.6; margin-right:.35em; font-weight:400; }
+  .prose h2::before { content:"##"; }
+  .prose h3::before { content:"###"; }
   .post-tags a span { color:var(--fg); }
   /* 固定フッターと「数字」の%表示（フッターの12px上）より上に出す */
   .to-top { position:fixed; right:12px; bottom:calc(var(--ftr) + env(safe-area-inset-bottom, 0px) + 40px); z-index:97; width:44px; height:44px; display:flex; align-items:center; justify-content:center; padding:0; border:1px solid var(--line); border-radius:50%; background:var(--bg); color:var(--muted); cursor:pointer; }
@@ -162,10 +182,14 @@ const { title, noindex = false, wide = false } = Astro.props;
     .post { display:grid; grid-template-columns:minmax(200px,1fr) minmax(0,756px) minmax(200px,1fr); column-gap:48px; }
     .post > * { grid-column:2; }
     .post h1 { font-size:2.4rem; line-height:1.35; margin:.2em 0 .8em; letter-spacing:.01em; }
+    /* 本文と目次は同じ3列を使う（本文は中央、目次は右の列） */
+    .post > .post-back { grid-column:1 / -1; }
+    .post-body { grid-column:1 / -1; display:grid; grid-template-columns:subgrid; }
+    .post-body > .prose { grid-column:2; grid-row:1; min-width:0; }
     .post .prose { font-size:18px; line-height:2; }
     .post .prose h2 { font-size:1.5rem; margin:2.4em 0 .7em; }
-    /* 画像・コード・左右比較は本文より右へ広げ、横幅を活かす */
-    .post .prose img, .post .prose pre, .post .prose .pair, .post .prose table { width:calc(100% + min(240px, (100vw - 756px - 176px) / 2 - 48px)); max-width:none; }
+    /* 画像・コード・左右比較は本文より左へ広げ（右の列は目次）、横幅を活かす */
+    .post .prose img, .post .prose pre, .post .prose .pair, .post .prose table { --ext:min(240px, (100vw - 756px - 176px) / 2 - 48px); width:calc(100% + var(--ext)); margin-left:calc(-1 * var(--ext)); max-width:none; }
   }
 </style>
 </head>
