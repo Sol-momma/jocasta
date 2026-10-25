@@ -24,7 +24,7 @@ const extras = [d.part, d.questionType].filter(Boolean);
 const markdown = `# ${d.title}\n\n${(post.body ?? '').trim()}\n`;
 const tags = [...new Set([d.theme && themeLabel(d.theme), ...(d.tags ?? [])].filter(Boolean))] as string[];
 ---
-<Base title={post.data.title} wide>
+<Base title={post.data.title} description={d.description} image={`/og/${post.id}.png`} wide>
   <div class="post">
   <ReadingProgress />
   <CdBack class="post-back" back />
