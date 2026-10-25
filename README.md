@@ -23,10 +23,10 @@ TOEIC の間違いを記録する学習ブログ。名前は Star Wars のジェ
 ## 使い方
 
 ```sh
-npm install
-npm run dev      # http://localhost:4321
-npm run build
-npm run deploy   # build + wrangler deploy
+pnpm install
+pnpm run dev      # http://localhost:4321
+pnpm run build
+pnpm run deploy   # build + wrangler deploy
 ```
 
 詳しくは [AGENTS.md](./AGENTS.md)。
