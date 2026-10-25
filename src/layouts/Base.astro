@@ -92,7 +92,7 @@ const imageUrl = new URL(image, Astro.site);
   /* ヘッダーはスクロールしても上に固定。地の色で塗り、下の本文が透けないようにする */
   header { position:sticky; top:0; z-index:99; height:var(--hdr); display:flex; align-items:center; background:var(--bg); border-bottom:1px solid var(--line); }
   header .wrap { width:100%; }
-  html { scroll-padding-top:calc(var(--hdr) + var(--rpb) + 16px); }
+  /* 見出しへのジャンプ位置は下の .prose 見出しの scroll-margin-top で決める（ここと重ねると2倍ずれる） */
   header a { color:var(--fg); text-decoration:none; font-weight:400; font-size:1.25rem; letter-spacing:.01em; }
   @media (max-width:560px) { header a { font-size:1.1rem; line-height:1.4; } }
   main { padding: 40px 0 72px; }
@@ -192,22 +192,23 @@ const imageUrl = new URL(image, Astro.site);
   .pair { display:grid; grid-template-columns:1fr 1fr; gap:16px; align-items:start; }
   .pair > div > .label { color:var(--muted); font-size:.78rem; margin:0 0 .3em; }
   @media (max-width:560px) { .pair { grid-template-columns:1fr; } }
-  /* 記事ページの PC 幅（1100px 以上）。参考: maggieappleton.com の「ヘッダーは画面の端から端まで・本文は中央の1列・目次は左の余白」。
-     本文は 18px × 756px で1行42字に抑える。1099px 以下（スマホ含む）は上の指定のまま変えない */
+  /* 見出しへジャンプしたとき、固定ヘッダーと読み進みバーの下に見出しが隠れないようにする */
+  .prose :is(h2,h3,h4) { scroll-margin-top:calc(var(--hdr) + var(--rpb) + 16px); }
+  /* 記事ページの PC 幅（1100px 以上）。本文と画像は左の余白から右の目次の手前まで広げ、目次は右の列に固定する。
+     ただし広がりすぎると1行が長くなり読みにくいので、記事全体の幅は 1280px まで（本文は1行おおよそ55字まで）に抑える。
+     1099px 以下（スマホ含む）は上の指定のまま全幅 */
   @media (min-width:1100px) {
     .is-wide header .wrap, .is-wide footer .wrap { max-width:none; padding:0 40px; }
     .is-wide main > .wrap { max-width:none; padding:0 40px; }
-    .post { display:grid; grid-template-columns:minmax(200px,1fr) minmax(0,756px) minmax(200px,1fr); column-gap:48px; }
-    .post > * { grid-column:2; }
+    .post { display:grid; grid-template-columns:minmax(0,1fr) 15rem; column-gap:48px; max-width:1280px; margin:0 auto; }
+    .post > * { grid-column:1; min-width:0; }
     .post h1 { font-size:2.4rem; line-height:1.35; margin:.2em 0 .8em; letter-spacing:.01em; }
-    /* 本文と目次は同じ3列を使う（本文は中央、目次は右の列） */
+    /* 本文と目次は同じ2列を使う（本文は左、目次は右の列） */
     .post > .post-back { grid-column:1 / -1; }
     .post-body { grid-column:1 / -1; display:grid; grid-template-columns:subgrid; }
-    .post-body > .prose { grid-column:2; grid-row:1; min-width:0; }
-    .post .prose { font-size:18px; line-height:2; }
+    .post-body > .prose { grid-column:1; grid-row:1; min-width:0; }
+    .post .prose { font-size:18px; line-height:1.95; }
     .post .prose h2 { font-size:1.5rem; margin:2.4em 0 .7em; }
-    /* 画像・コード・左右比較は本文より左へ広げ（右の列は目次）、横幅を活かす */
-    .post .prose img, .post .prose pre, .post .prose .pair, .post .prose table { --ext:min(240px, (100vw - 756px - 176px) / 2 - 48px); width:calc(100% + var(--ext)); margin-left:calc(-1 * var(--ext)); max-width:none; }
   }
 </style>
 </head>
