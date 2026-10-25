@@ -1,4 +1,5 @@
 ---
+import { newPostUrl } from '../lib/github';
 const { title, noindex = false } = Astro.props;
 ---
 <!doctype html>
@@ -34,6 +35,9 @@ const { title, noindex = false } = Astro.props;
   ol.posts p { margin:0 0 .5em; color:#444; }
   .more { font-size:.85rem; color:var(--muted); }
   .back { margin-top:3em; font-size:.85rem; }
+  /* GitHub で編集・新規作成するリンク。目立たせず、押せる範囲は44px以上にする */
+  .gh-link { display:inline-flex; align-items:center; min-height:44px; min-width:44px; color:var(--muted); font-size:.8rem; }
+  p.gh { margin:0; }
   .prose ul, .prose ol { padding-left: 1.4em; margin: .3em 0; }
   .prose ul ul, .prose ul ul ul { list-style: disc; }
   .prose li::marker { color: var(--muted); }
@@ -57,7 +61,7 @@ const { title, noindex = false } = Astro.props;
 <body>
 <header><div class="wrap"><a href="/">Jocasta</a><p>TOEIC の間違いを記録する学習ノート</p></div></header>
 <main><div class="wrap"><slot /></div></main>
-<footer><div class="wrap">問題文は掲載せず、自作の似た例文で解説しています。<span class="guide-link"> ・ <a href="/guide/">書き方</a></span></div></footer>
+<footer><div class="wrap">問題文は掲載せず、自作の似た例文で解説しています。<span class="guide-link"> ・ <a href="/guide/">書き方</a></span><span class="gh"> ・ <a class="gh-link" href={newPostUrl()} rel="nofollow">新しい記事</a></span></div></footer>
 <script>
 document.querySelectorAll('.prose li').forEach((li) => {
   if (!li.querySelector(':scope > ul, :scope > ol')) return;
