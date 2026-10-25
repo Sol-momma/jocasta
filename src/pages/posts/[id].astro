@@ -5,6 +5,7 @@ import Toc from '../../components/Toc.astro';
 import ReadingProgress from '../../components/ReadingProgress.astro';
 import ReadingProgressPicker from '../../components/ReadingProgressPicker.astro';
 import { getCollection, render } from 'astro:content';
+import { postMinutes } from '../../lib/reading-time.mjs';
 import { editUrl } from '../../lib/github';
 import { themeLabel, themeUrl } from '../../lib/themes';
 export async function getStaticPaths() {
@@ -13,6 +14,8 @@ export async function getStaticPaths() {
 }
 const { post } = Astro.props;
 const { Content, headings } = await render(post);
+// 読む時間（分）。数え方は src/lib/reading-time.mjs
+const minutes = postMinutes(post.body);
 const d = post.data;
 // 日付のあとに並べる補足（空のものは出さない）
 const extras = [d.part, d.questionType].filter(Boolean);
@@ -29,6 +32,8 @@ const tags = [...new Set([d.theme && themeLabel(d.theme), ...(d.tags ?? [])].fil
   <h1>{post.data.title}</h1>
   <p class="meta post-meta">
     <span class="pm-item"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="16" rx="2" /><path d="M16 3v4M8 3v4M4 11h16" /></svg><time datetime={d.date.toISOString().slice(0, 10)}>{d.date.toISOString().slice(0, 10).replaceAll('-', '.')}</time>{extras.map((x) => <> ・ {x}</>)}{d.sample && <span class="badge">サンプル</span>}</span>
+    <span class="pm-sep" aria-hidden="true">|</span>
+    <span class="pm-item"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8" /><path d="M12 8v4l3 2" /></svg>{minutes}min</span>
     <span class="pm-sep" aria-hidden="true">|</span>
     <a class="pm-item pm-edit" href={editUrl(post.id)} rel="nofollow"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z" /><path d="M13.5 6.5l4 4" /></svg>編集</a>
   </p>
