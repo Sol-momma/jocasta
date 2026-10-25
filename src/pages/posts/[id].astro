@@ -16,7 +16,8 @@ const d = post.data;
 // 日付のあとに並べる補足（空のものは出さない）
 const extras = [d.part, d.questionType].filter(Boolean);
 ---
-<Base title={post.data.title}>
+<Base title={post.data.title} wide>
+  <div class="post">
   <ReadingProgress />
   <Toc headings={headings} />
   <p class="meta">{d.date.toISOString().slice(0, 10).replaceAll('-', '.')}{d.theme && <> ・ <a class="theme" href={themeUrl(d.theme)}>{themeLabel(d.theme)}</a></>}{extras.map((x) => <> ・ {x}</>)}{d.sample && <span class="badge">サンプル</span>}</p>
@@ -24,4 +25,5 @@ const extras = [d.part, d.questionType].filter(Boolean);
   <div class="prose"><Content /></div>
   <p class="back"><a href="/">← 一覧へ</a></p>
   <p class="gh"><a class="gh-link" href={editUrl(post.id)} rel="nofollow">編集</a><ReadingProgressPicker /></p>
+  </div>
 </Base>
