@@ -6,14 +6,16 @@ import Toc from '../../components/Toc.astro';
 import ReadingProgress from '../../components/ReadingProgress.astro';
 import ReadingProgressPicker from '../../components/ReadingProgressPicker.astro';
 import { getCollection, render } from 'astro:content';
+import RelatedPosts from '../../components/RelatedPosts.astro';
+import { relatedPosts } from '../../lib/related';
 import { postMinutes } from '../../lib/reading-time.mjs';
 import { editUrl } from '../../lib/github';
 import { themeLabel, themeUrl } from '../../lib/themes';
 export async function getStaticPaths() {
   const posts = await getCollection('posts', (p) => !p.data.draft);
-  return posts.map((post) => ({ params: { id: post.id }, props: { post } }));
+  return posts.map((post) => ({ params: { id: post.id }, props: { post, related: relatedPosts(post, posts) } }));
 }
-const { post } = Astro.props;
+const { post, related } = Astro.props;
 const { Content, headings } = await render(post);
 // 読む時間（分）。数え方は src/lib/reading-time.mjs
 const minutes = postMinutes(post.body);
@@ -48,6 +50,7 @@ const tags = [...new Set([d.theme && themeLabel(d.theme), ...(d.tags ?? [])].fil
     <div class="prose" data-pagefind-body><Content /></div>
   </div>
   {d.theme === 'toeic' && <p class="post-note">TOEIC の記事は問題文を掲載せず、自作の似た例文で解説しています。</p>}
+  <RelatedPosts posts={related} />
   <CdBack />
   <button class="to-top" type="button" aria-label="ページの先頭へ戻る" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 15l6-6 6 6" /></svg></button>
   </div>
