@@ -15,15 +15,40 @@ const { Content, headings } = await render(post);
 const d = post.data;
 // 日付のあとに並べる補足（空のものは出さない）
 const extras = [d.part, d.questionType].filter(Boolean);
+// 本文の下に並べるタグ。テーマ名を先頭にし、押すとそのテーマの一覧へ飛ぶ（タグごとの一覧ページはまだない）
+const tags = [...new Set([d.theme && themeLabel(d.theme), ...(d.tags ?? [])].filter(Boolean))] as string[];
 ---
 <Base title={post.data.title} wide>
   <div class="post">
   <ReadingProgress />
   <Toc headings={headings} />
-  <p class="meta">{d.date.toISOString().slice(0, 10).replaceAll('-', '.')}{d.theme && <> ・ <a class="theme" href={themeUrl(d.theme)}>{themeLabel(d.theme)}</a></>}{extras.map((x) => <> ・ {x}</>)}{d.sample && <span class="badge">サンプル</span>}</p>
+  <p class="post-back"><a href="/" data-back>
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6" /></svg>戻る</a></p>
   <h1>{post.data.title}</h1>
+  <p class="meta post-meta">
+    <span class="pm-item"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="16" rx="2" /><path d="M16 3v4M8 3v4M4 11h16" /></svg><time datetime={d.date.toISOString().slice(0, 10)}>{d.date.toISOString().slice(0, 10).replaceAll('-', '.')}</time>{extras.map((x) => <> ・ {x}</>)}{d.sample && <span class="badge">サンプル</span>}</span>
+    <span class="pm-sep" aria-hidden="true">|</span>
+    <a class="pm-item pm-edit" href={editUrl(post.id)} rel="nofollow"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z" /><path d="M13.5 6.5l4 4" /></svg>編集</a>
+  </p>
   <div class="prose"><Content /></div>
-  <p class="back"><a href="/">← 一覧へ</a></p>
-  <p class="gh"><a class="gh-link" href={editUrl(post.id)} rel="nofollow">編集</a><ReadingProgressPicker /></p>
+  {tags.length > 0 && <ul class="post-tags">{tags.map((t) => <li><a href={themeUrl(d.theme ?? t)}><span aria-hidden="true">#</span>{t}</a></li>)}</ul>}
+  <button class="to-top" type="button" aria-label="ページの先頭へ戻る" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 15l6-6 6 6" /></svg></button>
   </div>
+  <ReadingProgressPicker slot="footer" />
 </Base>
+<script>
+// 「戻る」：同じサイトから来たときはブラウザの戻る、それ以外は一覧へ
+const back = document.querySelector<HTMLAnchorElement>('[data-back]');
+back?.addEventListener('click', (e) => {
+  if (document.referrer.startsWith(location.origin) && history.length > 1) { e.preventDefault(); history.back(); }
+});
+// 「ページの先頭へ戻る」：一番下までスクロールしたときだけ出す
+const top = document.querySelector<HTMLButtonElement>('.to-top');
+if (top) {
+  const update = () => { const el = document.documentElement; top.hidden = el.scrollTop + el.clientHeight < el.scrollHeight - 8; };
+  addEventListener('scroll', update, { passive: true });
+  addEventListener('resize', update);
+  update();
+  top.addEventListener('click', () => scrollTo({ top: 0, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' }));
+}
+</script>

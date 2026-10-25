@@ -28,8 +28,7 @@ const { title, noindex = false, wide = false } = Astro.props;
   header .wrap { width:100%; }
   html { scroll-padding-top:calc(var(--hdr) + var(--rpb) + 16px); }
   header a { color:var(--fg); text-decoration:none; font-weight:400; font-size:1.25rem; letter-spacing:.01em; }
-  header p { margin:0; color:var(--muted); font-size:.85rem; line-height:1.4; }
-  @media (max-width:560px) { header a { font-size:1.1rem; line-height:1.4; } header p { font-size:.75rem; } }
+  @media (max-width:560px) { header a { font-size:1.1rem; line-height:1.4; } }
   main { padding: 40px 0 72px; }
   a { color: var(--link); text-decoration:none; }
   a:visited { color: var(--link-visited); }
@@ -68,10 +67,23 @@ const { title, noindex = false, wide = false } = Astro.props;
   nav.themes { display:flex; flex-wrap:wrap; gap:0 1.2em; margin:-.6em 0 var(--gap); font-size:.9rem; }
   nav.themes a { display:inline-flex; align-items:center; min-height:44px; }
   nav.themes a[aria-current="page"] { color:var(--fg); text-decoration:underline; text-underline-offset:4px; }
-  .back { margin-top:3em; font-size:.85rem; }
+  /* 記事ページ：タイトル上の「戻る」、タイトル下の日付と編集、本文下のタグ、先頭へ戻るボタン。アイコンは線のSVG */
+  .post-back { margin:0 0 .2em; font-size:.85rem; }
+  .post-back a { display:inline-flex; align-items:center; gap:.2em; min-height:44px; color:var(--muted); }
+  .post svg { width:1.15em; height:1.15em; flex:none; fill:none; stroke:currentColor; stroke-width:1.6; stroke-linecap:round; stroke-linejoin:round; }
+  .post h1 { margin-top:0; }
+  .post-meta { display:flex; flex-wrap:wrap; align-items:center; gap:0 .6em; }
+  .pm-item { display:inline-flex; align-items:center; gap:.35em; }
+  a.pm-edit, a.pm-edit:visited { min-height:44px; color:var(--muted); }
+  .post-tags { display:flex; flex-wrap:wrap; gap:0 1.2em; list-style:none; margin:3em 0 0; padding:1.2em 0 0; border-top:1px dashed var(--line); font-size:.85rem; }
+  .post-tags a { display:inline-flex; align-items:center; gap:.15em; min-height:44px; color:var(--muted); }
+  .post-tags a span { color:var(--fg); }
+  /* 固定フッターと「数字」の%表示（フッターの12px上）より上に出す */
+  .to-top { position:fixed; right:12px; bottom:calc(var(--ftr) + env(safe-area-inset-bottom, 0px) + 40px); z-index:97; width:44px; height:44px; display:flex; align-items:center; justify-content:center; padding:0; border:1px solid var(--line); border-radius:50%; background:var(--bg); color:var(--muted); cursor:pointer; }
+  .to-top[hidden] { display:none; }
+  .to-top svg { width:20px; height:20px; }
   /* GitHub で編集・新規作成するリンク。目立たせず、押せる範囲は44px以上にする */
   .gh-link { display:inline-flex; align-items:center; min-height:44px; min-width:44px; color:var(--muted); font-size:.8rem; }
-  p.gh { margin:0; }
   .prose ul, .prose ol { padding-left: 1.4em; margin: .3em 0; }
   .prose ul ul, .prose ul ul ul { list-style: disc; }
   .prose li::marker { color: var(--muted); }
@@ -106,9 +118,9 @@ const { title, noindex = false, wide = false } = Astro.props;
 </style>
 </head>
 <body class:list={[{ 'is-wide': wide }]}>
-<header><div class="wrap"><a href="/">Jocasta</a><p>いろいろなテーマの学習ノート</p></div></header>
+<header><div class="wrap"><a href="/">Jocasta</a></div></header>
 <main><div class="wrap"><slot /></div></main>
-<footer><div class="wrap"><span class="fn"><span class="fn-long">TOEIC の記事は問題文を掲載せず、自作の似た例文で解説しています。</span><span class="fn-short">TOEIC の問題文は載せず自作例文で解説</span></span><span class="guide-link">&nbsp;・&nbsp;<a href="/guide/">書き方</a></span><span class="gh">&nbsp;・&nbsp;<a class="gh-link" href={newPostUrl()} rel="nofollow">新しい記事</a></span></div></footer>
+<footer><div class="wrap"><span class="fn"><span class="fn-long">TOEIC の記事は問題文を掲載せず、自作の似た例文で解説しています。</span><span class="fn-short">TOEIC の問題文は載せず自作例文で解説</span></span><span class="guide-link">&nbsp;・&nbsp;<a href="/guide/">書き方</a></span><span class="gh">&nbsp;・&nbsp;<a class="gh-link" href={newPostUrl()} rel="nofollow">新しい記事</a></span><slot name="footer" /></div></footer>
 <script>
 document.querySelectorAll('.prose li').forEach((li) => {
   if (!li.querySelector(':scope > ul, :scope > ol')) return;
