@@ -1,43 +1,54 @@
 # Jocasta
 
-いろいろなテーマの記事を書くブログです。Markdown で記事を書き、Astro（静的サイトを作るツール）でページにして、Cloudflare Workers で公開しています。
+いろいろなテーマの学習記録を書く、日本語の個人ブログです。Markdown で書いた記事を Astro で静的なページにし、Cloudflare Workers で公開しています。
+
+> **English summary:** Jocasta is a Japanese-language study blog by Sol-momma. Posts are written in Markdown, built into a static site with Astro, and served from Cloudflare Workers. Run it locally with `pnpm install` and `pnpm run dev`.
 
 公開URL: https://blog.sol-momma.com
 
-![本番のトップページ](docs/screenshot.png)
+![トップページ](docs/images/home.png)
+
+![記事ページ](docs/images/post.png)
+
+## できること
+
+- テーマ別の記事一覧と、年ごとにまとめた記事一覧
+- 入れ子の箇条書きを折りたためる記事ページと、目次・読み進みバー
+- Pagefind によるサイト内検索
+- 関連する記事の表示、RSS、記事ごとの OGP 画像
+- 背景の絵（木・山・波・星空・雨・雲・街）と読み進みバーの切り替え（フッターの「表示」から）
+- ブラウザの編集画面（`/admin`、Sveltia CMS）からの記事の作成
+- `draft: true` の下書きは一覧にも記事ページにも出さない
+
+## 使っている技術
+
+- [Astro](https://astro.build/)：Markdown から静的なページを作る
+- [Pagefind](https://pagefind.app/)：サイト内検索
+- [Sveltia CMS](https://github.com/sveltia/sveltia-cms)：ブラウザの編集画面
+- [satori](https://github.com/vercel/satori) と [resvg-js](https://github.com/yisibl/resvg-js)：OGP 画像
+- [Cloudflare Workers](https://developers.cloudflare.com/workers/static-assets/) と [wrangler](https://developers.cloudflare.com/workers/wrangler/)：公開
+- [pnpm](https://pnpm.io/)：パッケージ管理
+- GitHub Actions：PR ごとの build の確認
+
+## 動かし方
+
+Node.js と pnpm（`package.json` の `packageManager` で版を固定）を使います。npm・yarn・bun でインストールすると `pnpm-lock.yaml` とずれるので使いません。
+
+```sh
+git clone https://github.com/Sol-momma/jocasta.git
+cd jocasta
+pnpm install
+pnpm run dev      # http://localhost:4321 で確認
+pnpm run build    # dist/ にサイトと検索用データを作る
+pnpm test         # 単体テスト
+```
+
+`draft: true` の記事は `pnpm run dev` でも表示されません。見た目を確かめるときは `draft: false` にします。
 
 ## 記事の書き方
 
-### 1. /admin 編集画面
-
-ブラウザで https://blog.sol-momma.com/admin/ を開くと、記事を書けます。保存すると GitHub の `main` に直接コミットされます。
-
-**ログインする（トークン）**
-
-1. GitHub で「Fine-grained personal access token」を作ります。対象のリポジトリは `Sol-momma/jocasta` だけにし、「Contents」を「Read and write」にします。
-2. `/admin` で「トークンでログイン」を押し、作ったトークンを貼ります。
-3. トークンの値は README・記事・チャットに書きません。なくしたら GitHub で作り直します。
-
-**下書きと公開を切り替える**
-
-- 「下書き」は入力欄の一番上にあります。新しい記事は、はじめからオン（下書き）です。
-- オンのまま保存すると `draft: true` になります。一覧・記事ページ・テーマ一覧のどこにも出ません。
-- 書きかけの見た目は、編集画面の右側のプレビューで確かめます。サイトに近い文字と箇条書きで表示されます。
-- 公開するときは「下書き」をオフにして保存します（`draft: false`）。
-
-**保存したあと**
-
-保存しただけでは本番は変わりません。手元で `main` を取り込み、`pnpm run deploy` を実行すると本番に出ます。
-
-```sh
-git pull
-pnpm run deploy   # build → 下書きが出ていないかの確認 → 公開
-```
-
-### 2. Markdown で書く
-
-1. `templates/post.md` を `src/content/posts/` にコピーします。ファイル名がそのまま URL になります（例: `my-post.md` は `/posts/my-post/`）。ファイル名は英小文字とハイフンだけにします。
-2. 先頭の frontmatter（`---` で囲んだ設定欄）を書き換えます。
+1. `templates/post.md` を `src/content/posts/<英小文字-ハイフン>.md` にコピーします。ファイル名が URL（`/posts/<名前>/`）になります。
+2. 先頭の frontmatter を書き換えます。
 
    ```yaml
    ---
@@ -45,83 +56,38 @@ pnpm run deploy   # build → 下書きが出ていないかの確認 → 公開
    date: 2026-10-25
    theme: "toeic"     # テーマ名。一覧は src/lib/themes.ts
    tags: ["品詞"]
-   draft: true        # 下書き。公開しない
+   draft: true        # 下書き。公開するときは false
    ---
    ```
 
-   TOEIC の記事では `part`（例: `"Part 5"`）と `questionType` も書けます。項目の定義は `src/content.config.ts` にあります。
-3. 本文を書きます。
-4. 公開するときは `draft: true` を `draft: false` に変えます。`pnpm run dev` で見た目を確かめてから PR を出します。
+3. 本文は入れ子の箇条書き（半角スペース2つで字下げ）で書くと、ページ上で折りたためます。
 
-> [!NOTE]
-> `draft: true` の記事は `pnpm run dev` でも表示されません。見た目を確かめるときは `draft: false` にします。
+書き方の例は `src/content/posts/sample-part5-word-form.md` と https://blog.sol-momma.com/guide/ にあります。TOEIC などの問題文は著作権のため載せず、自作の似た例文に置き換えます。
 
-書き方の例は `src/content/posts/sample-part5-word-form.md` です。公開中のサイトでは https://blog.sol-momma.com/guide/ にも手順があります。
-
-> [!IMPORTANT]
-> TOEIC などの問題文は載せません（著作権のため）。説明には自作の似た例文を使います。
-
-> [!TIP]
-> 本文は入れ子の箇条書き（半角スペース2つで字下げ）で書くと、子のある項目をページ上で折りたためます。
-
-## 公開のしかた
-
-保存（mainへのpush）で Cloudflare Workers Builds が自動で本番（https://blog.sol-momma.com）に出す。`draft: true` の下書きは `check:drafts` で止まる。
-
-## コマンド
-
-パッケージ管理には pnpm を使います。
-
-```sh
-pnpm install      # 依存パッケージを入れる
-pnpm run dev      # 手元で確認（http://localhost:4321）
-pnpm run build    # dist/ にサイトを作り、続けて Pagefind の検索用データ（dist/pagefind）を作る
-pnpm run preview  # 作ったサイトを手元で確認
-pnpm run check:drafts  # build のあと、下書きが dist/ に出ていないか確かめる
-pnpm run deploy   # build・下書きの確認をしてから Cloudflare に公開（wrangler deploy）
-```
-
-> [!WARNING]
-> `npm` `yarn` `bun` でインストールしないでください。`pnpm-lock.yaml` とずれます。
-
-> [!CAUTION]
-> `pnpm run deploy` は本番を書き換えます。PR をマージしてから実行してください。
-
-## フォルダの構成
+## フォルダの作り
 
 ```text
 .
-├── .github/workflows/ci.yml   # PR ごとに build と deploy の試運転
-├── docs/                      # README の画像・参考にしたブログの一覧
+├── docs/                 # README の画像、参考にしたブログの一覧
+├── public/admin/         # 編集画面（Sveltia CMS）の設定
+├── scripts/              # 下書き・OGP・SEO の確認、リンクカードの取得
 ├── src/
-│   ├── components/            # 記事一覧・目次・読み進みバー
-│   ├── content/posts/         # 記事（Markdown）
-│   ├── content.config.ts      # frontmatter の定義
-│   ├── layouts/Base.astro     # 全ページ共通の枠
-│   ├── lib/                   # テーマ名・記事の並べ方・GitHub へのリンク
-│   └── pages/                 # URL ごとのページ（/、/posts/、/themes/、/guide/）
-├── scripts/check-drafts.mjs   # 下書きが dist/ に出ていないか確かめる
-├── templates/post.md          # 記事のひな形
-├── astro.config.mjs
-├── wrangler.jsonc             # Cloudflare Workers の設定（カスタムドメインもここ）
-├── package.json
-└── AGENTS.md                  # AI に作業を頼むときの決まり
+│   ├── components/       # 記事一覧・目次・検索・背景など
+│   ├── content/posts/    # 記事（Markdown）
+│   ├── layouts/          # 全ページ共通の枠
+│   ├── lib/              # テーマ名・記事の並べ方など
+│   └── pages/            # URL ごとのページ
+├── templates/post.md     # 記事のひな形
+├── tests/                # 単体テスト
+└── wrangler.jsonc        # Cloudflare Workers の設定
 ```
-
-## 使っている技術
-
-- [Astro](https://astro.build/): Markdown から静的なページを作る
-- [Cloudflare Workers](https://developers.cloudflare.com/workers/static-assets/): 作ったページを配る（無料プラン）
-- [wrangler](https://developers.cloudflare.com/workers/wrangler/): Cloudflare に公開するコマンド
-- [pnpm](https://pnpm.io/): パッケージ管理
-- GitHub Actions: PR ごとの build 確認
 
 ## 参考にしたブログ
 
-見た目や読みやすさで参考にしたブログは [docs/references.md](docs/references.md) にまとめています。記事ページの形は [Naoya Tech](https://naoya-tech.com)、フッターは [maguro.dev](https://maguro.dev) を参考にしました。
+見た目や読みやすさで参考にしたブログの一覧は [docs/references.md](docs/references.md) にあります。記事ページの形は [Naoya Tech](https://naoya-tech.com)、フッターと年ごとの記事一覧は [maguro.dev](https://maguro.dev)、文字・色・余白は [Boris Cherny's Blog](https://borischerny.com) を参考にしました。
 
-## 背景の絵
+背景の絵（`src/components/bg/`）はこのブログのために作ったものです。以前は [antfu.me](https://antfu.me) の ArtPlum を書き直した木を使っていましたが、今は作り直していて元のコードは使っていません。
 
-- 背景（木・山・波・星空・雨・雲・街）は `src/components/bg/` にあるこのブログのオリジナルです（以前は antfu.me の ArtPlum.vue を書き直した木を使っていましたが、作り直して元のコードは使っていません）。
-- 「表示」の設定で「ランダム（最初の設定）」「どれか1つに固定」「なし」を選べます。ランダムはページを開くたびに変わります。
-- 新しい背景を足すときは、`src/components/bg/` にファイルを作って `window.BG` に登録し、`src/lib/backgrounds.ts` と `src/components/Background.astro` に足します。
+## ライセンス
+
+リポジトリ全体のライセンスは定めていません。同梱のフォント Noto Sans JP は SIL Open Font License 1.1 です（[licenses/NotoSansJP-OFL.txt](licenses/NotoSansJP-OFL.txt)）。
