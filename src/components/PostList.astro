@@ -1,10 +1,19 @@
 ---
-// 記事一覧（日付・印・タイトルだけ）と、テーマで絞り込むリンク。トップとテーマ別ページで使う
+// 記事一覧。年ごとに見出し（例: 2026）を立て、その下に「タイトル（テーマ名・印）……日付」を1行ずつ並べる。トップとテーマ別ページで使う
+// 参考: maguro.dev の一覧（年見出し 1.25rem・灰色、年のまとまりの間 2rem、1件の上下 0.5rem、日付は等幅 0.85rem の YYYY-MM-DD を右寄せ、480px 以下は日付をタイトルの下へ）
 import { themeLabel, themeUrl } from '../lib/themes';
 import type { CollectionEntry } from 'astro:content';
 interface Props { posts: CollectionEntry<'posts'>[]; themes: string[]; current?: string }
 const { posts, themes, current } = Astro.props;
-const fmt = (d: Date) => d.toISOString().slice(0, 10).replaceAll('-', '.');
+const fmt = (d: Date) => d.toISOString().slice(0, 10);
+// 記事は新しい順で渡ってくるので、順番を保ったまま年でまとめる
+const years: { year: number; posts: typeof posts }[] = [];
+for (const p of posts) {
+  const y = p.data.date.getUTCFullYear();
+  const last = years.at(-1);
+  if (last && last.year === y) last.posts.push(p);
+  else years.push({ year: y, posts: [p] });
+}
 ---
 {themes.length > 0 && (
   <nav class="themes" aria-label="テーマで絞り込む">
@@ -12,11 +21,35 @@ const fmt = (d: Date) => d.toISOString().slice(0, 10).replaceAll('-', '.');
     {themes.map((t) => <a href={themeUrl(t)} aria-current={current === t ? 'page' : undefined}>{themeLabel(t)}</a>)}
   </nav>
 )}
-<ol class="posts">
-  {posts.map((p) => (
-    <li>
-      <div class="meta">{fmt(p.data.date)}{p.data.theme && !current && <> ・ <span class="theme">{themeLabel(p.data.theme)}</span></>}{p.data.sample && <span class="badge">サンプル</span>}</div>
-      <h2><a href={`/posts/${p.id}/`}>{p.data.title}</a></h2>
-    </li>
-  ))}
-</ol>
+{years.map(({ year, posts: ps }) => (
+  <section class="year-group" aria-labelledby={`y${year}`}>
+    <h2 class="year-heading" id={`y${year}`}>{year}</h2>
+    <ul class="post-list">
+      {ps.map((p) => (
+        <li>
+          <a class="post-link" href={`/posts/${p.id}/`}>
+            <span class="post-title">{p.data.title}{p.data.theme && !current && <span class="post-theme">{themeLabel(p.data.theme)}</span>}{p.data.sample && <span class="badge">サンプル</span>}</span>
+            <time class="post-date" datetime={p.data.date.toISOString()}>{fmt(p.data.date)}</time>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </section>
+))}
+<style>
+  /* 年のまとまり。間は2rem */
+  .year-group { margin:0 0 2rem; }
+  .year-heading { margin:0 0 1rem; color:var(--muted); font-size:1.25rem; font-weight:400; line-height:1.3; font-variant-numeric:tabular-nums; }
+  .post-list { list-style:none; margin:0; padding:0; }
+  .post-list li { margin:0; }
+  /* 1件は上下0.5rem。押せる範囲が44px以上になるよう高さを確保する */
+  .post-link { display:flex; justify-content:space-between; align-items:baseline; gap:1rem; padding:.5rem 0; min-height:44px; color:var(--fg); text-decoration:none; line-height:1.6; }
+  .post-link:visited { color:var(--fg); }
+  .post-link:hover { color:var(--fg); text-decoration:none; }
+  .post-link:hover .post-title { color:var(--link); text-decoration:underline; text-underline-offset:3px; }
+  .post-title { font-size:1rem; overflow-wrap:anywhere; }
+  .post-theme { color:var(--muted); font-size:.8rem; margin-left:.6em; white-space:nowrap; }
+  .post-date { color:var(--muted); font-size:.85rem; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; flex-shrink:0; }
+  /* スマホ（480px以下）は日付をタイトルの下に回す */
+  @media (max-width:480px) { .post-link { flex-direction:column; gap:.25rem; } }
+</style>
