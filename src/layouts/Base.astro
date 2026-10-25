@@ -1,5 +1,6 @@
 ---
 // wide: 記事ページだけ PC 幅（1100px 以上）で画面の横幅いっぱいの組み方にする
+import PlumTree from '../components/PlumTree.astro';
 const { title, noindex = false, wide = false } = Astro.props;
 ---
 <!doctype html>
@@ -11,6 +12,8 @@ const { title, noindex = false, wide = false } = Astro.props;
 <script is:inline>
   // 保存済みの配色を描画の前に当て、白が一瞬出るのを防ぐ
   try { var t = localStorage.getItem('theme'); if (t) document.documentElement.dataset.theme = t; } catch (e) {}
+  // 背景の木のオン・オフ（最初はオン。"0" のときだけ消す）
+  try { if (localStorage.getItem('plum') === '0') document.documentElement.dataset.plum = '0'; } catch (e) {}
 </script>
 <title>{title ? `${title} | Jocasta` : 'Jocasta — 学習ノート'}</title>
 <style is:global>
@@ -25,7 +28,9 @@ const { title, noindex = false, wide = false } = Astro.props;
 
   /* 配色（読む人が「表示」の設定で選ぶ）。html の data-theme で切り替え、色はすべてここの変数にまとめる。空=白（最初の設定）。
      文字の色は地の色に対して WCAG AA（本文4.5:1以上）を満たす値にしている */
-  :root { --code-bg:#f6f6f6; --quote:#666; --alert:#9a6700; --alert-bg:#fbf8f1; --ruler-bg:#f4f2ec; --pattern:none; color-scheme:light; }
+  :root { --code-bg:#f6f6f6; --quote:#666; --alert:#9a6700; --alert-bg:#fbf8f1; --ruler-bg:#f4f2ec; --pattern:none; color-scheme:light;
+    /* 背景の木の線の色。配色ごとに文字の薄い色から作るので、どの配色でも本文より十分薄い */
+    --plum:color-mix(in srgb, var(--muted) 12%, transparent); }
   /* 目に優しい黒：真っ黒ではなく少し明るい濃い灰色 */
   [data-theme=dark] { --fg:#e4e4e2; --muted:#a3a3a0; --line:#3d3e42; --bg:#1f2023; --link:#82b1ff; --link-visited:#a8c3ee;
     --code-bg:#2a2b2f; --quote:#b4b4b0; --alert:#e2b55a; --alert-bg:#2a2720; --ruler-bg:#2a2b2f; color-scheme:dark; }
@@ -188,6 +193,7 @@ const { title, noindex = false, wide = false } = Astro.props;
 </style>
 </head>
 <body class:list={[{ 'is-wide': wide }]}>
+<PlumTree />
 <header><div class="wrap"><a href="/">Jocasta</a></div></header>
 <main><div class="wrap"><slot /></div></main>
 <footer><div class="wrap"><p class="copy">&copy; 2026 Jocasta</p><nav class="ft-links" aria-label="フィードとリンク">

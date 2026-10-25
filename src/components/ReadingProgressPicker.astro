@@ -1,6 +1,6 @@
 ---
 // 読み進みバーの見た目と紙吹雪の切り替え。固定フッターの右端に「表示」アイコンを置き、押すと上に小さな設定が開く。
-// 選んだ値は localStorage の rp、紙吹雪のオン・オフは rpc、配色は theme に保存。
+// 選んだ値は localStorage の rp、紙吹雪のオン・オフは rpc、背景の木のオン・オフは plum、配色は theme に保存。
 // 配色の見本は各配色の地の色・文字の色（方眼紙と便箋は線も）を小さく描く
 const themes = [
   { id: '', name: '白', bg: '#fcfcfb', fg: '#151515' },
@@ -19,7 +19,7 @@ const themes = [
   <option value="spiral">らせん</option><option value="arrow">矢印</option><option value="pct">数字</option>
   <option value="train">電車</option><option value="rocket">ロケット</option><option value="candle">ろうそく</option>
   <option value="pixel">ドット絵</option><option value="neon">ネオン</option><option value="snake">ヘビ</option>
-</select></label><label class="rp-pick">紙吹雪<input type="checkbox" id="rp-cf"></label>
+</select></label><label class="rp-pick">紙吹雪<input type="checkbox" id="rp-cf"></label><label class="rp-pick">背景の木<input type="checkbox" id="rp-plum"></label>
 <div class="th-pick" role="radiogroup" aria-labelledby="th-label"><span id="th-label" class="th-label">配色</span>
 {themes.map((t) => <button type="button" role="radio" aria-checked="false" class="th-opt" data-t={t.id}><span class={`th-sw th-sw-${t.id || 'white'}`} style={`background-color:${t.bg};color:${t.fg}`} aria-hidden="true"><i></i></span>{t.name}</button>)}
 </div>
@@ -57,6 +57,10 @@ const themes = [
     var c = document.getElementById('rp-cf');
     c.checked = d.rpc === '1';
     c.onchange = function () { d.rpc = c.checked ? '1' : ''; try { localStorage.setItem('rpc', d.rpc); } catch (e) {} dispatchEvent(new Event('rp-cf')); };
+    // 背景の木：最初はオン。オフのときだけ html に data-plum="0" を付けて保存
+    var pl = document.getElementById('rp-plum');
+    pl.checked = d.plum !== '0';
+    pl.onchange = function () { if (pl.checked) delete d.plum; else d.plum = '0'; try { localStorage.setItem('plum', pl.checked ? '1' : '0'); } catch (e) {} };
     // 配色：押したら html の data-theme を変えて保存
     var opts = document.querySelectorAll('.th-opt');
     function mark() { opts.forEach(function (b) { b.setAttribute('aria-checked', String(b.dataset.t === (d.theme || ''))); }); }
