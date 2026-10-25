@@ -3,4 +3,9 @@
 export const backgrounds = [
   { id: 'tree', name: '木' },
   { id: 'mountain', name: '山' },
+  { id: 'wave', name: '波' },
+  { id: 'star', name: '星空' },
+  { id: 'rain', name: '雨' },
+  { id: 'cloud', name: '雲' },
+  { id: 'city', name: '街' },
 ];

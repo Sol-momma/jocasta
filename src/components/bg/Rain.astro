@@ -1,0 +1,21 @@
+---
+// 背景「雨」。細く短い斜めの線が静かに降り、下で小さな輪が広がる。しばらくして止まる（止まった絵は雨粒が残るだけ）。
+---
+<script is:inline>
+(window.BG = window.BG || {}).rain = function (c) {
+  var dr = [], n = c.small ? 28 : 64, i; // スマホは雨粒を減らす
+  for (i = 0; i < n; i++) dr.push({ x: c.rnd() * (c.W + 100), y: c.rnd() * c.H, v: 0.18 + c.rnd() * 0.12, l: 10 + c.rnd() * 10 });
+  var SL = 0.18; // 傾き
+  return { dur: 12000, draw: function (e) {
+    var g = c.ctx, fade = Math.min(1, e / 1500); g.strokeStyle = c.line; g.lineWidth = 1; g.globalAlpha = fade;
+    g.beginPath();
+    dr.forEach(function (d) { var y = (d.y + e * d.v) % (c.H + 40) - 20, x = d.x - y * SL; g.moveTo(x, y); g.lineTo(x - d.l * SL, y + d.l); });
+    g.stroke();
+    // 地面の小さな輪（雨粒が下に着いた位置）
+    dr.forEach(function (d, j) { if (j % 4) return;
+      var cyc = (c.H + 40) / d.v, ph = ((e + (c.H + 20 - d.y) / d.v) % cyc) / 600; if (ph > 1) return;
+      g.globalAlpha = fade * (1 - ph); g.beginPath(); g.ellipse(d.x - (c.H - 6) * SL, c.H - 6, 2 + ph * 10, 1 + ph * 3, 0, 0, 6.29); g.stroke(); });
+    g.globalAlpha = 1;
+  } };
+};
+</script>

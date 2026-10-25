@@ -12,13 +12,16 @@ const nums = Array.from({ length: 31 }, (_, i) => i);
 <script is:inline>
   // 描画前に保存済みの見た目を当て、一瞬だけ別の見た目が出るのを防ぐ
   try { document.documentElement.dataset.rp = localStorage.getItem('rp') || '';
-    document.documentElement.dataset.rpc = localStorage.getItem('rpc') || ''; } catch (e) {}
+    document.documentElement.dataset.rpc = localStorage.getItem('rpc') || '';
+    document.documentElement.dataset.rpo = localStorage.getItem('rpo') || ''; } catch (e) {}
 </script>
 <div class="reading-progress" aria-hidden="true"><div class="reading-progress__bar"><div class="rp-ruler"><svg viewBox="-3 0 306 12" preserveAspectRatio="none"><path d={ticks} /></svg>{nums.map((n) => <i style={`left:${((n * 10 + 3) / 306 * 100).toFixed(3)}%`}>{n}</i>)}</div></div><div class="rp-snake"><svg viewBox="0 0 2600 20"><path id="rp-w" d={wave} /><use class="rp-sn-dot" href="#rp-w" /></svg></div><span class="rp-head"><svg class="rp-cat" viewBox="0 0 26 16"><path class="rp-tail" d="M6 8.5C3.5 8 2.2 6.4 2.6 3.8"/><path class="rp-lg rp-lb1" d="M7.5 10.5 7 14.5"/><path class="rp-lg rp-lf1" d="M15.5 10.5 16 14.5"/><path d="M6 9.5C6 7.2 7.6 6 10 6h5.5c1.4 0 2.2.8 2.4 2v2.4H6.8"/><path class="rp-lg rp-lb2" d="M9.5 10.5 10 14.5"/><path class="rp-lg rp-lf2" d="M13.5 10.5 13 14.5"/><path d="M17.4 7.6c-.6-1.7.2-3.2 1.1-3.6l.4-2.6 1.9 1.9h1.4l1.9-1.9.4 2.6c.9.4 1.4 1.6.9 3-.5 1.5-1.9 2.2-3.8 2.2-1.6 0-3.6-.6-4.2-1.6"/><circle class="rp-eye" cx="22.6" cy="5.9" r=".55"/></svg><svg class="rp-sp" viewBox="0 0 12 12"><path d="M6 6a1 1 0 0 1 2 0 2 2 0 0 1-4 0 3 3 0 0 1 6 0 4 4 0 0 1-8 0"/></svg><svg class="rp-tr" viewBox="0 0 30 14"><path d="M2 10V4h17V2h7v8zM5 6h3v2H5zm6 0h3v2h-3zm11-2h2v3h-2z"/><circle cx="7" cy="11.5" r="1.5"/><circle cx="22" cy="11.5" r="1.5"/></svg><svg class="rp-rk" viewBox="0 0 34 14"><g class="rp-flg"><path class="rp-fl" d="M11 4.6C7 4.4 3 5.3 0 7c3 1.7 7 2.6 11 2.4z"/><path class="rp-fc" d="M11 5.6C9 5.6 7 6.2 5.6 7 7 7.8 9 8.4 11 8.4z"/></g><path d="M11 4.5h13c3.5 0 6.5 1.2 8.5 2.5-2 1.3-5 2.5-8.5 2.5H11z"/><path d="M14 4.5 11.8 1.5H15.6l2.4 3M14 9.5l-2.2 3h3.8l2.4-3"/><circle cx="24" cy="7" r="1.3"/></svg><svg class="rp-sn" viewBox="0 0 20 14"><path d="M1 7q0-5 8-5 9 0 9 5t-9 5q-8 0-8-5"/><circle cx="13" cy="5" r="1.2"/></svg><svg class="rp-px" viewBox="0 0 8 8"><path d="M3 0h2v2H3zM2 2h4v3H2z"/><path class="rp-f1" d="M1 5h1v3H1zm5 0h1v3H6z"/><path class="rp-f2" d="M3 5h2v3H3z"/></svg></span></div>
 <style is:global>
   @property --rp { syntax:'<number>'; inherits:true; initial-value:0; }
   @property --pc { syntax:'<integer>'; inherits:true; initial-value:0; }
   .reading-progress { position:fixed; top:var(--hdr, 0px); left:0; right:0; height:4px; z-index:100; pointer-events:none; }
+  /* 読み進みバーのオン・オフ（localStorage の rpo。"off"=出さない） */
+  [data-rpo=off] .reading-progress { display:none; }
   .reading-progress__bar { height:100%; background:var(--fg); opacity:.75; transform-origin:0 50%; transform:scaleX(var(--rp, 0)); }
   @supports (animation-timeline: scroll()) {
     .reading-progress { animation: rp-grow linear both; animation-duration: auto; animation-timeline: scroll(root block); }

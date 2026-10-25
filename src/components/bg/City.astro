@@ -1,0 +1,24 @@
+---
+// 背景「街」。画面の下に建物の輪郭が左から一筆で描かれ、ところどころの窓に細い線が入って止まる。
+---
+<script is:inline>
+(window.BG = window.BG || {}).city = function (c) {
+  var bs = [], x = -10, base = c.H - 2;
+  while (x < c.W + 10) { // 建物の幅と高さを決める（スマホは幅を広めにして数を減らす）
+    var w = (c.small ? 34 : 28) + c.rnd() * 50, h = c.H * (0.06 + c.rnd() * 0.2);
+    bs.push({ x: x, w: w, h: h, roof: c.rnd() < 0.25, win: [] }); x += w;
+  }
+  bs.forEach(function (b) { for (var yy = base - b.h + 12; yy < base - 10; yy += 14) for (var xx = b.x + 6; xx < b.x + b.w - 8; xx += 10) if (c.rnd() < (c.small ? 0.12 : 0.2)) b.win.push([xx, yy]); });
+  return { dur: 9000, draw: function (e) {
+    var g = c.ctx, p = Math.min(1, e / 6000); g.strokeStyle = c.line; g.lineWidth = 1;
+    g.save(); g.beginPath(); g.rect(0, 0, c.W * p, c.H); g.clip(); // 左から描いていく
+    g.beginPath(); g.moveTo(-10, base);
+    bs.forEach(function (b) { var top = base - b.h;
+      g.lineTo(b.x, top); if (b.roof) g.lineTo(b.x + b.w / 2, top - 10); g.lineTo(b.x + b.w, top); g.lineTo(b.x + b.w, base - Math.min(b.h, 1)); });
+    g.stroke(); g.restore();
+    g.globalAlpha = 0.7; g.beginPath();
+    bs.forEach(function (b, i) { var t = 6000 + i * 60; if (e < t) return; b.win.forEach(function (w) { g.moveTo(w[0], w[1]); g.lineTo(w[0] + 4, w[1]); }); });
+    g.stroke(); g.globalAlpha = 1;
+  } };
+};
+</script>
