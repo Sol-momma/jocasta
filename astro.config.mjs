@@ -3,13 +3,18 @@ import sitemap from '@astrojs/sitemap';
 import { satteri } from '@astrojs/markdown-satteri';
 import { linkCardPlugin } from './src/lib/link-card.mjs';
 import { codeMeta } from './src/lib/code-meta.mjs';
+import { readdirSync, readFileSync } from 'node:fs';
 
 // 下書きはページ自体を作らないのでサイトマップにも入らない。編集画面・書き方ガイド（noindex）・404 は除く
 const excluded = ['/admin/', '/guide/', '/404/'];
+// サンプル記事（frontmatter に sample: true）も検索エンジン向けの一覧から外す。記事ページ自体は noindex 付きで残す
+const samplePaths = readdirSync('./src/content/posts')
+  .filter((f) => f.endsWith('.md') && /^sample:\s*true\s*$/m.test(readFileSync(`./src/content/posts/${f}`, 'utf8').split(/^---\s*$/m)[1] ?? ''))
+  .map((f) => `/posts/${f.replace(/\.md$/, '')}/`);
 export default defineConfig({
   site: 'https://blog.sol-momma.com',
   output: 'static',
-  integrations: [sitemap({ filter: (page) => !excluded.some((p) => new URL(page).pathname.startsWith(p)) })],
+  integrations: [sitemap({ filter: (page) => { const path = new URL(page).pathname; return !excluded.some((p) => path.startsWith(p)) && !samplePaths.includes(path); } })],
   markdown: {
     // URLだけの行をリンクカードにする（OGP は scripts/fetch-link-cards.mjs がビルド前に取り、data/link-cards.json にためる）
     processor: satteri({ mdastPlugins: [linkCardPlugin] }),
