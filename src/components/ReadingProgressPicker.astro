@@ -1,6 +1,17 @@
 ---
 // 読み進みバーの見た目と紙吹雪の切り替え。固定フッターの右端に「表示」アイコンを置き、押すと上に小さな設定が開く。
-// 選んだ値は localStorage の rp、紙吹雪のオン・オフは rpc に保存。
+// 選んだ値は localStorage の rp、紙吹雪のオン・オフは rpc、配色は theme に保存。
+// 配色の見本は各配色の地の色・文字の色（方眼紙と便箋は線も）を小さく描く
+const themes = [
+  { id: '', name: '白', bg: '#fcfcfb', fg: '#151515' },
+  { id: 'dark', name: '黒', bg: '#1f2023', fg: '#e4e4e2' },
+  { id: 'cream', name: 'クリーム', bg: '#f7f0e1', fg: '#2b2620' },
+  { id: 'kanagawa', name: 'Kanagawa', bg: '#1F1F28', fg: '#DCD7BA' },
+  { id: 'dracula', name: 'Dracula', bg: '#282A36', fg: '#BD93F9' },
+  { id: 'grid', name: '方眼紙', bg: '#fbfcfd', fg: '#1d2228' },
+  { id: 'chalk', name: '黒板', bg: '#2c4637', fg: '#efeee6' },
+  { id: 'letter', name: '便箋', bg: '#fcf9f2', fg: '#2a2a33' },
+];
 ---
 <details class="rp-menu"><summary aria-label="表示の設定" title="表示"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h4M12 17h8" /><circle cx="16" cy="7" r="2" /><circle cx="10" cy="17" r="2" /></svg></summary><div class="rp-pop">
 <label class="rp-pick">バー<select id="rp-pick">
@@ -9,6 +20,9 @@
   <option value="train">電車</option><option value="rocket">ロケット</option><option value="candle">ろうそく</option>
   <option value="pixel">ドット絵</option><option value="neon">ネオン</option><option value="snake">ヘビ</option>
 </select></label><label class="rp-pick">紙吹雪<input type="checkbox" id="rp-cf"></label>
+<div class="th-pick" role="radiogroup" aria-labelledby="th-label"><span id="th-label" class="th-label">配色</span>
+{themes.map((t) => <button type="button" role="radio" aria-checked="false" class="th-opt" data-t={t.id}><span class={`th-sw th-sw-${t.id || 'white'}`} style={`background-color:${t.bg};color:${t.fg}`} aria-hidden="true"><i></i></span>{t.name}</button>)}
+</div>
 </div></details>
 <style is:global>
   /* 目立たせない。押せる範囲は44px以上（フッターより高い分は上下に均等にはみ出させ、見た目の高さは変えない） */
@@ -22,6 +36,17 @@
   .rp-pop { position:absolute; right:0; bottom:calc(100% + 96px); display:flex; flex-direction:column; padding:.2em .8em; background:var(--bg); border:1px solid var(--line); white-space:nowrap; }
   .rp-pick { display:flex; align-items:center; justify-content:space-between; gap:.6em; min-height:44px; cursor:pointer; }
   .rp-pick select { min-height:44px; min-width:44px; padding:0; font:inherit; color:inherit; background:none; border:0; cursor:pointer; }
+  /* 配色：2列に並べる。各ボタンは高さ44px以上、左に地と文字の色の見本 */
+  .rp-pop:has(.th-pick) { width:min(17rem, calc(100vw - 24px)); white-space:normal; }
+  .th-pick { display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); column-gap:4px; padding:.2em 0 .4em; border-top:1px solid var(--line); }
+  .th-label { grid-column:1 / -1; display:flex; align-items:center; min-height:32px; }
+  .th-opt { display:flex; align-items:center; gap:.5em; min-height:44px; min-width:44px; padding:0 .4em; font:inherit; color:var(--fg); background:none; border:1px solid transparent; border-radius:3px; cursor:pointer; text-align:left; }
+  .th-opt[aria-checked="true"] { border-color:var(--fg); }
+  .th-opt:focus-visible { outline:2px solid var(--link); outline-offset:1px; }
+  .th-sw { position:relative; flex:none; width:18px; height:18px; border:1px solid var(--muted); border-radius:3px; background-size:6px 6px; }
+  .th-sw i { position:absolute; left:3px; right:3px; top:7px; height:2px; background:currentColor; }
+  .th-sw-grid { background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='6' height='6'%3E%3Cpath d='M6 0V6H0' fill='none' stroke='%2396aec6'/%3E%3C/svg%3E"); }
+  .th-sw-letter { background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='6' height='6'%3E%3Cpath d='M0 5.5H6' stroke='%2396aec6'/%3E%3C/svg%3E"); }
   .rp-pick input { width:14px; height:14px; margin:0; accent-color:var(--muted); cursor:pointer; }
 </style>
 <script is:inline>
@@ -32,6 +57,15 @@
     var c = document.getElementById('rp-cf');
     c.checked = d.rpc === '1';
     c.onchange = function () { d.rpc = c.checked ? '1' : ''; try { localStorage.setItem('rpc', d.rpc); } catch (e) {} dispatchEvent(new Event('rp-cf')); };
+    // 配色：押したら html の data-theme を変えて保存
+    var opts = document.querySelectorAll('.th-opt');
+    function mark() { opts.forEach(function (b) { b.setAttribute('aria-checked', String(b.dataset.t === (d.theme || ''))); }); }
+    opts.forEach(function (b) { b.onclick = function () {
+      if (b.dataset.t) d.theme = b.dataset.t; else delete d.theme;
+      try { localStorage.setItem('theme', b.dataset.t); } catch (e) {}
+      mark();
+    }; });
+    mark();
     // 設定の外を押したら閉じる
     var m = s.closest('details');
     document.addEventListener('click', function (e) { if (m.open && !m.contains(e.target)) m.open = false; });

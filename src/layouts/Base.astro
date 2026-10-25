@@ -8,16 +8,58 @@ const { title, noindex = false, wide = false } = Astro.props;
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 {noindex && <meta name="robots" content="noindex, nofollow" />}
+<script is:inline>
+  // 保存済みの配色を描画の前に当て、白が一瞬出るのを防ぐ
+  try { var t = localStorage.getItem('theme'); if (t) document.documentElement.dataset.theme = t; } catch (e) {}
+</script>
 <title>{title ? `${title} | Jocasta` : 'Jocasta — 学習ノート'}</title>
 <style is:global>
   /* 参考: borischerny.com の「白に近い地・黒に近い文字・青いリンク・見出しは細め・広めの段落間」。書体は本文も見出しもゴシック */
-  :root { --fg:#151515; --muted:#7c7c7c; --line:#e6e6e6; --bg:#fcfcfb; --link:#2463c4; --link-visited:#1c4f9c;
+  :root { --fg:#151515; --muted:#6f6f6f; --line:#e6e6e6; --bg:#fcfcfb; --link:#2463c4; --link-visited:#1c4f9c;
     --sans:"Hiragino Sans","Noto Sans JP","Noto Sans CJK JP",system-ui,sans-serif; --gap:28px;
     /* 固定ヘッダーの高さ(--hdr)と読み進みバーの帯(--rpb)。スマホでは合計が画面の高さの15%以下になるよう小さめ */
     --hdr:76px; --rpb:24px;
     /* 画面の下に固定するフッターの高さ(--ftr)。スマホでは画面の高さの約6%以下（iPhone 13 で約5.1%、iPhone SE 初代でも6%以内）に抑える */
     --ftr:44px; }
   @media (max-width:560px) { :root { --hdr:56px; --rpb:20px; --ftr:34px; } }
+
+  /* 配色（読む人が「表示」の設定で選ぶ）。html の data-theme で切り替え、色はすべてここの変数にまとめる。空=白（最初の設定）。
+     文字の色は地の色に対して WCAG AA（本文4.5:1以上）を満たす値にしている */
+  :root { --code-bg:#f6f6f6; --quote:#666; --alert:#9a6700; --alert-bg:#fbf8f1; --ruler-bg:#f4f2ec; --pattern:none; color-scheme:light; }
+  /* 目に優しい黒：真っ黒ではなく少し明るい濃い灰色 */
+  [data-theme=dark] { --fg:#e4e4e2; --muted:#a3a3a0; --line:#3d3e42; --bg:#1f2023; --link:#82b1ff; --link-visited:#a8c3ee;
+    --code-bg:#2a2b2f; --quote:#b4b4b0; --alert:#e2b55a; --alert-bg:#2a2720; --ruler-bg:#2a2b2f; color-scheme:dark; }
+  [data-theme=cream] { --fg:#2b2620; --muted:#6c6457; --line:#e4dac6; --bg:#f7f0e1; --link:#1f56ad; --link-visited:#1a4687;
+    --code-bg:#efe6d2; --quote:#5e574b; --alert:#875a00; --alert-bg:#f1e6cc; --ruler-bg:#efe6d2; }
+  /* Kanagawa（kanagawa.nvim の wave の色）：sumiInk3 の地、fujiWhite の文字、crystalBlue のリンク */
+  [data-theme=kanagawa] { --fg:#DCD7BA; --muted:#C8C093; --line:#54546D; --bg:#1F1F28; --link:#7E9CD8; --link-visited:#7FB4CA;
+    --code-bg:#2A2A37; --quote:#C8C093; --alert:#E6C384; --alert-bg:#2A2A37; --ruler-bg:#2A2A37; color-scheme:dark; }
+  /* Dracula（draculatheme.com の色）。補足の文字は公式の Comment #6272A4 だと地に対し AA に届かないため、Foreground と Comment の中間の色にする */
+  [data-theme=dracula] { --fg:#F8F8F2; --muted:#B0B7D6; --line:#44475A; --bg:#282A36; --link:#8BE9FD; --link-visited:#BD93F9;
+    --code-bg:#44475A; --quote:#B0B7D6; --alert:#F1FA8C; --alert-bg:#343746; --ruler-bg:#44475A; color-scheme:dark; }
+  /* 方眼紙：薄い格子の背景（5mm 方眼に見える 20px の目） */
+  [data-theme=grid] { --fg:#1d2228; --muted:#5f6670; --line:#d5dfe9; --bg:#fbfcfd; --link:#1f5fbf; --link-visited:#1a4c96;
+    --code-bg:#eef2f6; --quote:#545b64; --alert:#8a5d00; --alert-bg:#f5f1e6; --ruler-bg:#eef2f6; --pattern:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20'%3E%3Cpath d='M20 0V20H0' fill='none' stroke='%23d5dfe9' stroke-width='1'/%3E%3C/svg%3E"); }
+  /* 黒板：深い緑にチョークのような白い文字。リンクは黄色のチョーク */
+  [data-theme=chalk] { --fg:#efeee6; --muted:#c3cdbf; --line:#4f6b5a; --bg:#2c4637; --link:#f3e19a; --link-visited:#e2c98a;
+    --code-bg:#365242; --quote:#d0d8cc; --alert:#f3e19a; --alert-bg:#365242; --ruler-bg:#365242; color-scheme:dark; }
+  /* 手紙の便箋：罫線は本文の行の高さ(--lh)ごとに引く */
+  [data-theme=letter] { --fg:#2a2a33; --muted:#625f68; --line:#d9d2c3; --bg:#fcf9f2; --link:#24529e; --link-visited:#1f427b;
+    --code-bg:#f2ede1; --quote:#55525b; --alert:#875a00; --alert-bg:#f4ecd8; --ruler-bg:#f2ede1; --rule:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' preserveAspectRatio='none'%3E%3Cpath d='M0 7.5H8' stroke='%23b9cbe0' stroke-width='1' vector-effect='non-scaling-stroke'/%3E%3C/svg%3E"); }
+  body { background-image:var(--pattern); }
+  [data-theme=chalk] body { text-shadow:0 0 1px rgba(239,238,230,.35); }
+  select, option { background:var(--bg); color:var(--fg); }
+  /* 便箋：本文の行の高さを px で固定し、余白も行の高さの倍数にして、罫線と文字の行をそろえる */
+  [data-theme=letter] { --lh:32px; }
+  @media (min-width:1100px) { [data-theme=letter] .is-wide { --lh:36px; } }
+  [data-theme=letter] .prose { line-height:var(--lh); background-image:var(--rule); background-size:100% var(--lh); }
+  [data-theme=letter] .prose :is(p,li,h2,h3,h4,blockquote) { line-height:var(--lh); }
+  [data-theme=letter] .prose :is(p,blockquote,pre,.alert,.pair) { margin:0 0 var(--lh); }
+  [data-theme=letter] .prose :is(h2,h3,h4) { margin:var(--lh) 0 0; }
+  [data-theme=letter] .prose li { margin:0; }
+  [data-theme=letter] .prose :is(ul,ol) { margin:0; }
+  [data-theme=letter] .prose pre { line-height:var(--lh); padding:0 1em; }
+  [data-theme=letter] .prose .alert { padding:0 1em; }
   * { box-sizing: border-box; }
   body { margin:0; background:var(--bg); color:var(--fg);
     font-family:var(--sans); line-height:1.6; font-size:16px; -webkit-font-smoothing:antialiased; font-kerning:normal; }
@@ -38,7 +80,7 @@ const { title, noindex = false, wide = false } = Astro.props;
   h3 { font-size:1.1rem; margin:1.6em 0 .5em; }
   .prose { font-size:17px; line-height:1.9; text-rendering:optimizeLegibility; }
   .prose p, .prose blockquote, .prose pre { margin:0 0 var(--gap); }
-  blockquote { margin:1em 0; padding:0 0 0 1em; border-left:3px solid var(--line); color:#666; }
+  blockquote { margin:1em 0; padding:0 0 0 1em; border-left:3px solid var(--line); color:var(--quote); }
   code { border:1px solid var(--line); background:none; padding:0 .3em; border-radius:3px; font-size:.88em; }
   .meta { color:var(--muted); font-size:.875rem; letter-spacing:.02em; font-variant-numeric:tabular-nums; margin:0 0 var(--gap); }
   .badge { display:inline-block; color:var(--muted); font-size:.72rem; border:1px solid var(--line); padding:0 .45em; border-radius:3px; margin-left:.5em; }
@@ -98,10 +140,10 @@ const { title, noindex = false, wide = false } = Astro.props;
   .prose li.has-children > .tog::before { content:"▾"; }
   .prose li.collapsed > .tog::before { content:"▸"; }
   .prose li.collapsed > ul, .prose li.collapsed > ol { display:none; }
-.alert { margin:1.6em 0; padding:.7em 1em; border-left:3px solid #9a6700; background:#fbf8f1; font-size:.92rem; }
-  .alert-title { font-weight:600; color:#9a6700; margin:0 0 .2em; }
+.alert { margin:1.6em 0; padding:.7em 1em; border-left:3px solid var(--alert); background:var(--alert-bg); font-size:.92rem; }
+  .alert-title { font-weight:600; color:var(--alert); margin:0 0 .2em; }
   .alert p { margin:.2em 0; }
-  pre { background:#f6f6f6; padding:.9em 1em; border-radius:4px; overflow-x:auto; font-size:.85rem; line-height:1.6; }
+  pre { background:var(--code-bg); padding:.9em 1em; border-radius:4px; overflow-x:auto; font-size:.85rem; line-height:1.6; }
   pre code { background:none; padding:0; }
   .pair { display:grid; grid-template-columns:1fr 1fr; gap:16px; align-items:start; }
   .pair > div > .label { color:var(--muted); font-size:.78rem; margin:0 0 .3em; }
