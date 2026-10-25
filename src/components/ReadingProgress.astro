@@ -1,10 +1,12 @@
 ---
 // 記事ページ用の読み進みバー。CSS scroll-driven animations が基本、未対応ブラウザは小さなJSで代替。
-// 見た目は html の data-rp で切り替える（空=今の線 / ruler / cat / spiral / arrow / pct / train / rocket / candle / pixel / neon）。
+// 見た目は html の data-rp で切り替える（空=今の線 / ruler / cat / spiral / arrow / pct / train / rocket / candle / pixel / neon / snake）。
 // 紙吹雪は data-rpc=1 で別にオン・オフ（どの見た目とも組み合わせられる）。
 // バーは固定ヘッダーのすぐ下（top: var(--hdr)）に出す。高さの目安 --rpb は Base.astro で決める。
 // 定規：30cm を画面幅に合わせて描く。mm=短い線、5mm=中くらい、cm=長い線と数字0〜30。線の太さは拡大しても1pxのまま。
 const ticks = Array.from({ length: 301 }, (_, i) => `M${i} 0v${i % 10 === 0 ? 11 : i % 5 === 0 ? 7.5 : 4.5}`).join('');
+// ヘビ：波の線を横に流して体をうねらせる。1つの波は40px、2600pxあれば広い画面でも足りる。
+const wave = 'M0 10q10-6 20 0' + 't20 0'.repeat(129);
 const nums = Array.from({ length: 31 }, (_, i) => i);
 ---
 <script is:inline>
@@ -12,7 +14,7 @@ const nums = Array.from({ length: 31 }, (_, i) => i);
   try { document.documentElement.dataset.rp = localStorage.getItem('rp') || '';
     document.documentElement.dataset.rpc = localStorage.getItem('rpc') || ''; } catch (e) {}
 </script>
-<div class="reading-progress" aria-hidden="true"><div class="reading-progress__bar"><div class="rp-ruler"><svg viewBox="-3 0 306 12" preserveAspectRatio="none"><path d={ticks} /></svg>{nums.map((n) => <i style={`left:${((n * 10 + 3) / 306 * 100).toFixed(3)}%`}>{n}</i>)}</div></div><span class="rp-head"><svg class="rp-cat" viewBox="0 0 20 12"><path d="M3 9V5l3-2h7l1-2 1 2 1-2 1 2v3l-2 1H6M4 9v2M7 8v3M12 8v3M15 8v3M3 5 1 3"/></svg><svg class="rp-sp" viewBox="0 0 12 12"><path d="M6 6a1 1 0 0 1 2 0 2 2 0 0 1-4 0 3 3 0 0 1 6 0 4 4 0 0 1-8 0"/></svg><svg class="rp-tr" viewBox="0 0 30 14"><path d="M2 10V4h17V2h7v8zM5 6h3v2H5zm6 0h3v2h-3zm11-2h2v3h-2z"/><circle cx="7" cy="11.5" r="1.5"/><circle cx="22" cy="11.5" r="1.5"/></svg><svg class="rp-rk" viewBox="0 0 24 12"><path class="rp-fl" d="M5 5 0 6l5 1z"/><path d="M5 4h11l6 2-6 2H5zM7 4 5 1M7 8l-2 3"/></svg><svg class="rp-px" viewBox="0 0 8 8"><path d="M3 0h2v2H3zM2 2h4v3H2z"/><path class="rp-f1" d="M1 5h1v3H1zm5 0h1v3H6z"/><path class="rp-f2" d="M3 5h2v3H3z"/></svg></span></div>
+<div class="reading-progress" aria-hidden="true"><div class="reading-progress__bar"><div class="rp-ruler"><svg viewBox="-3 0 306 12" preserveAspectRatio="none"><path d={ticks} /></svg>{nums.map((n) => <i style={`left:${((n * 10 + 3) / 306 * 100).toFixed(3)}%`}>{n}</i>)}</div></div><div class="rp-snake"><svg viewBox="0 0 2600 20"><path id="rp-w" d={wave} /><use class="rp-sn-dot" href="#rp-w" /></svg></div><span class="rp-head"><svg class="rp-cat" viewBox="0 0 20 12"><path d="M3 9V5l3-2h7l1-2 1 2 1-2 1 2v3l-2 1H6M4 9v2M7 8v3M12 8v3M15 8v3M3 5 1 3"/></svg><svg class="rp-sp" viewBox="0 0 12 12"><path d="M6 6a1 1 0 0 1 2 0 2 2 0 0 1-4 0 3 3 0 0 1 6 0 4 4 0 0 1-8 0"/></svg><svg class="rp-tr" viewBox="0 0 30 14"><path d="M2 10V4h17V2h7v8zM5 6h3v2H5zm6 0h3v2h-3zm11-2h2v3h-2z"/><circle cx="7" cy="11.5" r="1.5"/><circle cx="22" cy="11.5" r="1.5"/></svg><svg class="rp-rk" viewBox="0 0 24 12"><path class="rp-fl" d="M5 5 0 6l5 1z"/><path d="M5 4h11l6 2-6 2H5zM7 4 5 1M7 8l-2 3"/></svg><svg class="rp-sn" viewBox="0 0 20 14"><path d="M1 7q0-5 8-5 9 0 9 5t-9 5q-8 0-8-5"/><circle cx="13" cy="5" r="1.2"/></svg><svg class="rp-px" viewBox="0 0 8 8"><path d="M3 0h2v2H3zM2 2h4v3H2z"/><path class="rp-f1" d="M1 5h1v3H1zm5 0h1v3H6z"/><path class="rp-f2" d="M3 5h2v3H3z"/></svg></span></div>
 <style is:global>
   @property --rp { syntax:'<number>'; inherits:true; initial-value:0; }
   @property --pc { syntax:'<integer>'; inherits:true; initial-value:0; }
@@ -69,6 +71,17 @@ const nums = Array.from({ length: 31 }, (_, i) => i);
   /* ネオン：光る線。色がゆっくり変わる */
   [data-rp=neon] .reading-progress__bar { height:5px; opacity:1; color:#0ee; background:currentColor; box-shadow:0 0 6px 1px currentColor; animation:rp-neon 6s infinite alternate; }
   @keyframes rp-neon { 50% { color:#3f6; } to { color:#fb3; } }
+  /* ヘビ：読むほど体が右へ伸び、波が流れてうねる。緑の体に黄の模様 */
+  .rp-snake { display:none; }
+  [data-rp=snake] .reading-progress { height:var(--rpb); }
+  [data-rp=snake] .reading-progress__bar { display:none; }
+  [data-rp=snake] .rp-snake { display:block; position:absolute; inset:0 auto 0 0; width:calc(var(--rp) * 100% - 14px); overflow:hidden; }
+  .rp-snake svg { position:absolute; top:50%; left:0; width:2600px; height:20px; margin-top:-10px; fill:none; stroke:#3e7a4a; stroke-width:6; stroke-linecap:round; animation:rp-slither .8s linear infinite; }
+  .rp-snake .rp-sn-dot { stroke:#d6b84a; stroke-width:2; stroke-dasharray:4 8; }
+  @keyframes rp-slither { to { transform:translateX(-40px); } }
+  [data-rp=snake] .rp-head { display:block; position:absolute; top:50%; left:calc(var(--rp) * 100%); transform:translate(-100%,-50%); }
+  [data-rp=snake] .rp-sn { display:block; width:22px; height:16px; fill:#3e7a4a; stroke:none; animation:rp-walk .8s ease-in-out infinite; }
+  [data-rp=snake] .rp-sn circle { fill:#d6b84a; }
   /* 紙吹雪 */
   .rp-cf { position:fixed; top:calc(var(--hdr, 0px) - 12px); width:6px; height:10px; z-index:101; pointer-events:none; animation:rp-fall 2.6s ease-in forwards; }
   @keyframes rp-fall { to { transform:translate(var(--dx),105vh) rotate(720deg); } }
@@ -77,7 +90,7 @@ const nums = Array.from({ length: 31 }, (_, i) => i);
     .rp-cat { animation:none !important; }
     .rp-sp { transform:none !important; }
     /* 新しい見た目と紙吹雪は止まった絵にする */
-    .rp-head, .rp-head *, .rp-head::before, .reading-progress__bar, .rp-cf { animation:none !important; }
+    .rp-head, .rp-head *, .rp-head::before, .reading-progress__bar, .rp-cf, .rp-snake svg { animation:none !important; }
     .rp-cf { top:var(--hdr, 0px); transform:translateY(var(--y)); }
   }
 </style>
