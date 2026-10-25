@@ -1,4 +1,36 @@
 ---
+// 見つからないページ。古いURLや打ち間違いで来た人がそのまま記事を探せるよう、検索と新しい記事を出す
+// 検索はフッターの検索欄（SiteSearch）を開くだけにして、同じ仕組みを2つ持たない
 import Base from '../layouts/Base.astro';
+import PostList from '../components/PostList.astro';
+import { publishedPosts } from '../lib/posts';
+const recent = (await publishedPosts()).filter((p) => !p.data.sample).slice(0, 5);
 ---
-<Base title="ページが見つかりません"><h1>ページが見つかりません</h1><p><a href="/">トップへ戻る</a></p></Base>
+<Base title="ページが見つかりません" noindex>
+  <h1>ページが見つかりません</h1>
+  <p>URLが変わったか、打ち間違いかもしれません。記事を検索するか、新しい記事から探してください。</p>
+  <p class="nf-actions">
+    <button class="nf-search" type="button">記事を検索する</button>
+    <a href="/">トップへ戻る</a>
+  </p>
+  {recent.length > 0 && (
+    <section aria-labelledby="nf-recent">
+      <h2 id="nf-recent" class="nf-h2">新しい記事</h2>
+      <PostList posts={recent} themes={[]} />
+    </section>
+  )}
+</Base>
+<style>
+  .nf-actions { display:flex; flex-wrap:wrap; gap:12px 20px; align-items:center; }
+  .nf-search { min-height:44px; padding:0 1em; font:inherit; color:var(--fg); background:var(--bg); border:1px solid var(--line); border-radius:4px; cursor:pointer; }
+  .nf-search:hover { border-color:var(--muted); }
+  .nf-search:focus-visible { outline:2px solid var(--link); outline-offset:2px; }
+  .nf-h2 { font-size:1rem; color:var(--muted); font-weight:400; }
+</style>
+<script>
+  // フッターの検索ボタンを押したのと同じ動きにする。検索欄の「外を押したら閉じる」に拾われないよう、このクリックは外へ伝えない
+  document.querySelector('.nf-search')?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    document.querySelector<HTMLButtonElement>('.ss-open')?.click();
+  });
+</script>
