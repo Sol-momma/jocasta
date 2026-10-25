@@ -1,0 +1,68 @@
+---
+// 一覧の上の記事検索。「検索」を押すと入力欄が開き、Pagefind（ビルド時に dist/pagefind に作る索引）で記事本文を全文検索する
+// 見た目はサイトの色の変数（--fg / --muted / --line / --bg / --link）だけを使い、Pagefind の既定UIは使わない
+---
+<div class="site-search">
+  <button class="ss-open" type="button" aria-expanded="false" aria-controls="ss-panel"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="M20 20l-4-4" /></svg><span>検索</span></button>
+  <div class="ss-panel" id="ss-panel" hidden>
+    <input class="ss-input" type="search" placeholder="記事を検索（例: 品詞）" aria-label="記事を検索" autocomplete="off" />
+    <p class="ss-status" aria-live="polite"></p>
+    <ul class="ss-results"></ul>
+  </div>
+</div>
+<style>
+  .site-search { margin:0 0 var(--gap); }
+  .ss-open { display:inline-flex; align-items:center; gap:.35em; min-height:44px; padding:0 .9em; font:inherit; font-size:.85rem; color:var(--muted); background:var(--bg); border:1px solid var(--line); border-radius:4px; cursor:pointer; }
+  .ss-open:hover, .ss-open[aria-expanded="true"] { color:var(--fg); }
+  .ss-open svg { width:1.1em; height:1.1em; fill:none; stroke:currentColor; stroke-width:1.6; stroke-linecap:round; }
+  .ss-panel { margin-top:.8em; }
+  .ss-input { width:100%; min-height:44px; padding:0 .8em; font:inherit; font-size:16px; color:var(--fg); background:var(--bg); border:1px solid var(--line); border-radius:4px; }
+  .ss-input:focus { outline:2px solid var(--link); outline-offset:1px; }
+  .ss-status { margin:.6em 0 0; color:var(--muted); font-size:.85rem; }
+  .ss-status:empty { display:none; }
+  .ss-results { list-style:none; margin:.4em 0 0; padding:0; }
+  /* 結果は script で差し込むので :global で当てる */
+  .ss-results :global(li) { padding:.6em 0; border-bottom:1px solid var(--line); }
+  .ss-results :global(a) { display:block; min-height:44px; overflow-wrap:anywhere; }
+  .ss-results :global(p) { margin:.2em 0 0; color:var(--muted); font-size:.85rem; line-height:1.7; overflow-wrap:anywhere; }
+  .ss-results :global(mark) { background:none; color:var(--fg); font-weight:600; }
+</style>
+<script>
+// Pagefind は最初に検索欄を開いたときに読み込む（一覧の表示を遅くしない）。dev では索引がないので案内を出す
+type Hit = { data: () => Promise<{ url: string; meta: { title?: string }; excerpt: string }> };
+type PF = { search: (q: string) => Promise<{ results: Hit[] } | null> };
+const root = document.querySelector('.site-search');
+const open = root?.querySelector<HTMLButtonElement>('.ss-open');
+const panel = root?.querySelector<HTMLDivElement>('.ss-panel');
+const input = root?.querySelector<HTMLInputElement>('.ss-input');
+const status = root?.querySelector<HTMLParagraphElement>('.ss-status');
+const list = root?.querySelector<HTMLUListElement>('.ss-results');
+let pf: Promise<PF> | undefined;
+const load = () => (pf ??= import(/* @vite-ignore */ `${'/pagefind/'}pagefind.js`) as Promise<PF>);
+// 抜粋は Pagefind が本文を HTML エスケープした上で <mark> だけ付けて返すので、そのまま差し込める
+const esc = (s: string) => s.replace(/[&<>"]/g, (c) => `&#${c.charCodeAt(0)};`);
+let seq = 0;
+const run = async () => {
+  const q = input!.value.trim();
+  const my = ++seq;
+  if (!q) { list!.innerHTML = ''; status!.textContent = ''; return; }
+  try {
+    const r = await (await load()).search(q);
+    if (!r || my !== seq) return;
+    const hits = await Promise.all(r.results.slice(0, 10).map((h) => h.data()));
+    if (my !== seq) return;
+    status!.textContent = hits.length ? `${r.results.length}件` : '見つかりませんでした';
+    list!.innerHTML = hits.map((h) => `<li><a href="${esc(h.url)}">${esc(h.meta.title ?? h.url)}</a><p>${h.excerpt}</p></li>`).join('');
+  } catch {
+    status!.textContent = '検索を読み込めませんでした（pnpm run build のあとの表示で使えます）';
+  }
+};
+open?.addEventListener('click', () => {
+  const on = panel!.hidden;
+  panel!.hidden = !on;
+  open.setAttribute('aria-expanded', String(on));
+  if (on) { input!.focus(); load().catch(() => {}); }
+});
+let t: number | undefined;
+input?.addEventListener('input', () => { clearTimeout(t); t = window.setTimeout(run, 150); });
+</script>
