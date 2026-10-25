@@ -1,5 +1,5 @@
 ---
-// 記事の目次。見出し(h2〜h4)から自動生成し、h2の下にh3、h3の下にh4を入れ子で並べる。開閉状態は localStorage に保存（PC幅とスマホ幅で別々、スマホは既定で閉じる）。
+// 記事の目次。見出し(h2〜h4)から自動生成し、h2の下にh3、h3の下にh4を入れ子で並べる（小見出しは字下げ）。開閉状態は localStorage に保存（PC幅とスマホ幅で別々、スマホは既定で閉じる）。
 import type { MarkdownHeading } from 'astro';
 import TocList from './TocList.astro';
 import { buildToc } from '../lib/toc';
@@ -8,33 +8,36 @@ const items = buildToc(Astro.props.headings);
 ---
 {items.length > 0 && (
   <nav class="toc" aria-label="目次" data-open="false">
-    <button class="toc__toggle" type="button" aria-expanded="false" aria-controls="toc-list">目次</button>
+    <button class="toc__toggle" type="button" aria-expanded="false" aria-controls="toc-list">
+      <svg class="toc__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h10" /></svg>
+      <span>目次</span>
+      <svg class="toc__chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" /></svg>
+    </button>
     <TocList nodes={items} id="toc-list" class="toc__list" />
   </nav>
 )}
 <style is:global>
-  /* 目次ボタンは固定ヘッダーの右端の中に置き、下の読み進みバーと重ならないようにする */
-  .toc { position:fixed; top:calc((var(--hdr) - 26px) / 2); right:16px; z-index:101; font-size:.8rem; line-height:1.5; text-align:right; }
-  .toc__toggle { font:inherit; min-height:26px; color:var(--muted); background:var(--bg); border:1px solid var(--line); border-radius:3px; padding:.15em .6em; cursor:pointer; }
-  .toc__toggle:hover, .toc[data-open="true"] .toc__toggle { color:var(--fg); }
-  .toc__list { display:none; list-style:none; margin:calc((var(--hdr) - 26px) / 2 + var(--rpb) + 8px) 0 0; padding:.6em .9em; text-align:left; width:15rem; max-width:calc(100vw - 32px); box-sizing:border-box; max-height:70vh; overflow:auto; background:var(--bg); border-left:1px solid var(--line); }
+  /* 参考: azukiazusa.dev の目次。「≡ 目次 ⌄」で開閉、項目は文字だけ、左に細い縦線、今読んでいる見出しは文字と縦線に色。
+     スマホ・タブレット幅では本文の上に置き、PC 幅（1100px 以上）では本文の右の列に貼り付ける */
+  .toc { margin:0 0 var(--gap); font-size:.85rem; line-height:1.6; }
+  .toc__toggle { display:inline-flex; align-items:center; gap:.4em; min-height:44px; padding:0; font:inherit; color:var(--muted); background:none; border:0; cursor:pointer; }
+  .toc__toggle:hover { color:var(--fg); }
+  .toc svg { width:1.1em; height:1.1em; fill:none; stroke:currentColor; stroke-width:1.6; stroke-linecap:round; stroke-linejoin:round; }
+  .toc__chev { transition:transform .15s; }
+  .toc[data-open="false"] .toc__chev { transform:rotate(-90deg); }
+  .toc__list { display:none; list-style:none; margin:.2em 0 0 .45em; padding:0; border-left:1px solid var(--line); }
   .toc[data-open="true"] .toc__list { display:block; }
-  .toc__list li { margin:.25em 0; }
-  /* 入れ子の段は字下げし、左の細い線で親子の範囲がわかるようにする */
-  .toc__sub { list-style:none; margin:.2em 0 .1em .25em; padding:0 0 0 .7em; border-left:1px solid var(--line); }
-  .toc__list li.d4 { font-size:.95em; }
-  .toc__list a { display:inline-block; overflow-wrap:anywhere; }
-  .toc__list a { color:var(--muted); text-decoration:none; }
-  .toc__list a:hover { color:var(--fg); }
-  .toc__list a.is-active { color:var(--fg); font-weight:600; }
-  /* PC 幅では目次を本文の左の列に置き、スクロールしても見える位置に貼り付ける。開閉ボタンも列の上に移す */
+  .toc__sub { list-style:none; margin:0; padding:0; }
+  .toc__list li { margin:0; }
+  .toc__list a { display:block; margin-left:-1px; padding:.3em 0 .3em 1em; border-left:1px solid transparent; color:var(--muted); text-decoration:none; overflow-wrap:anywhere; }
+  .toc__list a:visited { color:var(--muted); }
+  .toc__list li.d3 > a { padding-left:1.9em; }
+  .toc__list li.d4 > a { padding-left:2.8em; font-size:.95em; }
+  .toc__list a:hover { color:var(--fg); text-decoration:none; }
+  .toc__list a.is-active { color:var(--link); border-left-color:var(--link); }
   @media (min-width: 1100px) {
-    .post > .toc { position:sticky; top:calc(var(--hdr) + var(--rpb) + 24px); right:auto; grid-column:1; grid-row:1 / span 20; align-self:start; justify-self:end; width:13rem; text-align:left; z-index:1; }
-    .toc__toggle { border:0; padding:0; background:none; }
-    .toc__list { margin:.6em 0 0; padding:.2em 0 .2em .9em; width:auto; max-height:calc(100vh - var(--hdr) - var(--rpb) - 96px); }
-  }
-  @media (max-width: 1099px) {
-    .toc__list { border:1px solid var(--line); border-radius:3px; box-shadow:0 2px 8px rgba(0,0,0,.06); }
+    .post-body > .toc { grid-column:3; grid-row:1; align-self:start; position:sticky; top:calc(var(--hdr) + var(--rpb) + 24px); max-width:15rem; margin:0; }
+    .toc__list { max-height:calc(100vh - var(--hdr) - var(--rpb) - var(--ftr) - 120px); overflow:auto; }
   }
 </style>
 <script is:inline>
@@ -59,23 +62,17 @@ const items = buildToc(Astro.props.headings);
     nav.addEventListener('click', function (e) {
       if (e.target.closest('a') && !wide.matches) set(false, false);
     });
-    if (!('IntersectionObserver' in window)) return;
     var links = {};
     nav.querySelectorAll('.toc__list a').forEach(function (a) { links[decodeURIComponent(a.hash.slice(1))] = a; });
     var heads = Object.keys(links).map(function (id) { return document.getElementById(id); }).filter(Boolean);
-    var visible = new Set();
+    // 画面の上から4割の線より上にある最後の見出しを「今読んでいる見出し」にする
     function mark() {
-      var cur = heads.find(function (h) { return visible.has(h); });
-      if (!cur) {
-        cur = null;
-        heads.forEach(function (h) { if (h.getBoundingClientRect().top < 80) cur = h; });
-      }
+      var cur = null, line = innerHeight * 0.4;
+      heads.forEach(function (h) { if (h.getBoundingClientRect().top < line) cur = h; });
       Object.keys(links).forEach(function (id) { links[id].classList.toggle('is-active', !!cur && cur.id === id); });
     }
-    var io = new IntersectionObserver(function (es) {
-      es.forEach(function (e) { e.isIntersecting ? visible.add(e.target) : visible.delete(e.target); });
-      mark();
-    }, { rootMargin: '0px 0px -60% 0px' });
-    heads.forEach(function (h) { io.observe(h); });
+    var ticking = false;
+    addEventListener('scroll', function () { if (ticking) return; ticking = true; requestAnimationFrame(function () { ticking = false; mark(); }); }, { passive: true });
+    mark();
   });
 </script>

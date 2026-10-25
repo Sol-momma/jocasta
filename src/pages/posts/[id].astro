@@ -16,23 +16,33 @@ const d = post.data;
 // 日付のあとに並べる補足（空のものは出さない）
 const extras = [d.part, d.questionType].filter(Boolean);
 // 本文の下に並べるタグ。テーマ名を先頭にし、押すとそのテーマの一覧へ飛ぶ（タグごとの一覧ページはまだない）
+// 「Markdownをコピー」で渡す元の Markdown。frontmatter は出さず、タイトルと本文だけにする（下書きはページ自体を作らない）
+const markdown = `# ${d.title}\n\n${(post.body ?? '').trim()}\n`;
 const tags = [...new Set([d.theme && themeLabel(d.theme), ...(d.tags ?? [])].filter(Boolean))] as string[];
 ---
 <Base title={post.data.title} wide>
   <div class="post">
   <ReadingProgress />
-  <Toc headings={headings} />
   <p class="post-back"><a href="/" data-back>
     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6" /></svg>戻る</a></p>
+  {d.image && <p class="post-hero"><img src={d.image} alt="" /></p>}
   <h1>{post.data.title}</h1>
   <p class="meta post-meta">
     <span class="pm-item"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="16" rx="2" /><path d="M16 3v4M8 3v4M4 11h16" /></svg><time datetime={d.date.toISOString().slice(0, 10)}>{d.date.toISOString().slice(0, 10).replaceAll('-', '.')}</time>{extras.map((x) => <> ・ {x}</>)}{d.sample && <span class="badge">サンプル</span>}</span>
     <span class="pm-sep" aria-hidden="true">|</span>
     <a class="pm-item pm-edit" href={editUrl(post.id)} rel="nofollow"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z" /><path d="M13.5 6.5l4 4" /></svg>編集</a>
   </p>
-  <div class="prose"><Content /></div>
+  <div class="post-bar">
+    <ul class="post-tags">{tags.map((t) => <li><a href={themeUrl(d.theme ?? t)}><span aria-hidden="true">#</span>{t}</a></li>)}</ul>
+    <button class="md-copy" type="button" data-md={markdown}><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2" /><path d="M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3" /></svg><span>Markdownをコピー</span></button>
+  </div>
+  {d.description && <p class="post-desc">{d.description}</p>}
+  <div class="post-body">
+    <Toc headings={headings} />
+    <div class="prose"><Content /></div>
+  </div>
   {d.theme === 'toeic' && <p class="post-note">TOEIC の記事は問題文を掲載せず、自作の似た例文で解説しています。</p>}
-  {tags.length > 0 && <ul class="post-tags">{tags.map((t) => <li><a href={themeUrl(d.theme ?? t)}><span aria-hidden="true">#</span>{t}</a></li>)}</ul>}
+  <p class="cd-back"><a class="cd-link" href="/"><span class="cd-gt" aria-hidden="true">&gt;</span><code>cd ..</code><span class="sr-only">記事の一覧へ戻る</span></a></p>
   <button class="to-top" type="button" aria-label="ページの先頭へ戻る" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 15l6-6 6 6" /></svg></button>
   </div>
   <ReadingProgressPicker slot="footer" />
@@ -52,4 +62,12 @@ if (top) {
   update();
   top.addEventListener('click', () => scrollTo({ top: 0, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' }));
 }
+// 「Markdownをコピー」：元の Markdown をクリップボードへ
+const md = document.querySelector<HTMLButtonElement>('.md-copy');
+md?.addEventListener('click', async () => {
+  const label = md.querySelector('span')!;
+  try { await navigator.clipboard.writeText(md.dataset.md ?? ''); label.textContent = 'コピーしました'; }
+  catch { label.textContent = 'コピーできませんでした'; }
+  setTimeout(() => { label.textContent = 'Markdownをコピー'; }, 2000);
+});
 </script>
