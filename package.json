@@ -4,9 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build",
+    "build": "astro build && pagefind --site dist",
     "preview": "astro preview",
-    "deploy": "astro build && node scripts/check-drafts.mjs && wrangler deploy",
+    "deploy": "pnpm run build && node scripts/check-drafts.mjs && wrangler deploy",
     "check:drafts": "node scripts/check-drafts.mjs"
   },
   "dependencies": {
@@ -14,6 +14,7 @@
     "astro": "^7.4.2"
   },
   "devDependencies": {
+    "pagefind": "^1.5.2",
     "wrangler": "^4.152.0"
   },
   "packageManager": "pnpm@10.23.0",
