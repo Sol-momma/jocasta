@@ -1,6 +1,7 @@
 ---
 // 読み進みバーの見た目と紙吹雪の切り替え。固定フッターの右端に「表示」アイコンを置き、押すと上に小さな設定が開く。
-// 選んだ値は localStorage の rp、紙吹雪のオン・オフは rpc、背景は bg（空=ランダム、off=なし、それ以外=固定）、配色は theme に保存。
+// ホームと記事ページで同じパネル。背景とバーは小さな見本つきのカード（ラジオ）で選ぶ。
+// 選んだ値は localStorage の rp（バーの種類）、rpo（"off"=バーを出さない）、紙吹雪のオン・オフは rpc、背景は bg（空=ランダム、off=なし、それ以外=固定）、配色は theme に保存。
 // 配色の見本は各配色の地の色・文字の色（方眼紙と便箋は線も）を小さく描く
 const themes = [
   { id: '', name: '白', bg: '#fcfcfb', fg: '#151515' },
@@ -13,14 +14,19 @@ const themes = [
   { id: 'letter', name: '便箋', bg: '#fcf9f2', fg: '#2a2a33' },
 ];
 import { backgrounds } from '../lib/backgrounds';
+import { bars } from '../lib/bars';
 ---
 <details class="rp-menu"><summary aria-label="表示の設定" title="表示"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h4M12 17h8" /><circle cx="16" cy="7" r="2" /><circle cx="10" cy="17" r="2" /></svg></summary><div class="rp-pop">
-<label class="rp-pick">バー<select id="rp-pick">
-  <option value="">線</option><option value="ruler">目盛り</option><option value="cat">猫</option>
-  <option value="spiral">らせん</option><option value="arrow">矢印</option><option value="pct">数字</option>
-  <option value="train">電車</option><option value="rocket">ロケット</option><option value="candle">ろうそく</option>
-  <option value="pixel">ドット絵</option><option value="neon">ネオン</option><option value="snake">ヘビ</option>
-</select></label><label class="rp-pick">バーを出す<input type="checkbox" id="rp-on"></label><label class="rp-pick">紙吹雪<input type="checkbox" id="rp-cf"></label><label class="rp-pick">背景<select id="bg-pick"><option value="">ランダム</option>{backgrounds.map((b) => <option value={b.id}>{b.name}</option>)}<option value="off">なし</option></select></label>
+<fieldset class="sp-group"><legend class="th-label">背景</legend><div class="sp-grid">
+<label class="sp-card"><input class="sp-in" type="radio" name="sp-bg" value="" /><span class="sp-sw" aria-hidden="true"><svg viewBox="0 0 40 24"><path d="M10 8h6v6h-6zM20 6l6 3-3 6-6-3zM28 14h5v5h-5z"/></svg></span>ランダム</label>
+{backgrounds.map((b) => <label class="sp-card"><input class="sp-in" type="radio" name="sp-bg" value={b.id} /><span class="sp-sw" aria-hidden="true"><canvas data-bg-sw={b.id} width="80" height="48"></canvas></span>{b.name}</label>)}
+<label class="sp-card"><input class="sp-in" type="radio" name="sp-bg" value="off" /><span class="sp-sw" aria-hidden="true"></span>なし</label>
+</div></fieldset>
+<fieldset class="sp-group"><legend class="th-label">読み進みバー</legend><div class="sp-grid">
+<label class="sp-card"><input class="sp-in" type="radio" name="sp-rp" value="off" /><span class="sp-sw" aria-hidden="true"></span>なし</label>
+{bars.map((b) => <label class="sp-card"><input class="sp-in" type="radio" name="sp-rp" value={b.id} /><span class="sp-sw" aria-hidden="true"><svg viewBox="0 0 40 24" set:html={b.svg} /></span>{b.name}</label>)}
+</div></fieldset>
+<label class="rp-pick">紙吹雪<input type="checkbox" id="rp-cf"></label>
 <div class="th-pick" role="radiogroup" aria-labelledby="th-label"><span id="th-label" class="th-label">配色</span>
 {themes.map((t) => <button type="button" role="radio" aria-checked="false" class="th-opt" data-t={t.id}><span class={`th-sw th-sw-${t.id || 'white'}`} style={`background-color:${t.bg};color:${t.fg}`} aria-hidden="true"><i></i></span>{t.name}</button>)}
 </div>
@@ -34,11 +40,29 @@ import { backgrounds } from '../lib/backgrounds';
   .rp-menu summary::-webkit-details-marker { display:none; }
   .rp-menu[open] summary { color:var(--fg); }
   /* 開いた設定は「数字」の%表示と「先頭へ戻る」ボタンより上に出して重ならないようにする */
-  .rp-pop { position:absolute; right:0; bottom:calc(100% + 96px); display:flex; flex-direction:column; padding:.2em .8em; background:var(--bg); border:1px solid var(--line); white-space:nowrap; }
+  .rp-pop { position:absolute; right:0; bottom:calc(100% + 96px); display:flex; flex-direction:column; padding:.2em .8em .4em; background:var(--bg); border:1px solid var(--line); border-radius:4px; white-space:nowrap;
+    max-height:calc(100dvh - var(--hdr, 0px) - var(--ftr, 0px) - env(safe-area-inset-bottom, 0px) - 96px - 16px); overflow-y:auto; overscroll-behavior:contain; }
+  .rp-menu[open] .rp-pop { animation:sp-in .15s ease-out; }
+  @keyframes sp-in { from { opacity:0; transform:translateY(4px); } }
+  /* 背景とバー：見本つきのカードを2列に。押せる範囲は44px以上、選んだものは文字の色の枠 */
+  .sp-group { margin:0; padding:0 0 .4em; border:0; min-width:0; }
+  .sp-group + .sp-group { border-top:1px solid var(--line); }
+  .sp-group legend { float:left; width:100%; padding:0; }
+  .sp-grid { clear:both; display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:4px; }
+  .sp-card { position:relative; display:flex; align-items:center; gap:.5em; min-width:0; min-height:44px; padding:0 .4em; color:var(--fg); border:1px solid transparent; border-radius:3px; cursor:pointer; overflow-wrap:anywhere; transition:border-color .15s ease; }
+  .sp-card:hover { border-color:var(--line); }
+  .sp-in { position:absolute; opacity:0; width:1px; height:1px; margin:0; pointer-events:none; }
+  .sp-card:has(.sp-in:checked) { border-color:var(--fg); }
+  .sp-card:has(.sp-in:focus-visible) { outline:2px solid var(--link); outline-offset:1px; }
+  .sp-sw { flex:none; display:grid; place-items:center; width:36px; height:22px; border:1px solid var(--line); border-radius:3px; overflow:hidden; color:var(--fg); }
+  .sp-sw svg { width:36px; height:22px; fill:none; stroke:currentColor; stroke-width:1.2; stroke-linecap:round; stroke-linejoin:round; opacity:.8; }
+  .sp-sw canvas { display:block; width:36px; height:22px; }
+  .rp-menu summary:focus-visible { outline:2px solid var(--link); outline-offset:-4px; border-radius:4px; }
+  @media (prefers-reduced-motion: reduce) { .rp-menu[open] .rp-pop { animation:none; } .sp-card { transition:none; } }
   .rp-pick { display:flex; align-items:center; justify-content:space-between; gap:.6em; min-height:44px; cursor:pointer; }
   .rp-pick select { min-height:44px; min-width:44px; padding:0; font:inherit; color:inherit; background:none; border:0; cursor:pointer; }
   /* 配色：2列に並べる。各ボタンは高さ44px以上、左に地と文字の色の見本 */
-  .rp-pop:has(.th-pick) { width:min(17rem, calc(100vw - 24px)); white-space:normal; }
+  .rp-pop:has(.th-pick) { width:min(19rem, calc(100vw - 24px)); white-space:normal; }
   .th-pick { display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); column-gap:4px; padding:.2em 0 .4em; border-top:1px solid var(--line); }
   .th-label { grid-column:1 / -1; display:flex; align-items:center; min-height:32px; }
   .th-opt { display:flex; align-items:center; gap:.5em; min-height:44px; min-width:44px; padding:0 .4em; font:inherit; color:var(--fg); background:none; border:1px solid transparent; border-radius:3px; cursor:pointer; text-align:left; }
@@ -52,26 +76,42 @@ import { backgrounds } from '../lib/backgrounds';
 </style>
 <script is:inline>
   (function () {
-    var s = document.getElementById('rp-pick'), d = document.documentElement.dataset;
-    s.value = d.rp || '';
-    s.onchange = function () { d.rp = s.value; try { localStorage.setItem('rp', s.value); } catch (e) {} };
-    // バーのオン・オフ（rpo。ホームの「設定」と同じ保存先）
-    var on = document.getElementById('rp-on');
-    on.checked = d.rpo !== 'off';
-    on.onchange = function () { d.rpo = on.checked ? '' : 'off'; try { localStorage.setItem('rpo', d.rpo); } catch (e) {} };
+    var d = document.documentElement.dataset;
+    function get(k) { try { return localStorage.getItem(k) || ''; } catch (e) { return ''; } }
+    function set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+    // バー：「なし」は rpo=off（種類 rp は残す）。種類を選ぶと rpo を戻して rp に保存
+    var rps = [].slice.call(document.querySelectorAll('input[name="sp-rp"]'));
+    var cur = get('rpo') === 'off' ? 'off' : get('rp');
+    if (!rps.some(function (i) { return i.value === cur; })) cur = '';
+    rps.forEach(function (i) { i.checked = i.value === cur; i.onchange = function () {
+      if (i.value === 'off') { d.rpo = 'off'; set('rpo', 'off'); } else { d.rpo = ''; d.rp = i.value; set('rpo', ''); set('rp', i.value); }
+    }; });
     var c = document.getElementById('rp-cf');
     c.checked = d.rpc === '1';
-    c.onchange = function () { d.rpc = c.checked ? '1' : ''; try { localStorage.setItem('rpc', d.rpc); } catch (e) {} dispatchEvent(new Event('rp-cf')); };
+    c.onchange = function () { d.rpc = c.checked ? '1' : ''; set('rpc', d.rpc); dispatchEvent(new Event('rp-cf')); };
     // 背景：ランダム（最初の設定）・どれか1つに固定・なし。選んだら保存して、すぐその背景に描き直す
-    var bp = document.getElementById('bg-pick'), bm = '';
-    try { bm = localStorage.getItem('bg') || (localStorage.getItem('plum') === '0' ? 'off' : ''); } catch (e) {}
-    bp.value = bm; if (bp.value !== bm) bp.value = '';
-    bp.onchange = function () {
-      try { localStorage.setItem('bg', bp.value); localStorage.removeItem('plum'); } catch (e) {}
-      if (bp.value === 'off') d.bg = 'none';
-      else if (bp.value) d.bg = bp.value;
-      else { var o = [].slice.call(bp.options).map(function (x) { return x.value; }).filter(function (v) { return v && v !== 'off' && v !== d.bg; }); if (o.length) d.bg = o[Math.floor(Math.random() * o.length)]; }
-    };
+    var bgs = [].slice.call(document.querySelectorAll('input[name="sp-bg"]'));
+    var ids = bgs.map(function (i) { return i.value; }).filter(function (v) { return v && v !== 'off'; });
+    var bm = get('bg') || (get('plum') === '0' ? 'off' : '');
+    if (bm !== 'off' && ids.indexOf(bm) < 0) bm = '';
+    bgs.forEach(function (i) { i.checked = i.value === bm; i.onchange = function () {
+      set('bg', i.value); try { localStorage.removeItem('plum'); } catch (e) {}
+      if (i.value === 'off') d.bg = 'none';
+      else if (i.value) d.bg = i.value;
+      else { var o = ids.filter(function (v) { return v !== d.bg; }); if (o.length) d.bg = o[Math.floor(Math.random() * o.length)]; }
+    }; });
+    // 背景の見本：各背景の描き方（window.BG）で描き終わりの絵を小さく描く。配色が変わったら描き直す
+    function prng(a) { return function () { a = (a * 1664525 + 1013904223) >>> 0; return a / 4294967296; }; }
+    function swatch() {
+      var cs = getComputedStyle(document.documentElement), fg = cs.getPropertyValue('--fg').trim() || '#555', bgc = cs.getPropertyValue('--bg').trim() || '#fff';
+      document.querySelectorAll('[data-bg-sw]').forEach(function (cv) {
+        var f = (window.BG || {})[cv.dataset.bgSw], g = cv.getContext && cv.getContext('2d'); if (!f || !g) return;
+        g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, 80, 48);
+        try { var sc = f({ ctx: g, W: 80, H: 48, small: true, rnd: prng(7), line: fg, bg: bgc }); sc.draw(Math.min(sc.dur, 25000)); } catch (e) {}
+      });
+    }
+    swatch();
+    new MutationObserver(swatch).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
     // 配色：押したら html の data-theme を変えて保存
     var opts = document.querySelectorAll('.th-opt');
     function mark() { opts.forEach(function (b) { b.setAttribute('aria-checked', String(b.dataset.t === (d.theme || ''))); }); }
@@ -82,7 +122,9 @@ import { backgrounds } from '../lib/backgrounds';
     }; });
     mark();
     // 設定の外を押したら閉じる
-    var m = s.closest('details');
+    var m = document.querySelector('.rp-menu');
     document.addEventListener('click', function (e) { if (m.open && !m.contains(e.target)) m.open = false; });
+    // Esc で閉じて、つまみのボタンにフォーカスを戻す
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && m.open) { m.open = false; m.querySelector('summary').focus(); } });
   })();
 </script>
