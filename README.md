@@ -64,6 +64,10 @@ pnpm run deploy   # build → 下書きが出ていないかの確認 → 公開
 > [!TIP]
 > 本文は入れ子の箇条書き（半角スペース2つで字下げ）で書くと、子のある項目をページ上で折りたためます。
 
+## 公開のしかた
+
+保存（mainへのpush）で Cloudflare Workers Builds が自動で本番（https://blog.sol-momma.com）に出す。`draft: true` の下書きは `check:drafts` で止まる。
+
 ## コマンド
 
 パッケージ管理には pnpm を使います。
