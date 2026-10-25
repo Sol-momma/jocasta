@@ -1,15 +1,15 @@
 ---
-// 記事の目次。見出し(h2/h3)から自動生成。開閉状態は localStorage に保存（PC幅とスマホ幅で別々、スマホは既定で閉じる）。
+// 記事の目次。見出し(h2〜h4)から自動生成し、h2の下にh3、h3の下にh4を入れ子で並べる。開閉状態は localStorage に保存（PC幅とスマホ幅で別々、スマホは既定で閉じる）。
 import type { MarkdownHeading } from 'astro';
+import TocList from './TocList.astro';
+import { buildToc } from '../lib/toc';
 interface Props { headings: MarkdownHeading[] }
-const items = Astro.props.headings.filter((h) => h.depth >= 2 && h.depth <= 3);
+const items = buildToc(Astro.props.headings);
 ---
 {items.length > 0 && (
   <nav class="toc" aria-label="目次" data-open="false">
     <button class="toc__toggle" type="button" aria-expanded="false" aria-controls="toc-list">目次</button>
-    <ol class="toc__list" id="toc-list">
-      {items.map((h) => <li class={`d${h.depth}`}><a href={`#${h.slug}`}>{h.text}</a></li>)}
-    </ol>
+    <TocList nodes={items} id="toc-list" class="toc__list" />
   </nav>
 )}
 <style is:global>
@@ -17,10 +17,13 @@ const items = Astro.props.headings.filter((h) => h.depth >= 2 && h.depth <= 3);
   .toc { position:fixed; top:calc((var(--hdr) - 26px) / 2); right:16px; z-index:101; font-size:.8rem; line-height:1.5; text-align:right; }
   .toc__toggle { font:inherit; min-height:26px; color:var(--muted); background:var(--bg); border:1px solid var(--line); border-radius:3px; padding:.15em .6em; cursor:pointer; }
   .toc__toggle:hover, .toc[data-open="true"] .toc__toggle { color:var(--fg); }
-  .toc__list { display:none; list-style:none; margin:calc((var(--hdr) - 26px) / 2 + var(--rpb) + 8px) 0 0; padding:.6em .9em; text-align:left; width:13rem; max-height:70vh; overflow:auto; background:var(--bg); border-left:1px solid var(--line); }
+  .toc__list { display:none; list-style:none; margin:calc((var(--hdr) - 26px) / 2 + var(--rpb) + 8px) 0 0; padding:.6em .9em; text-align:left; width:15rem; max-width:calc(100vw - 32px); box-sizing:border-box; max-height:70vh; overflow:auto; background:var(--bg); border-left:1px solid var(--line); }
   .toc[data-open="true"] .toc__list { display:block; }
   .toc__list li { margin:.25em 0; }
-  .toc__list li.d3 { padding-left:.9em; }
+  /* 入れ子の段は字下げし、左の細い線で親子の範囲がわかるようにする */
+  .toc__sub { list-style:none; margin:.2em 0 .1em .25em; padding:0 0 0 .7em; border-left:1px solid var(--line); }
+  .toc__list li.d4 { font-size:.95em; }
+  .toc__list a { display:inline-block; overflow-wrap:anywhere; }
   .toc__list a { color:var(--muted); text-decoration:none; }
   .toc__list a:hover { color:var(--fg); }
   .toc__list a.is-active { color:var(--fg); font-weight:600; }
