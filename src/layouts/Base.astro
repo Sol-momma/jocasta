@@ -209,6 +209,13 @@ const imageUrl = new URL(image, Astro.site);
     /* 画像・コード・左右比較は本文より左へ広げ（右の列は目次）、横幅を活かす */
     .post .prose img, .post .prose pre, .post .prose .pair, .post .prose table { --ext:min(240px, (100vw - 756px - 176px) / 2 - 48px); width:calc(100% + var(--ext)); margin-left:calc(-1 * var(--ext)); max-width:none; }
   }
+  /* 表示のとき、本文の段落・見出し・一覧の項目を上から順に少し下からふわっと出す。
+     data-fade は下の小さなスクリプトが付けるので、JS が無効なら何も付かず最初から見える。
+     動きを減らす設定の人には動かさない。fill は backwards なので終わると transform が元に戻り、固定表示や sticky の邪魔をしない */
+  @media (prefers-reduced-motion: no-preference) {
+    [data-fade] { animation:fade-up .5s cubic-bezier(.2,.7,.2,1) backwards; animation-delay:calc(var(--fade-i, 0) * 60ms); }
+  }
+  @keyframes fade-up { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:none; } }
 </style>
 </head>
 <body class:list={[{ 'is-wide': wide }]}>
@@ -222,6 +229,21 @@ const imageUrl = new URL(image, Astro.site);
   <a class="ft-icon" href="https://www.linkedin.com/in/so-momma" target="_blank" rel="noopener" aria-label="LinkedIn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6zM2 9h4v12H2z" /><circle cx="4" cy="4" r="2" /></svg></a>
   <slot name="footer" />
 </nav></div></footer>
+<script is:inline>
+  // フェードインの対象に印を付ける。最初に描かれる前に動くよう、本文の直後でそのまま実行する。
+  // 上から12個だけ順に遅らせ、それより下は待たせない。目次・検索・読み進みバーの中は対象にしない。
+  (function () {
+    if (!matchMedia('(prefers-reduced-motion: no-preference)').matches) return;
+    var sel = 'h1, h2, h3, h4, p, li, blockquote, pre, table, .alert, .pair, .themes';
+    var skip = '.toc, .site-search, .reading-progress, .to-top, nav.themes *';
+    var n = 0;
+    document.querySelectorAll('main ' + sel.split(', ').join(', main ')).forEach(function (el) {
+      if (el.closest(skip) || (el.parentElement && el.parentElement.closest('[data-fade]'))) return;
+      el.setAttribute('data-fade', '');
+      if (n < 12) el.style.setProperty('--fade-i', n++);
+    });
+  })();
+</script>
 <script>
 document.querySelectorAll('.prose li').forEach((li) => {
   if (!li.querySelector(':scope > ul, :scope > ol')) return;
