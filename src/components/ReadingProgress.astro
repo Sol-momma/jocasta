@@ -43,7 +43,7 @@
   [data-rp=train] .rp-tr { display:block; width:34px; height:16px; margin-top:4px; animation:rp-walk .3s steps(2) infinite; }
   /* ロケット：炎がゆれる */
   [data-rp=rocket] .rp-rk { display:block; width:32px; height:16px; margin-top:0; }
-  .rp-fl { fill:currentColor; transform-origin:5px 6px; animation:rp-fire .15s steps(2) infinite alternate; }
+  [data-rp=rocket] .rp-fl { fill:currentColor; transform-origin:5px 6px; animation:rp-fire .15s steps(2) infinite alternate; }
   @keyframes rp-fire { to { transform:scaleX(.5); } }
   /* ドット絵：足を2コマで動かし、ときどき跳ぶ */
   [data-rp=pixel] .rp-px { display:block; width:20px; height:20px; margin-top:2px; fill:currentColor; stroke:none; shape-rendering:crispEdges; animation:rp-jump 1.6s steps(8) infinite; }
