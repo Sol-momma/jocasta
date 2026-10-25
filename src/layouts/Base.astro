@@ -14,8 +14,10 @@ const { title, noindex = false } = Astro.props;
   :root { --fg:#151515; --muted:#7c7c7c; --line:#e6e6e6; --bg:#fcfcfb; --link:#2463c4; --link-visited:#1c4f9c;
     --sans:"Hiragino Sans","Noto Sans JP","Noto Sans CJK JP",system-ui,sans-serif; --gap:28px;
     /* 固定ヘッダーの高さ(--hdr)と読み進みバーの帯(--rpb)。スマホでは合計が画面の高さの15%以下になるよう小さめ */
-    --hdr:76px; --rpb:24px; }
-  @media (max-width:560px) { :root { --hdr:56px; --rpb:20px; } }
+    --hdr:76px; --rpb:24px;
+    /* 画面の下に固定するフッターの高さ(--ftr)。スマホでは画面の高さの約6%以下（iPhone 13 で約5.1%、iPhone SE 初代でも6%以内）に抑える */
+    --ftr:44px; }
+  @media (max-width:560px) { :root { --hdr:56px; --rpb:20px; --ftr:34px; } }
   * { box-sizing: border-box; }
   body { margin:0; background:var(--bg); color:var(--fg);
     font-family:var(--sans); line-height:1.6; font-size:16px; -webkit-font-smoothing:antialiased; font-kerning:normal; }
@@ -41,8 +43,17 @@ const { title, noindex = false } = Astro.props;
   code { border:1px solid var(--line); background:none; padding:0 .3em; border-radius:3px; font-size:.88em; }
   .meta { color:var(--muted); font-size:.875rem; letter-spacing:.02em; font-variant-numeric:tabular-nums; margin:0 0 var(--gap); }
   .badge { display:inline-block; color:var(--muted); font-size:.72rem; border:1px solid var(--line); padding:0 .45em; border-radius:3px; margin-left:.5em; }
-  footer { padding:24px 0 48px; color:var(--muted); font-size:.8rem; border-top:1px solid var(--line); }
-  footer .wrap { padding-top:0; }
+  /* フッターは画面の下に固定。本文の最後が隠れないよう、body の下にフッターと同じ高さの余白を取る */
+  body { padding-bottom:calc(var(--ftr) + env(safe-area-inset-bottom, 0px)); }
+  footer { position:fixed; left:0; right:0; bottom:0; z-index:98; height:calc(var(--ftr) + env(safe-area-inset-bottom, 0px)); padding-bottom:env(safe-area-inset-bottom, 0px);
+    display:flex; align-items:center; background:var(--bg); color:var(--muted); font-size:.8rem; border-top:1px solid var(--line); }
+  /* 1行に収める。長い注意書きは省略し、リンクは必ず見えるようにする */
+  footer .wrap { width:100%; display:flex; align-items:center; white-space:nowrap; line-height:1; }
+  footer .fn { overflow:hidden; text-overflow:ellipsis; min-width:0; }
+  footer .fn-short { display:none; }
+  footer .guide-link, footer .gh { flex:none; display:inline-flex; align-items:center; }
+  footer .gh-link { min-height:var(--ftr); }
+  @media (max-width:560px) { footer { font-size:.72rem; } footer .fn-long { display:none; } footer .fn-short { display:inline; } }
   .list-heading { font-size:1.6rem; margin:0 0 var(--gap); }
   ol.posts { list-style:none; padding:0; margin:0; }
   ol.posts li { margin:0 0 var(--gap); }
@@ -83,7 +94,7 @@ const { title, noindex = false } = Astro.props;
 <body>
 <header><div class="wrap"><a href="/">Jocasta</a><p>いろいろなテーマの学習ノート</p></div></header>
 <main><div class="wrap"><slot /></div></main>
-<footer><div class="wrap">TOEIC の記事は問題文を掲載せず、自作の似た例文で解説しています。<span class="guide-link"> ・ <a href="/guide/">書き方</a></span><span class="gh"> ・ <a class="gh-link" href={newPostUrl()} rel="nofollow">新しい記事</a></span></div></footer>
+<footer><div class="wrap"><span class="fn"><span class="fn-long">TOEIC の記事は問題文を掲載せず、自作の似た例文で解説しています。</span><span class="fn-short">TOEIC の問題文は載せず自作例文で解説</span></span><span class="guide-link">&nbsp;・&nbsp;<a href="/guide/">書き方</a></span><span class="gh">&nbsp;・&nbsp;<a class="gh-link" href={newPostUrl()} rel="nofollow">新しい記事</a></span></div></footer>
 <script>
 document.querySelectorAll('.prose li').forEach((li) => {
   if (!li.querySelector(':scope > ul, :scope > ol')) return;

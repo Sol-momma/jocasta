@@ -42,7 +42,7 @@ const nums = Array.from({ length: 31 }, (_, i) => i);
   [data-rp=spiral] .rp-sp { display:block; width:20px; height:20px; margin-top:-8px; transform:rotate(calc(var(--rp) * 30turn)); }
   [data-rp=arrow] .rp-head { width:0; height:0; margin-top:-4px; border:6px solid transparent; border-left:10px solid currentColor; transform:none; }
   [data-rp=pct] .reading-progress__bar { opacity:.25; }
-  [data-rp=pct] .rp-head { position:fixed; left:auto; top:auto; right:16px; bottom:16px; transform:none; font-size:.75rem; color:var(--muted); font-variant-numeric:tabular-nums; counter-reset:p var(--pc); }
+  [data-rp=pct] .rp-head { position:fixed; left:auto; top:auto; right:16px; bottom:calc(var(--ftr, 0px) + env(safe-area-inset-bottom, 0px) + 12px); /* 固定フッターの上に出す */ transform:none; font-size:.75rem; color:var(--muted); font-variant-numeric:tabular-nums; counter-reset:p var(--pc); }
   [data-rp=pct] .rp-head::after { content:counter(p) "%"; }
   /* 追加の見た目。動きは選ばれたときだけ付く */
   [data-rp=train] .rp-head, [data-rp=rocket] .rp-head, [data-rp=pixel] .rp-head, [data-rp=candle] .rp-head {
@@ -63,7 +63,7 @@ const nums = Array.from({ length: 31 }, (_, i) => i);
   @keyframes rp-step { 50% { opacity:0; } }
   @keyframes rp-jump { 75% { transform:none; } 85% { transform:translateY(-6px); } }
   /* ろうそく：左下に立ち、読むほど短くなる */
-  [data-rp=candle] .rp-head { position:fixed; top:auto; left:16px; bottom:16px; transform:none; width:8px; height:calc(4px + (1 - var(--rp)) * 44px); border:1.2px solid; border-radius:1px; }
+  [data-rp=candle] .rp-head { position:fixed; top:auto; left:16px; bottom:calc(var(--ftr, 0px) + env(safe-area-inset-bottom, 0px) + 12px); /* 固定フッターの上に出す */ transform:none; width:8px; height:calc(4px + (1 - var(--rp)) * 44px); border:1.2px solid; border-radius:1px; }
   [data-rp=candle] .rp-head::before { content:''; position:absolute; left:0; bottom:100%; width:6px; height:10px; margin-bottom:2px; background:currentColor; border-radius:50% 50% 50% 50%/60% 60% 40% 40%; transform-origin:50% 100%; animation:rp-flick .4s infinite alternate; }
   @keyframes rp-flick { to { transform:scale(.8,1.1); } }
   /* ネオン：光る線。色がゆっくり変わる */
