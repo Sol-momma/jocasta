@@ -189,6 +189,16 @@ const imageUrl = new URL(image, Astro.site);
 .alert { margin:1.6em 0; padding:.7em 1em; border-left:3px solid var(--alert); background:var(--alert-bg); font-size:.92rem; }
   .alert-title { font-weight:600; color:var(--alert); margin:0 0 .2em; }
   .alert p { margin:.2em 0; }
+  /* リンクカード（URLだけの行。src/lib/link-card.mjs が作る）。左に文字、右に画像 */
+  .link-card { display:flex; align-items:stretch; margin:0 0 var(--gap); border:1px solid var(--line); border-radius:6px; overflow:hidden; color:var(--fg); text-decoration:none; background:var(--bg); max-width:100%; }
+  .link-card:hover { border-color:var(--muted); }
+  .link-card-body { flex:1; min-width:0; display:flex; flex-direction:column; gap:.2em; padding:.8em 1em; line-height:1.5; }
+  .link-card-title { font-weight:600; font-size:.95rem; overflow:hidden; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; }
+  .link-card-desc { color:var(--muted); font-size:.8rem; overflow:hidden; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; }
+  .link-card-host { color:var(--muted); font-size:.75rem; margin-top:auto; }
+  .prose .link-card .link-card-img, .post .prose .link-card .link-card-img { flex:none; margin:0; max-width:none; height:auto; border-radius:0; display:block; width:min(34%, 220px); aspect-ratio:1.91; object-fit:cover; border-left:1px solid var(--line); }
+  @media (max-width:520px) { .prose .link-card .link-card-img, .post .prose .link-card .link-card-img { width:96px; aspect-ratio:1; } .link-card-desc { display:none; } }
+  [data-theme=letter] .prose .link-card { margin:0 0 var(--lh); }
   pre { background:var(--code-bg); padding:.9em 1em; border-radius:4px; overflow-x:auto; font-size:.85rem; line-height:1.6; }
   pre code { background:none; padding:0; }
   .pair { display:grid; grid-template-columns:1fr 1fr; gap:16px; align-items:start; }
