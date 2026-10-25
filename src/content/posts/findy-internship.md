@@ -1,10 +1,15 @@
 ---
-title: "開発効率・生産性向上だけじゃない、ファインディの2週間インターン"
+draft: false
+title: 開発効率・生産性向上だけじゃない、ファインディの2週間インターン
+slug: findy
 date: 2026-10-01
-theme: "internship"
-tags: ["インターン", "ファインディ"]
+tags:
+  - インターン
+  - ファインディ
+theme: internship
+part: ''
+questionType: ''
 sample: false
-draft: true
 ---
 
 ![開発効率・生産性向上だけじゃない、ファインディの2週間インターン](/images/posts/findy-internship/eyecatch.png)
