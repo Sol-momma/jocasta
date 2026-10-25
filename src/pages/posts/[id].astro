@@ -1,0 +1,16 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getCollection, render } from 'astro:content';
+export async function getStaticPaths() {
+  const posts = await getCollection('posts', (p) => !p.data.draft);
+  return posts.map((post) => ({ params: { id: post.id }, props: { post } }));
+}
+const { post } = Astro.props;
+const { Content } = await render(post);
+---
+<Base title={post.data.title}>
+  <p class="meta">{post.data.date.toISOString().slice(0, 10)} ・ {post.data.part} ・ {post.data.questionType}{post.data.sample && <span class="badge">サンプル</span>}</p>
+  <h1>{post.data.title}</h1>
+  <div class="prose"><Content /></div>
+  <p><a href="/">← 記事一覧へ</a></p>
+</Base>

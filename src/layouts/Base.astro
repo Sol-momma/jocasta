@@ -1,0 +1,56 @@
+---
+const { title } = Astro.props;
+---
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>{title ? `${title} | Jocasta` : 'Jocasta — TOEIC 学習ノート'}</title>
+<style is:global>
+  :root { --fg:#222; --muted:#666; --line:#e4e1da; --bg:#faf9f6; --accent:#2f5d50; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--fg);
+    font-family: "Hiragino Sans","Noto Sans JP",system-ui,sans-serif; line-height:1.85; font-size:17px; }
+  .wrap { max-width: 720px; margin: 0 auto; padding: 0 20px; }
+  header { border-bottom:1px solid var(--line); padding:20px 0; }
+  header a { color:var(--fg); text-decoration:none; font-weight:700; font-size:1.15rem; }
+  header p { margin:2px 0 0; color:var(--muted); font-size:.9rem; }
+  main { padding: 32px 0 64px; }
+  a { color: var(--accent); }
+  h1 { font-size:1.6rem; line-height:1.4; }
+  h2 { font-size:1.2rem; margin-top:2.2em; padding-bottom:.3em; border-bottom:1px solid var(--line); }
+  blockquote { margin:1em 0; padding:.6em 1em; border-left:3px solid var(--accent); background:#f1efe9; }
+  code { background:#efede7; padding:.1em .3em; border-radius:3px; }
+  .meta { color:var(--muted); font-size:.9rem; }
+  .badge { display:inline-block; border:1px solid var(--muted); color:var(--muted); font-size:.75rem; padding:0 .5em; border-radius:3px; margin-left:.4em; }
+  footer { border-top:1px solid var(--line); padding:20px 0; color:var(--muted); font-size:.85rem; }
+  ul.posts { list-style:none; padding:0; } ul.posts li { padding:14px 0; border-bottom:1px solid var(--line); }
+  .prose ul, .prose ol { padding-left: 1.4em; margin: .3em 0; }
+  .prose ul ul, .prose ul ul ul { list-style: disc; }
+  .prose li::marker { color: var(--muted); }
+  .prose li { margin: .25em 0; line-height:1.75; }
+  .prose li > ul, .prose li > ol { margin-left: .15em; padding-left: 1.1em; border-left: 1px solid var(--line); }
+  .prose li.has-children { list-style: none; position: relative; }
+  .prose li.has-children > .tog { position:absolute; left:-1.3em; top:.15em; width:1.1em; height:1.1em; border:0; background:none; padding:0; cursor:pointer; color:var(--muted); font-size:.8rem; line-height:1.1em; }
+  .prose li.has-children > .tog::before { content:"▾"; }
+  .prose li.collapsed > .tog::before { content:"▸"; }
+  .prose li.collapsed > ul, .prose li.collapsed > ol { display:none; }
+</style>
+</head>
+<body>
+<header><div class="wrap"><a href="/">Jocasta</a><p>TOEIC の間違いを記録する学習ノート</p></div></header>
+<main><div class="wrap"><slot /></div></main>
+<footer><div class="wrap">問題文は掲載せず、自作の似た例文で解説しています。</div></footer>
+<script>
+document.querySelectorAll('.prose li').forEach((li) => {
+  if (!li.querySelector(':scope > ul, :scope > ol')) return;
+  li.classList.add('has-children');
+  const b = document.createElement('button');
+  b.className = 'tog'; b.type = 'button'; b.setAttribute('aria-label', '折りたたむ'); b.setAttribute('aria-expanded', 'true');
+  b.addEventListener('click', () => { const c = li.classList.toggle('collapsed'); b.setAttribute('aria-expanded', String(!c)); });
+  li.prepend(b);
+});
+</script>
+</body>
+</html>
