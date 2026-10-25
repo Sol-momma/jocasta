@@ -3,15 +3,24 @@ import Base from '../layouts/Base.astro';
 import { getCollection } from 'astro:content';
 const posts = (await getCollection('posts', (p) => !p.data.draft))
   .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+const fmt = (d: Date) => d.toISOString().slice(0, 10).replaceAll('-', '.');
+const excerpt = (body = '') => {
+  const t = body.split('\n')
+    .filter((l) => l.trim() && !/^\s*(#|>|```|---)/.test(l))
+    .map((l) => l.replace(/^\s*([-*+]|\d+\.)\s+/, '').replace(/[*_`\[\]]/g, '').replace(/\(([^)]*)\)/g, (m) => m.startsWith('(http') ? '' : m).trim())
+    .join(' ');
+  return t.length > 110 ? t.slice(0, 110) + '…' : t;
+};
 ---
 <Base>
-  <h1>記事一覧</h1>
-  <ul class="posts">
+  <ol class="posts">
     {posts.map((p) => (
       <li>
-        <a href={`/posts/${p.id}/`}>{p.data.title}</a>{p.data.sample && <span class="badge">サンプル</span>}
-        <div class="meta">{p.data.date.toISOString().slice(0, 10)} ・ {p.data.part} ・ {p.data.questionType}</div>
+        <div class="meta">{fmt(p.data.date)}{p.data.sample && <span class="badge">サンプル</span>}</div>
+        <h2><a href={`/posts/${p.id}/`}>{p.data.title}</a></h2>
+        <p>{excerpt(p.body)}</p>
+        <a class="more" href={`/posts/${p.id}/`}>続きを読む</a>
       </li>
     ))}
-  </ul>
+  </ol>
 </Base>

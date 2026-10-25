@@ -9,8 +9,8 @@ const { post } = Astro.props;
 const { Content } = await render(post);
 ---
 <Base title={post.data.title}>
-  <p class="meta">{post.data.date.toISOString().slice(0, 10)} ・ {post.data.part} ・ {post.data.questionType}{post.data.sample && <span class="badge">サンプル</span>}</p>
+  <p class="meta">{post.data.date.toISOString().slice(0, 10).replaceAll('-', '.')} ・ {post.data.part} ・ {post.data.questionType}{post.data.sample && <span class="badge">サンプル</span>}</p>
   <h1>{post.data.title}</h1>
   <div class="prose"><Content /></div>
-  <p><a href="/">← 記事一覧へ</a></p>
+  <p class="back"><a href="/">← 一覧へ</a></p>
 </Base>
