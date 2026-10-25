@@ -32,16 +32,22 @@ collections:
     summary: "{{title}}（{{date | date('YYYY-MM-DD')}}）{{draft | ternary('・下書き', '')}}"
     sortable_fields: { fields: [date, title], default: { field: date, direction: descending } }
     preview_path: "/posts/{{slug}}/"
+    # プレビュー（右側）には、下書き・タイトル・日付・本文だけを出す
     fields:
+      # 下書きは一番上に置く。新しい記事はオン（下書き）から始まる
+      - name: draft
+        label: 下書き
+        widget: boolean
+        default: true
+        hint: "オン＝下書き。保存してもサイトには出ません（一覧・記事ページ・テーマ一覧のどこにも）。公開するときはオフにして保存し、pnpm run deploy を実行します"
       - { name: title, label: タイトル, widget: string }
-      - { name: slug, label: "URL名（英小文字とハイフン。例：book-notes-1）", widget: string, pattern: ['^[a-z0-9]+(-[a-z0-9]+)*$', '英小文字・数字・ハイフンだけ'] }
-      - { name: draft, label: 下書き（オフにすると公開）, widget: boolean, default: true }
+      - { name: slug, label: "URL名（英小文字とハイフン。例：book-notes-1）", widget: string, pattern: ['^[a-z0-9]+(-[a-z0-9]+)*$', '英小文字・数字・ハイフンだけ'], preview: false }
       - { name: date, label: 日付, widget: datetime, type: date, format: YYYY-MM-DD, default: "{{now}}" }
-      - { name: tags, label: タグ, widget: list, required: false }
-      - { name: theme, label: "テーマ（例：toeic／reading。英小文字）", widget: string, required: false }
-      - { name: part, label: "Part（TOEICの記事だけ。例：Part 5）", widget: string, required: false }
-      - { name: questionType, label: "問題の種類（TOEICの記事だけ。例：品詞）", widget: string, required: false }
-      - { name: sample, label: サンプル, widget: boolean, default: false, required: false }
+      - { name: tags, label: タグ, widget: list, required: false, preview: false }
+      - { name: theme, label: "テーマ（例：toeic／reading。英小文字）", widget: string, required: false, preview: false }
+      - { name: part, label: "Part（TOEICの記事だけ。例：Part 5）", widget: string, required: false, preview: false }
+      - { name: questionType, label: "問題の種類（TOEICの記事だけ。例：品詞）", widget: string, required: false, preview: false }
+      - { name: sample, label: サンプル, widget: boolean, default: false, required: false, preview: false }
       - name: body
         label: 本文
         widget: markdown
