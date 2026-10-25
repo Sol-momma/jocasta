@@ -1,16 +1,25 @@
 ---
-// 読み進みバーの見た目を選ぶ小さな切り替え。編集リンクの隣に置く。選んだ値は localStorage の rp、紙吹雪のオン・オフは rpc に保存。
+// 読み進みバーの見た目と紙吹雪の切り替え。固定フッターの右端に「表示」を置き、押すと上に小さな設定が開く。
+// 選んだ値は localStorage の rp、紙吹雪のオン・オフは rpc に保存。
 ---
+<details class="rp-menu"><summary>表示</summary><div class="rp-pop">
 <label class="rp-pick">バー<select id="rp-pick">
   <option value="">線</option><option value="ruler">目盛り</option><option value="cat">猫</option>
   <option value="spiral">らせん</option><option value="arrow">矢印</option><option value="pct">数字</option>
   <option value="train">電車</option><option value="rocket">ロケット</option><option value="candle">ろうそく</option>
   <option value="pixel">ドット絵</option><option value="neon">ネオン</option><option value="snake">ヘビ</option>
 </select></label><label class="rp-pick">紙吹雪<input type="checkbox" id="rp-cf"></label>
+</div></details>
 <style is:global>
-  /* 押せる範囲は44px以上。目立たせない */
-  .rp-pick { display:inline-flex; align-items:center; gap:.3em; min-height:44px; margin-left:1em; color:var(--muted); font-size:.8rem; }
-  .rp-pick select { min-height:44px; min-width:44px; font:inherit; color:inherit; background:none; border:0; cursor:pointer; }
+  /* 目立たせない。押せる範囲は44px以上（フッターより高い分は上下に均等にはみ出させ、見た目の高さは変えない） */
+  .rp-menu { flex:none; position:relative; margin-left:auto; padding-left:.8em; color:var(--muted); font-size:.8rem; }
+  .rp-menu summary { display:flex; align-items:center; justify-content:center; height:44px; min-width:44px; margin:calc((var(--ftr) - 44px) / 2) 0; list-style:none; cursor:pointer; }
+  .rp-menu summary::-webkit-details-marker { display:none; }
+  .rp-menu[open] summary { color:var(--fg); }
+  /* 開いた設定は「数字」の%表示と「先頭へ戻る」ボタンより上に出して重ならないようにする */
+  .rp-pop { position:absolute; right:0; bottom:calc(100% + 96px); display:flex; flex-direction:column; padding:.2em .8em; background:var(--bg); border:1px solid var(--line); white-space:nowrap; }
+  .rp-pick { display:flex; align-items:center; justify-content:space-between; gap:.6em; min-height:44px; cursor:pointer; }
+  .rp-pick select { min-height:44px; min-width:44px; padding:0; font:inherit; color:inherit; background:none; border:0; cursor:pointer; }
   .rp-pick input { width:14px; height:14px; margin:0; accent-color:var(--muted); cursor:pointer; }
 </style>
 <script is:inline>
@@ -21,5 +30,8 @@
     var c = document.getElementById('rp-cf');
     c.checked = d.rpc === '1';
     c.onchange = function () { d.rpc = c.checked ? '1' : ''; try { localStorage.setItem('rpc', d.rpc); } catch (e) {} dispatchEvent(new Event('rp-cf')); };
+    // 設定の外を押したら閉じる
+    var m = s.closest('details');
+    document.addEventListener('click', function (e) { if (m.open && !m.contains(e.target)) m.open = false; });
   })();
 </script>
