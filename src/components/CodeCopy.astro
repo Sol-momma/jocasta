@@ -1,0 +1,35 @@
+---
+// 記事のコードブロック右上の「コピー」ボタン。ボタンと見た目は src/lib/code-meta.mjs が付ける
+---
+<script>
+document.querySelectorAll<HTMLButtonElement>('.code-copy').forEach((btn) => {
+  btn.addEventListener('click', async () => {
+    const code = btn.parentElement?.querySelector('pre code')?.textContent ?? '';
+    try { await navigator.clipboard.writeText(code); btn.textContent = 'コピーしました'; }
+    catch { btn.textContent = 'コピーできませんでした'; }
+    setTimeout(() => { btn.textContent = 'コピー'; }, 2000);
+  });
+});
+</script>
+<style is:global>
+  /* コードの色。明るい配色は github-light、暗い配色は github-dark、Kanagawa と Dracula はそれぞれ専用の色 */
+  .astro-code span { color:var(--shiki-light); }
+  :is([data-theme=dark],[data-theme=chalk]) .astro-code span { color:var(--shiki-dark); }
+  [data-theme=kanagawa] .astro-code span { color:var(--shiki-kanagawa); }
+  [data-theme=dracula] .astro-code span { color:var(--shiki-dracula); }
+  .prose pre.astro-code { background:var(--code-bg); color:var(--fg); }
+  .code-block { position:relative; margin:0 0 var(--gap); }
+  .code-block pre { margin:0; }
+  /* ファイル名（title="…"）。コードの上に小さく */
+  .code-title { padding:.4em 1em; border-bottom:1px solid var(--line); background:var(--code-bg); border-radius:4px 4px 0 0; color:var(--muted); font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:.78rem; overflow-wrap:anywhere; padding-right:7em; }
+  .code-block.has-title pre { border-radius:0 0 4px 4px; }
+  /* 目立たせる行（{2,4-5}）。左に線を引き、背景を少し濃くする */
+  .astro-code .line.hl { display:inline-block; min-width:100%; box-shadow:inset 3px 0 0 var(--link); background:color-mix(in srgb, var(--fg) 8%, transparent); }
+  .code-copy { position:absolute; top:.35em; right:.35em; min-height:32px; padding:0 .7em; border:1px solid var(--line); border-radius:4px; background:var(--bg); color:var(--muted); font-size:.75rem; cursor:pointer; opacity:.85; }
+  .code-copy:hover, .code-copy:focus-visible { opacity:1; color:var(--fg); }
+  /* 広い画面では本文より左へ広げる（Base.astro の pre と同じ幅）。枠ごと広げ、中の pre は枠に合わせる */
+  @media (min-width:1100px) {
+    .post .prose .code-block { --ext:min(240px, (100vw - 756px - 176px) / 2 - 48px); width:calc(100% + var(--ext)); margin-left:calc(-1 * var(--ext)); }
+    .post .prose .code-block pre { width:100%; margin-left:0; }
+  }
+</style>

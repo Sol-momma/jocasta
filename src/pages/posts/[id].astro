@@ -1,18 +1,21 @@
 ---
 import CdBack from '../../components/CdBack.astro';
 import Base from '../../layouts/Base.astro';
+import CodeCopy from '../../components/CodeCopy.astro';
 import Toc from '../../components/Toc.astro';
 import ReadingProgress from '../../components/ReadingProgress.astro';
 import ReadingProgressPicker from '../../components/ReadingProgressPicker.astro';
 import { getCollection, render } from 'astro:content';
+import RelatedPosts from '../../components/RelatedPosts.astro';
+import { relatedPosts } from '../../lib/related';
 import { postMinutes } from '../../lib/reading-time.mjs';
 import { editUrl } from '../../lib/github';
 import { themeLabel, themeUrl } from '../../lib/themes';
 export async function getStaticPaths() {
   const posts = await getCollection('posts', (p) => !p.data.draft);
-  return posts.map((post) => ({ params: { id: post.id }, props: { post } }));
+  return posts.map((post) => ({ params: { id: post.id }, props: { post, related: relatedPosts(post, posts) } }));
 }
-const { post } = Astro.props;
+const { post, related } = Astro.props;
 const { Content, headings } = await render(post);
 // 読む時間（分）。数え方は src/lib/reading-time.mjs
 const minutes = postMinutes(post.body);
@@ -29,7 +32,7 @@ const tags = [...new Set([d.theme && themeLabel(d.theme), ...(d.tags ?? [])].fil
   <ReadingProgress />
   <CdBack class="post-back" back />
   {d.image && <p class="post-hero"><img src={d.image} alt="" /></p>}
-  <h1>{post.data.title}</h1>
+  <h1 data-pagefind-meta="title">{post.data.title}</h1>
   <p class="meta post-meta">
     <span class="pm-item"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="16" rx="2" /><path d="M16 3v4M8 3v4M4 11h16" /></svg><time datetime={d.date.toISOString().slice(0, 10)}>{d.date.toISOString().slice(0, 10).replaceAll('-', '.')}</time>{extras.map((x) => <> ・ {x}</>)}{d.sample && <span class="badge">サンプル</span>}</span>
     <span class="pm-sep" aria-hidden="true">|</span>
@@ -44,12 +47,14 @@ const tags = [...new Set([d.theme && themeLabel(d.theme), ...(d.tags ?? [])].fil
   {d.description && <p class="post-desc">{d.description}</p>}
   <div class="post-body">
     <Toc headings={headings} />
-    <div class="prose"><Content /></div>
+    <div class="prose" data-pagefind-body><Content /></div>
   </div>
   {d.theme === 'toeic' && <p class="post-note">TOEIC の記事は問題文を掲載せず、自作の似た例文で解説しています。</p>}
+  <RelatedPosts posts={related} />
   <CdBack />
   <button class="to-top" type="button" aria-label="ページの先頭へ戻る" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 15l6-6 6 6" /></svg></button>
   </div>
+  <CodeCopy />
   <ReadingProgressPicker slot="footer" />
 </Base>
 <script>

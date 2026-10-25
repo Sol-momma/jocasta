@@ -1,6 +1,7 @@
 ---
 // wide: 記事ページだけ PC 幅（1100px 以上）で画面の横幅いっぱいの組み方にする
-import PlumTree from '../components/PlumTree.astro';
+import Background from '../components/Background.astro';
+import { backgrounds } from '../lib/backgrounds';
 // description / image: OGP用。image は記事なら /og/<記事名>.png、なければ共通画像
 const { title, noindex = false, wide = false, description, image = '/og/default.png' } = Astro.props;
 const siteName = 'Jocasta';
@@ -18,9 +19,22 @@ const imageUrl = new URL(image, Astro.site);
 <script is:inline>
   // 保存済みの配色を描画の前に当て、白が一瞬出るのを防ぐ
   try { var t = localStorage.getItem('theme'); if (t) document.documentElement.dataset.theme = t; } catch (e) {}
-  // 背景の木のオン・オフ（最初はオン。"0" のときだけ消す）
-  try { if (localStorage.getItem('plum') === '0') document.documentElement.dataset.plum = '0'; } catch (e) {}
 </script>
+<script is:inline set:html={`
+  // 背景を決める。localStorage の bg：なし・空=ランダム（最初の設定）、"off"=出さない、それ以外=その背景に固定。
+  // ランダムはページを開くたびに選び、直前と同じものは避ける。前の「背景の木」をオフにしていた人は "off" として扱う
+  (function () {
+    var ids = ${JSON.stringify(backgrounds.map((b) => b.id))}, d = document.documentElement.dataset, m = '', prev = '';
+    try { m = localStorage.getItem('bg') || (localStorage.getItem('plum') === '0' ? 'off' : ''); prev = sessionStorage.getItem('bgLast') || ''; } catch (e) {}
+    if (m === 'off') { d.bg = 'none'; return; }
+    if (ids.indexOf(m) >= 0) { d.bg = m; return; }
+    var c = ids.filter(function (i) { return i !== prev; }); if (!c.length) c = ids;
+    d.bg = c[Math.floor(Math.random() * c.length)];
+    try { sessionStorage.setItem('bgLast', d.bg); } catch (e) {}
+  })();
+`} />
+<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+<link rel="canonical" href={new URL(Astro.url.pathname, Astro.site).href} />
 <title>{pageTitle}</title>
 <meta name="description" content={desc} />
 <meta property="og:type" content={title ? 'article' : 'website'} />
@@ -48,7 +62,7 @@ const imageUrl = new URL(image, Astro.site);
   /* 配色（読む人が「表示」の設定で選ぶ）。html の data-theme で切り替え、色はすべてここの変数にまとめる。空=白（最初の設定）。
      文字の色は地の色に対して WCAG AA（本文4.5:1以上）を満たす値にしている */
   :root { --code-bg:#f6f6f6; --quote:#666; --alert:#9a6700; --alert-bg:#fbf8f1; --ruler-bg:#f4f2ec; --pattern:none; color-scheme:light;
-    /* 背景の木の線の色。配色ごとに文字の薄い色から作るので、どの配色でも本文より十分薄い */
+    /* 背景の絵（木・山など）の線の色。配色ごとに文字の薄い色から作るので、どの配色でも本文より十分薄い */
     --plum:color-mix(in srgb, var(--muted) 12%, transparent); }
   /* 目に優しい黒：真っ黒ではなく少し明るい濃い灰色 */
   [data-theme=dark] { --fg:#e4e4e2; --muted:#a3a3a0; --line:#3d3e42; --bg:#1f2023; --link:#82b1ff; --link-visited:#a8c3ee;
@@ -210,10 +224,17 @@ const imageUrl = new URL(image, Astro.site);
     .post .prose { font-size:18px; line-height:1.95; }
     .post .prose h2 { font-size:1.5rem; margin:2.4em 0 .7em; }
   }
+  /* 表示のとき、本文の段落・見出し・一覧の項目を上から順に少し下からふわっと出す。
+     data-fade は下の小さなスクリプトが付けるので、JS が無効なら何も付かず最初から見える。
+     動きを減らす設定の人には動かさない。fill は backwards なので終わると transform が元に戻り、固定表示や sticky の邪魔をしない */
+  @media (prefers-reduced-motion: no-preference) {
+    [data-fade] { animation:fade-up .5s cubic-bezier(.2,.7,.2,1) backwards; animation-delay:calc(var(--fade-i, 0) * 60ms); }
+  }
+  @keyframes fade-up { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:none; } }
 </style>
 </head>
 <body class:list={[{ 'is-wide': wide }]}>
-<PlumTree />
+<Background />
 <header><div class="wrap"><a href="/">Jocasta</a></div></header>
 <main><div class="wrap"><slot /></div></main>
 <footer><div class="wrap"><p class="copy">&copy; 2026 Jocasta</p><nav class="ft-links" aria-label="フィードとリンク">
@@ -223,6 +244,21 @@ const imageUrl = new URL(image, Astro.site);
   <a class="ft-icon" href="https://www.linkedin.com/in/so-momma" target="_blank" rel="noopener" aria-label="LinkedIn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6zM2 9h4v12H2z" /><circle cx="4" cy="4" r="2" /></svg></a>
   <slot name="footer" />
 </nav></div></footer>
+<script is:inline>
+  // フェードインの対象に印を付ける。最初に描かれる前に動くよう、本文の直後でそのまま実行する。
+  // 上から12個だけ順に遅らせ、それより下は待たせない。目次・検索・読み進みバーの中は対象にしない。
+  (function () {
+    if (!matchMedia('(prefers-reduced-motion: no-preference)').matches) return;
+    var sel = 'h1, h2, h3, h4, p, li, blockquote, pre, table, .alert, .pair, .themes';
+    var skip = '.toc, .site-search, .reading-progress, .to-top, nav.themes *';
+    var n = 0;
+    document.querySelectorAll('main ' + sel.split(', ').join(', main ')).forEach(function (el) {
+      if (el.closest(skip) || (el.parentElement && el.parentElement.closest('[data-fade]'))) return;
+      el.setAttribute('data-fade', '');
+      if (n < 12) el.style.setProperty('--fade-i', n++);
+    });
+  })();
+</script>
 <script>
 document.querySelectorAll('.prose li').forEach((li) => {
   if (!li.querySelector(':scope > ul, :scope > ol')) return;

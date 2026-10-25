@@ -1,0 +1,42 @@
+---
+// 背景「山」。細い線の山並みが左から右へゆっくり描かれ、奥ほど薄い山が何層か重なる。
+// 霧は半透明の楕円を重ねた形で、山の間をゆっくり横に流れる（グラデーションは使わない）。
+---
+<script is:inline>
+(window.BG = window.BG || {}).mountain = function (c) {
+  var DRAW = 6000, layers = c.small ? 3 : 4, pts = c.small ? 32 : 64, ridges = [], fog = [], i; // スマホは層と点を減らす
+  // 尾根の線を中点変位で作る（左から右へ等間隔の高さの列）
+  function ridge(base, amp) {
+    var p = [base + (c.rnd() - 0.5) * amp, base + (c.rnd() - 0.5) * amp], r = amp;
+    while (p.length <= pts) {
+      var q = []; for (var k = 0; k < p.length - 1; k++) q.push(p[k], (p[k] + p[k + 1]) / 2 + (c.rnd() - 0.5) * r);
+      q.push(p[p.length - 1]); p = q; r *= 0.5;
+    }
+    return p;
+  }
+  for (i = 0; i < layers; i++) ridges.push({ p: ridge(c.H * (0.62 + i * 0.08), c.H * (0.55 - i * 0.1)), a: 0.45 + i / (layers - 1) * 0.55 });
+  for (i = 0; i < (c.small ? 2 : 4); i++) {
+    var L = i % (layers - 1);
+    fog.push({ L: L, x: c.rnd() * c.W, y: c.H * (0.64 + L * 0.09), rx: c.W * (0.16 + c.rnd() * 0.1), ry: c.H * 0.012, v: 5 + c.rnd() * 6 });
+  }
+  return { dur: 16000, draw: function (e) {
+    var g = c.ctx, prog = Math.min(1, e / DRAW);
+    ridges.forEach(function (r, i) {
+      var pr = Math.max(0, Math.min(1, prog * 1.6 - i * 0.2)), n = Math.floor((r.p.length - 1) * pr), dx = c.W / (r.p.length - 1), k;
+      if (n < 1) return;
+      // 下を地の色で塗り、手前の山が奥の山を隠す
+      g.beginPath(); g.moveTo(0, r.p[0]); for (k = 1; k <= n; k++) g.lineTo(k * dx, r.p[k]);
+      g.lineTo(n * dx, c.H); g.lineTo(0, c.H); g.closePath(); g.globalAlpha = 1; g.fillStyle = c.bg; g.fill();
+      g.beginPath(); g.moveTo(0, r.p[0]); for (k = 1; k <= n; k++) g.lineTo(k * dx, r.p[k]);
+      g.globalAlpha = r.a; g.strokeStyle = c.line; g.lineWidth = 1; g.stroke();
+      // この層の霧（奥の霧は手前の山に隠れる）
+      fog.forEach(function (f) { if (f.L !== i) return;
+        var x = (f.x + e / 1000 * f.v) % (c.W + 2 * f.rx) - f.rx;
+        g.globalAlpha = 0.28 * prog; g.fillStyle = c.line;
+        for (var j = 0; j < 5; j++) { g.beginPath(); g.ellipse(x + (j - 2) * f.rx * 0.35, f.y - (j % 2) * f.ry * 0.8, f.rx * (0.5 - Math.abs(j - 2) * 0.08), f.ry, 0, 0, Math.PI * 2); g.fill(); } // 細長い楕円を少しずつずらして重ね、霧の帯にする
+      });
+    });
+    g.globalAlpha = 1;
+  } };
+};
+</script>

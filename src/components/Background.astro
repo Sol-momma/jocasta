@@ -1,0 +1,57 @@
+---
+// 背景の絵を描く仕組み。各背景は src/components/bg/ のファイルが window.BG に「描き方」を登録する。
+// html の data-bg に、今出している背景の id（"none" なら出さない）を入れる。決め方は Base.astro の最初のスクリプト。
+// 共通の約束：描き終わったら止める・上限25秒・動きを減らす設定では描き終わった絵だけ・スマホでは描く量を減らす。
+import Tree from './bg/Tree.astro';
+import Mountain from './bg/Mountain.astro';
+---
+<Tree /><Mountain />
+<canvas id="bg" aria-hidden="true"></canvas>
+<style is:global>
+  #bg { position:fixed; inset:0; width:100%; height:100%; z-index:-1; pointer-events:none; }
+  [data-bg="none"] #bg { display:none; }
+  @media print { #bg { display:none; } }
+</style>
+<script is:inline>
+(function () {
+  var cv = document.getElementById('bg'); if (!cv || !cv.getContext) return;
+  var ctx = cv.getContext('2d'), root = document.documentElement, MAX = 25000, FPS = 1000 / 30;
+  var reduce = matchMedia('(prefers-reduced-motion: reduce)');
+  var seed = (Math.random() * 2 ** 31) | 0, raf = 0, tm = 0, sc = null, t0 = 0, last = 0, W = 0, H = 0;
+  // 同じ seed なら同じ絵になる乱数（配色を変えたとき同じ形で描き直すため）
+  function prng(a) { return function () { a = (a * 1664525 + 1013904223) >>> 0; return a / 4294967296; }; }
+  function paint(e) { ctx.clearRect(0, 0, W, H); sc.draw(e); }
+  function frame(t) {
+    raf = 0; if (!t0) t0 = t;
+    var e = t - t0, end = Math.min(sc.dur, MAX);
+    if (e >= end) { finish(); return; } // 描き終わったら止める
+    if (t - last >= FPS) { last = t; paint(e); }
+    raf = requestAnimationFrame(frame);
+  }
+  function finish() { if (raf) cancelAnimationFrame(raf), raf = 0; clearTimeout(tm); paint(Math.min(sc.dur, MAX)); root.dataset.bgDone = '1'; }
+  function start(animate) {
+    if (raf) cancelAnimationFrame(raf), raf = 0;
+    clearTimeout(tm);
+    delete root.dataset.bgDone;
+    var f = (window.BG || {})[root.dataset.bg];
+    if (!f) return;
+    var dpr = Math.min(window.devicePixelRatio || 1, 2), cs = getComputedStyle(root);
+    W = innerWidth; H = innerHeight;
+    cv.width = W * dpr; cv.height = H * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    sc = f({ ctx: ctx, W: W, H: H, small: W < 600, rnd: prng(seed),
+      line: cs.getPropertyValue('--plum').trim() || 'rgba(136,136,136,.15)', bg: cs.getPropertyValue('--bg').trim() || '#fff' });
+    t0 = 0; last = 0;
+    // 画面が重くてコマが遅れても、上限時間がきたら必ず描き終わりの絵にして止める
+    if (animate && !reduce.matches) { raf = requestAnimationFrame(frame); tm = setTimeout(finish, Math.min(sc.dur, MAX) + 1000); return; }
+    finish(); // 動きを減らす設定・描き直しでは描き終わった絵だけ
+  }
+  start(true);
+  // 配色が変わったら同じ形で描き直す。背景を選び直したら新しく描く
+  var cur = root.dataset.bg;
+  new MutationObserver(function () { var nb = root.dataset.bg; start(nb !== cur); cur = nb; })
+    .observe(root, { attributes: true, attributeFilter: ['data-theme', 'data-bg'] });
+  var lw = innerWidth, to; // 幅が変わったときだけ描き直す（スマホのアドレスバーの出入りでは描き直さない）
+  addEventListener('resize', function () { if (innerWidth === lw) return; lw = innerWidth; clearTimeout(to); to = setTimeout(function () { start(false); }, 200); });
+})();
+</script>

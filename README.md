@@ -75,7 +75,7 @@ pnpm run deploy   # build → 下書きが出ていないかの確認 → 公開
 ```sh
 pnpm install      # 依存パッケージを入れる
 pnpm run dev      # 手元で確認（http://localhost:4321）
-pnpm run build    # dist/ にサイトを作る
+pnpm run build    # dist/ にサイトを作り、続けて Pagefind の検索用データ（dist/pagefind）を作る
 pnpm run preview  # 作ったサイトを手元で確認
 pnpm run check:drafts  # build のあと、下書きが dist/ に出ていないか確かめる
 pnpm run deploy   # build・下書きの確認をしてから Cloudflare に公開（wrangler deploy）
@@ -120,6 +120,8 @@ pnpm run deploy   # build・下書きの確認をしてから Cloudflare に公�
 
 見た目や読みやすさで参考にしたブログは [docs/references.md](docs/references.md) にまとめています。記事ページの形は [Naoya Tech](https://naoya-tech.com)、フッターは [maguro.dev](https://maguro.dev) を参考にしました。
 
-## 使わせてもらったコード
+## 背景の絵
 
-- 背景の木（`src/components/PlumTree.astro`）は、Anthony Fu さんの [antfu.me](https://github.com/antfu/antfu.me) の `src/components/ArtPlum.vue` をもとに書き直したものです。元のコードは MIT License（Copyright (c) 2020-2021 Anthony Fu）で、全文を [licenses/antfu.me-MIT.txt](licenses/antfu.me-MIT.txt) に置いています。
+- 背景（木・山）は `src/components/bg/` にあるこのブログのオリジナルです（以前は antfu.me の ArtPlum.vue を書き直した木を使っていましたが、作り直して元のコードは使っていません）。
+- 「表示」の設定で「ランダム（最初の設定）」「どれか1つに固定」「なし」を選べます。ランダムはページを開くたびに変わります。
+- 新しい背景を足すときは、`src/components/bg/` にファイルを作って `window.BG` に登録し、`src/lib/backgrounds.ts` と `src/components/Background.astro` に足します。
