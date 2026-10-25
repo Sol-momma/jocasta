@@ -21,6 +21,8 @@ const imageUrl = new URL(image, Astro.site);
   // 背景の木のオン・オフ（最初はオン。"0" のときだけ消す）
   try { if (localStorage.getItem('plum') === '0') document.documentElement.dataset.plum = '0'; } catch (e) {}
 </script>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+<link rel="canonical" href={new URL(Astro.url.pathname, Astro.site).href} />
 <title>{pageTitle}</title>
 <meta name="description" content={desc} />
 <meta property="og:type" content={title ? 'article' : 'website'} />
