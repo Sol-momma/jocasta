@@ -16,7 +16,7 @@
 - 入れ子の箇条書きを折りたためる記事ページと、目次・読み進みバー
 - Pagefind によるサイト内検索
 - 関連する記事の表示、RSS、記事ごとの OGP 画像
-- 背景の絵（木・山）の切り替え
+- 背景の絵（木・山・波・星空・雨・雲・街）と読み進みバーの切り替え（フッターの「表示」から）
 - ブラウザの編集画面（`/admin`、Sveltia CMS）からの記事の作成
 - `draft: true` の下書きは一覧にも記事ページにも出さない
 
@@ -86,7 +86,7 @@ pnpm test         # 単体テスト
 
 見た目や読みやすさで参考にしたブログの一覧は [docs/references.md](docs/references.md) にあります。記事ページの形は [Naoya Tech](https://naoya-tech.com)、フッターと年ごとの記事一覧は [maguro.dev](https://maguro.dev)、文字・色・余白は [Boris Cherny's Blog](https://borischerny.com) を参考にしました。
 
-背景の絵（`src/components/bg/`）はこのブログのために作ったものです。
+背景の絵（`src/components/bg/`）はこのブログのために作ったものです。以前は [antfu.me](https://antfu.me) の ArtPlum を書き直した木を使っていましたが、今は作り直していて元のコードは使っていません。
 
 ## ライセンス
 

@@ -1,0 +1,27 @@
+---
+// 背景「星空」。小さな星が少しずつ現れ、星座のような細い線が2つ結ばれる。しばらく静かにまたたいて止まる。
+---
+<script is:inline>
+(window.BG = window.BG || {}).star = function (c) {
+  var st = [], cons = [], i, n = c.small ? 40 : 90; // スマホは星を減らす
+  for (i = 0; i < n; i++) st.push({ x: c.rnd() * c.W, y: c.rnd() * c.H, r: 0.6 + c.rnd() * 0.9, t: c.rnd() * 5000, ph: c.rnd() * 6.28 });
+  for (i = 0; i < 2; i++) { // 星座：近くにある星を4〜5個つなぐ
+    var cx = c.W * (0.15 + c.rnd() * 0.7), cy = c.H * (0.1 + c.rnd() * 0.4), pts = [];
+    for (var k = 0; k < 4 + (c.rnd() < 0.5 ? 1 : 0); k++) pts.push([cx + (c.rnd() - 0.5) * Math.min(220, c.W * 0.4), cy + (c.rnd() - 0.5) * 140]);
+    pts.sort(function (a, b) { return a[0] - b[0]; }); cons.push(pts);
+  }
+  return { dur: 14000, draw: function (e) {
+    var g = c.ctx; g.fillStyle = c.line; g.strokeStyle = c.line; g.lineWidth = 1;
+    st.forEach(function (s) { if (s.t > e) return;
+      g.globalAlpha = 0.6 + 0.4 * Math.sin(s.ph + e / 900); g.beginPath(); g.arc(s.x, s.y, s.r, 0, 6.29); g.fill(); });
+    g.globalAlpha = 1;
+    cons.forEach(function (pts, j) {
+      var p = Math.max(0, Math.min(1, (e - 5000 - j * 2000) / 3000)) * (pts.length - 1); if (p <= 0) return;
+      pts.forEach(function (q) { g.beginPath(); g.arc(q[0], q[1], 1.6, 0, 6.29); g.fill(); });
+      g.beginPath(); g.moveTo(pts[0][0], pts[0][1]);
+      for (var k = 1; k <= Math.ceil(p); k++) { var f = Math.min(1, p - k + 1), a = pts[k - 1], b = pts[k]; g.lineTo(a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f); }
+      g.stroke();
+    });
+  } };
+};
+</script>
