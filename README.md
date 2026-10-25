@@ -1,32 +1,90 @@
 # Jocasta
 
-TOEIC の間違いを記録する学習ブログ。名前は Star Wars のジェダイ記録係 Jocasta Nu から。
+いろいろなテーマの記事を書くブログです。Markdown で記事を書き、Astro（静的サイトを作るツール）でページにして、Cloudflare Workers で公開しています。
 
 公開URL: https://blog.sol-momma.com
 
-- Astro（静的出力）＋ Markdown 記事（`src/content/posts/*.md`）
-- Cloudflare Workers（静的アセット）に wrangler でデプロイ
+![本番のトップページ](docs/screenshot.png)
 
-## 著作権について
+## 記事の書き方
 
-**問題文（公式問題集・アプリ・模試などの文）は載せません。** 記事では、同じポイントを説明できる**自作の似た例文**だけを使います。
+### 1. /admin 編集画面
 
-## 記事の型
+> [!NOTE]
+> 準備中です。ブラウザから記事を書ける編集画面（`/admin`）を作っています。それまでは下の Markdown の手順で書いてください。
 
-`templates/post.md` をコピーして使います。見出しは次の4つ。
+### 2. Markdown で書く
 
-1. 問題の種類
-2. 自分の答え
-3. なぜ間違えたか
-4. 見分け方
+1. `templates/post.md` を `src/content/posts/` にコピーします。ファイル名がそのまま URL になります（例: `my-post.md` は `/posts/my-post/`）。ファイル名は英小文字とハイフンだけにします。
+2. 先頭の frontmatter（`---` で囲んだ設定欄）を書き換えます。
 
-## 使い方
+   ```yaml
+   ---
+   title: "記事のタイトル"
+   date: 2026-10-25
+   theme: "toeic"     # テーマ名。一覧は src/lib/themes.ts
+   tags: ["品詞"]
+   draft: true        # 下書き。公開しない
+   ---
+   ```
+
+   TOEIC の記事では `part`（例: `"Part 5"`）と `questionType` も書けます。項目の定義は `src/content.config.ts` にあります。
+3. 本文を書きます。
+4. 公開するときは `draft: true` を `draft: false` に変えます。`pnpm run dev` で見た目を確かめてから PR を出します。
+
+> [!NOTE]
+> `draft: true` の記事は `pnpm run dev` でも表示されません。見た目を確かめるときは `draft: false` にします。
+
+書き方の例は `src/content/posts/sample-part5-word-form.md` です。公開中のサイトでは https://blog.sol-momma.com/guide/ にも手順があります。
+
+> [!IMPORTANT]
+> TOEIC などの問題文は載せません（著作権のため）。説明には自作の似た例文を使います。
+
+> [!TIP]
+> 本文は入れ子の箇条書き（半角スペース2つで字下げ）で書くと、子のある項目をページ上で折りたためます。
+
+## コマンド
+
+パッケージ管理には pnpm を使います。
 
 ```sh
-pnpm install
-pnpm run dev      # http://localhost:4321
-pnpm run build
-pnpm run deploy   # build + wrangler deploy
+pnpm install      # 依存パッケージを入れる
+pnpm run dev      # 手元で確認（http://localhost:4321）
+pnpm run build    # dist/ にサイトを作る
+pnpm run preview  # 作ったサイトを手元で確認
+pnpm run deploy   # build してから Cloudflare に公開（wrangler deploy）
 ```
 
-詳しくは [AGENTS.md](./AGENTS.md)。
+> [!WARNING]
+> `npm` `yarn` `bun` でインストールしないでください。`pnpm-lock.yaml` とずれます。
+
+> [!CAUTION]
+> `pnpm run deploy` は本番を書き換えます。PR をマージしてから実行してください。
+
+## フォルダの構成
+
+```text
+.
+├── .github/workflows/ci.yml   # PR ごとに build と deploy の試運転
+├── docs/                      # README の画像
+├── src/
+│   ├── components/            # 記事一覧・目次・読み進みバー
+│   ├── content/posts/         # 記事（Markdown）
+│   ├── content.config.ts      # frontmatter の定義
+│   ├── layouts/Base.astro     # 全ページ共通の枠
+│   ├── lib/                   # テーマ名・記事の並べ方・GitHub へのリンク
+│   └── pages/                 # URL ごとのページ（/、/posts/、/themes/、/guide/）
+├── templates/post.md          # 記事のひな形
+├── astro.config.mjs
+├── wrangler.jsonc             # Cloudflare Workers の設定（カスタムドメインもここ）
+├── package.json
+└── AGENTS.md                  # AI に作業を頼むときの決まり
+```
+
+## 使っている技術
+
+- [Astro](https://astro.build/): Markdown から静的なページを作る
+- [Cloudflare Workers](https://developers.cloudflare.com/workers/static-assets/): 作ったページを配る（無料プラン）
+- [wrangler](https://developers.cloudflare.com/workers/wrangler/): Cloudflare に公開するコマンド
+- [pnpm](https://pnpm.io/): パッケージ管理
+- GitHub Actions: PR ごとの build 確認
