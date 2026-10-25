@@ -25,8 +25,8 @@ const ramp = (a: number, k = 12) => `opacity:clamp(0, (var(--rp) - ${a}) * ${k},
   .rp-x-train .rp-wh { transform-box:fill-box; transform-origin:center; animation:rp-spin .5s linear infinite; }
   @keyframes rp-spin { to { transform:rotate(1turn); } }
   [data-rp=train] .reading-progress__bar { display:none; }
-  .rp-rail { display:none; position:absolute; left:0; right:0; top:14px; height:6px; width:100%; color:var(--fg); opacity:.45; fill:none; stroke:currentColor; stroke-width:1; }
-  [data-rp=train] .rp-rail { display:block; }
+  .reading-progress .rp-rail { display:none; position:absolute; left:0; right:0; top:14px; height:6px; width:100%; color:var(--fg); opacity:.45; fill:none; stroke:currentColor; stroke-width:1; }
+  [data-rp=train] .reading-progress .rp-rail { display:block; }
   /* 釣り：バーが糸。先に浮きと針、最後に魚がかかる */
   [data-rp=fish] .rp-head { transform:translateX(-50%); }
   [data-rp=fish] .reading-progress__bar { height:1px; opacity:.6; }
