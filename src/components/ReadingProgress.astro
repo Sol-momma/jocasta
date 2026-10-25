@@ -34,10 +34,11 @@ const nums = Array.from({ length: 31 }, (_, i) => i);
   [data-rp=ruler] .reading-progress { height:var(--rpb); }
   [data-rp=ruler] .reading-progress__bar { opacity:1; background:var(--ruler-bg); border-bottom:1px solid var(--fg); transform:none; clip-path:inset(0 calc((1 - var(--rp)) * 100%) 0 0); }
   [data-rp=ruler] .rp-ruler { display:block; position:relative; height:100%; color:var(--fg); }
-  .rp-ruler svg { display:block; width:100%; height:12px; }
+  /* 記事の .post svg（アイコン用 1.15em）に縮められないよう .reading-progress を前に付けて強くする */
+  .reading-progress .rp-ruler svg { display:block; width:100%; height:12px; }
   .rp-ruler path { stroke:currentColor; stroke-width:1px; vector-effect:non-scaling-stroke; }
   .rp-ruler i { position:absolute; bottom:1px; transform:translateX(-50%); font:normal 10px/1 var(--sans); font-variant-numeric:tabular-nums; }
-  @media (max-width:560px) { .rp-ruler svg { height:10px; } .rp-ruler path { stroke-width:.6px; } .rp-ruler i { font-size:8px; letter-spacing:-.04em; } }
+  @media (max-width:560px) { .reading-progress .rp-ruler svg { height:10px; } .rp-ruler path { stroke-width:.6px; } .rp-ruler i { font-size:8px; letter-spacing:-.04em; } }
   [data-rp=cat] .rp-head, [data-rp=spiral] .rp-head, [data-rp=arrow] .rp-head, [data-rp=pct] .rp-head {
     display:block; position:absolute; top:0; left:calc(var(--rp) * 100%); transform:translateX(-100%); color:var(--fg); opacity:.75; }
   .rp-head svg { fill:none; stroke:currentColor; stroke-width:1.2; stroke-linecap:round; stroke-linejoin:round; }
@@ -79,7 +80,7 @@ const nums = Array.from({ length: 31 }, (_, i) => i);
   [data-rp=snake] .reading-progress { height:var(--rpb); }
   [data-rp=snake] .reading-progress__bar { display:none; }
   [data-rp=snake] .rp-snake { display:block; position:absolute; inset:0 auto 0 0; width:calc(var(--rp) * 100% - 14px); overflow:hidden; }
-  .rp-snake svg { position:absolute; top:50%; left:0; width:2600px; height:20px; margin-top:-10px; fill:none; stroke:#3e7a4a; stroke-width:6; stroke-linecap:round; animation:rp-slither .8s linear infinite; }
+  .reading-progress .rp-snake svg { position:absolute; top:50%; left:0; width:2600px; height:20px; margin-top:-10px; fill:none; stroke:#3e7a4a; stroke-width:6; stroke-linecap:round; animation:rp-slither .8s linear infinite; }
   .rp-snake .rp-sn-dot { stroke:#d6b84a; stroke-width:2; stroke-dasharray:4 8; }
   @keyframes rp-slither { to { transform:translateX(-40px); } }
   [data-rp=snake] .rp-head { display:block; position:absolute; top:50%; left:calc(var(--rp) * 100%); transform:translate(-100%,-50%); }
@@ -93,7 +94,7 @@ const nums = Array.from({ length: 31 }, (_, i) => i);
     .rp-cat { animation:none !important; }
     .rp-sp { transform:none !important; }
     /* 新しい見た目と紙吹雪は止まった絵にする */
-    .rp-head, .rp-head *, .rp-head::before, .reading-progress__bar, .rp-cf, .rp-snake svg { animation:none !important; }
+    .rp-head, .rp-head *, .rp-head::before, .reading-progress__bar, .rp-cf, .reading-progress .rp-snake svg { animation:none !important; }
     .rp-cf { top:var(--hdr, 0px); transform:translateY(var(--y)); }
   }
 </style>
