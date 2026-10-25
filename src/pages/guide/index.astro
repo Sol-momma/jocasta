@@ -19,21 +19,22 @@ const sample = `- 問題の種類
   </div>
 
   <div class="prose">
-    <h2>1. ファイルの置き場所</h2>
+    <h2>1. 書く場所：編集画面 /admin</h2>
     <ul>
-      <li><code>templates/post.md</code> をコピーする
+      <li>ページ下の「新しい記事」、または記事ページ下の「編集」で <a href="/admin/"><code>/admin</code></a> が開く
         <ul>
-          <li>コピー先：<code>src/content/posts/&lt;英小文字-ハイフン&gt;.md</code>
-            <ul><li>例：<code>part5-because-of.md</code></li></ul>
-          </li>
+          <li>スマホでもPCでも、ふつうのエディタのように書ける</li>
+          <li>ログインは GitHub（Sol-momma）。リポジトリに書き込める人しか保存できない</li>
         </ul>
       </li>
-      <li>ファイル名がそのままURLになる
-        <ul><li><code>part5-because-of.md</code> → <code>/posts/part5-because-of/</code></li></ul>
+      <li>「保存」すると GitHub の <code>main</code> に1コミットされる</li>
+      <li>ファイル名（スラッグ）がそのままURLになる
+        <ul><li>英小文字とハイフン：<code>part5-because-of</code> → <code>/posts/part5-because-of/</code></li></ul>
       </li>
+      <li>テーマは自由（TOEIC、読書メモ、開発メモなど）。「テーマ」で一覧を分けられる。「Part」「問題の種類」はTOEICの記事だけ</li>
     </ul>
 
-    <h2>2. 見出し4つと記入例</h2>
+    <h2>2. TOEICの記事：見出し4つと記入例</h2>
     <ul>
       <li>問題の種類：どのPartの、どのタイプの問題か
         <ul>
@@ -79,7 +80,8 @@ const sample = `- 問題の種類
 
     <h2>3. 入れ子の書き方</h2>
     <ul>
-      <li>行頭に半角スペース2つを足すと、1段深くなる
+      <li>編集画面：箇条書きの中で Tab（スマホはインデントのボタン）で1段深く、Shift+Tab で戻す</li>
+      <li>Markdown で直接書くとき：行頭に半角スペース2つで1段深く
         <ul><li>タブや全角スペースは使わない</li><li>子のある項目は ▾ で折りたためる</li></ul>
       </li>
     </ul>
@@ -103,17 +105,12 @@ const sample = `- 問題の種類
       <li><code>draft: false</code>：公開
         <ul><li>一覧に出て、<code>/posts/&lt;名前&gt;/</code> で見られる</li></ul>
       </li>
-      <li>公開の手順
+      <li>公開の手順（編集画面で）
         <ul>
-          <li>自分で中身を確かめる（問題文が入っていないかも）</li>
-          <li><code>draft: false</code> にする</li>
-          <li><code>pnpm run deploy</code> を実行</li>
-        </ul>
-      </li>
-      <li>スマホから書くとき
-        <ul>
-          <li>ページ下の「新しい記事」で GitHub の新規作成画面が開く（テンプレート入り・<code>draft: true</code>）。ファイル名を決めて「Create a new branch」でコミットし、PR のプレビューで確かめる</li>
-          <li>公開済みの記事は、記事ページ下の「編集」で直せる</li>
+          <li>新しい記事は「下書き」がオンの状態で始まる → 書いて保存（まだ公開されない）</li>
+          <li>中身を確かめる（TOEICなら問題文が入っていないかも）</li>
+          <li>「下書き」をオフにして保存 → <code>draft: false</code> がコミットされる</li>
+          <li>サイトへの反映は <code>pnpm run deploy</code>（自動デプロイを入れたら不要）</li>
         </ul>
       </li>
     </ul>

@@ -1,0 +1,49 @@
+# /admin の編集画面（Sveltia CMS）の設定
+# ログイン：GitHub。リポジトリに書き込める人（Sol-momma だけ）しか保存できない
+backend:
+  name: github
+  repo: Sol-momma/jocasta
+  branch: main
+  commit_messages:
+    create: "post: 「{{slug}}」を追加"
+    update: "post: 「{{slug}}」を更新"
+    delete: "post: 「{{slug}}」を削除"
+  # OAuth 中継 Worker を置いたら下の行を有効にする（未設定なら「トークンでログイン」を使う）
+  # base_url: https://jocasta-cms-auth.<account>.workers.dev
+
+site_url: https://blog.sol-momma.com
+display_url: https://blog.sol-momma.com
+locale: ja
+media_folder: public/images
+public_folder: /images
+
+collections:
+  - name: posts
+    label: 記事
+    label_singular: 記事
+    folder: src/content/posts
+    create: true
+    delete: true
+    extension: md
+    format: frontmatter
+    # ファイル名＝URL。英小文字とハイフンで書く
+    slug: "{{fields.slug}}"
+    identifier_field: title
+    summary: "{{title}}（{{date | date('YYYY-MM-DD')}}）{{draft | ternary('・下書き', '')}}"
+    sortable_fields: { fields: [date, title], default: { field: date, direction: descending } }
+    preview_path: "/posts/{{slug}}/"
+    fields:
+      - { name: title, label: タイトル, widget: string }
+      - { name: slug, label: "URL名（英小文字とハイフン。例：book-notes-1）", widget: string, pattern: ['^[a-z0-9]+(-[a-z0-9]+)*$', '英小文字・数字・ハイフンだけ'] }
+      - { name: draft, label: 下書き（オフにすると公開）, widget: boolean, default: true }
+      - { name: date, label: 日付, widget: datetime, type: date, format: YYYY-MM-DD, default: "{{now}}" }
+      - { name: tags, label: タグ, widget: list, required: false }
+      - { name: theme, label: "テーマ（例：toeic／reading。英小文字）", widget: string, required: false }
+      - { name: part, label: "Part（TOEICの記事だけ。例：Part 5）", widget: string, required: false }
+      - { name: questionType, label: "問題の種類（TOEICの記事だけ。例：品詞）", widget: string, required: false }
+      - { name: sample, label: サンプル, widget: boolean, default: false, required: false }
+      - name: body
+        label: 本文
+        widget: markdown
+        hint: "入れ子の箇条書き：「- 」で箇条書き、Tab で1段深く／Shift+Tab で戻す。スマホはツールバー右端の M↓ ボタンで Markdown に切り替えて書く（行頭スペース2つで1段深く）"
+        modes: [rich_text, raw]
