@@ -1,10 +1,10 @@
 # AGENTS.md
 
-TOEIC 学習ブログ（Astro 静的出力 → Cloudflare Workers 静的アセット）。日本語中心。
+いろいろなテーマの学習ブログ（Astro 静的出力 → Cloudflare Workers 静的アセット）。日本語中心。
 
 ## 記事の書き方
 1. `templates/post.md` を `src/content/posts/<英小文字-ハイフン>.md` にコピーする（ファイル名がURL `/posts/<名前>/` になる）。
-2. frontmatter: `title` `date` `part` `questionType` `tags` `sample` `draft`。公開するときは `draft: false`（または削除）。
+2. frontmatter: `title` `date` `theme`（例: `toeic`。名前は `src/lib/themes.ts`、なくても表示は壊れない） `part` `questionType` `tags` `sample` `draft`。公開するときは `draft: false`（または削除）。
 3. 本文の見出しは必ず「問題の種類 / 自分の答え / なぜ間違えたか / 見分け方」の4つ。
 4. **問題文は載せない**（著作権）。必ず自作の似た例文に置き換える。
 5. 本文は入れ子の箇条書き（Logseq風、半角スペース2つでインデント）中心で書く。子のある項目はページ上で折りたためる。

@@ -1,6 +1,7 @@
 ---
 title: "（例）品詞問題：形容詞と副詞の取り違え"
 date: 2026-01-01
+theme: "toeic"
 part: "Part 5"
 questionType: "品詞"
 tags: ["品詞"]

@@ -1,26 +1,10 @@
 ---
 import Base from '../layouts/Base.astro';
-import { getCollection } from 'astro:content';
-const posts = (await getCollection('posts', (p) => !p.data.draft))
-  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
-const fmt = (d: Date) => d.toISOString().slice(0, 10).replaceAll('-', '.');
-const excerpt = (body = '') => {
-  const t = body.split('\n')
-    .filter((l) => l.trim() && !/^\s*(#|>|```|---)/.test(l))
-    .map((l) => l.replace(/^\s*([-*+]|\d+\.)\s+/, '').replace(/[*_`\[\]]/g, '').replace(/\(([^)]*)\)/g, (m) => m.startsWith('(http') ? '' : m).trim())
-    .join(' ');
-  return t.length > 110 ? t.slice(0, 110) + '…' : t;
-};
+import PostList from '../components/PostList.astro';
+import { publishedPosts, usedThemes } from '../lib/posts';
+const posts = await publishedPosts();
 ---
 <Base>
-  <ol class="posts">
-    {posts.map((p) => (
-      <li>
-        <div class="meta">{fmt(p.data.date)}{p.data.sample && <span class="badge">サンプル</span>}</div>
-        <h2><a href={`/posts/${p.id}/`}>{p.data.title}</a></h2>
-        <p>{excerpt(p.body)}</p>
-        <a class="more" href={`/posts/${p.id}/`}>続きを読む</a>
-      </li>
-    ))}
-  </ol>
+  <h2 class="list-heading">記事</h2>
+  <PostList posts={posts} themes={usedThemes(posts)} />
 </Base>
