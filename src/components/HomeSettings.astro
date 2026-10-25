@@ -1,0 +1,111 @@
+---
+// ホームの「設定」。背景と記事の読み進みバーを、小さな見本つきのカードから選ぶ。
+// 保存先は記事ページの「表示」と同じ localStorage：
+//   背景 bg（空=ランダム / "off"=なし / それ以外=その背景に固定）
+//   バー rpo（"off"=出さない）と rp（バーの種類。「なし」を選んでも種類は残す）
+// 背景のカードは src/lib/backgrounds.ts の登録から作り、見本は各背景の描き方（window.BG）で小さく描く。
+// バーの絵や動きは ReadingProgress.astro 側にあり、ここでは選ぶだけ。
+import { backgrounds } from '../lib/backgrounds';
+// バーの種類。値は「表示」の選択肢と同じ。見本は細い線の簡単な絵
+const bars: { id: string; name: string; svg: string }[] = [
+  { id: '', name: '線', svg: '<path d="M4 12h22"/>' },
+  { id: 'ruler', name: '目盛り', svg: '<path d="M4 9h32M6 9v4M10 9v2M14 9v4M18 9v2M22 9v4"/>' },
+  { id: 'cat', name: '猫', svg: '<path d="M4 12h12" opacity=".4"/><path d="M17 13v-3l2-1.5h5l.8-1.5.7 1.5.7-1.5.8 1.5v2l-1.5.7h-5M18 13v1.5M24 12v2.5"/>' },
+  { id: 'spiral', name: 'らせん', svg: '<path d="M4 12h14" opacity=".4"/><path d="M22 12a1 1 0 0 1 2 0 2 2 0 0 1-4 0 3 3 0 0 1 6 0"/>' },
+  { id: 'arrow', name: '矢印', svg: '<path d="M4 12h16M18 9l4 3-4 3"/>' },
+  { id: 'pct', name: '数字', svg: '<path d="M4 8h12" opacity=".4"/><text x="21" y="17" font-size="8" stroke="none" fill="currentColor">42%</text>' },
+  { id: 'train', name: '電車', svg: '<path d="M4 15h32M10 13v4M20 13v4M30 13v4"/><path d="M12 12V8h9V6.5h3V12z"/>' },
+  { id: 'rocket', name: 'ロケット', svg: '<path d="M4 12h10" opacity=".4"/><path d="M14 11.5 11 12l3 .5M15 10h8l4 2-4 2h-8z"/>' },
+  { id: 'candle', name: 'ろうそく', svg: '<path d="M18 9h4v8h-4zM20 9V7"/>' },
+  { id: 'pixel', name: 'ドット絵', svg: '<path d="M4 14h12" opacity=".4"/><path d="M19 7h2v2h-2zM18 9h4v3h-4zM18 12v2M22 12v2"/>' },
+  { id: 'neon', name: 'ネオン', svg: '<path d="M4 12h22" stroke-width="2.4"/><path d="M4 12h22" stroke-width="5" opacity=".2"/>' },
+  { id: 'snake', name: 'ヘビ', svg: '<path d="M4 12q3-3 6 0t6 0 6 0"/><circle cx="25" cy="11.5" r="2"/>' },
+];
+---
+<section class="hs" aria-labelledby="hs-title">
+  <h2 id="hs-title" class="hs-title">設定</h2>
+  <p class="hs-note">このブラウザに保存され、すべてのページに効きます。記事ページの「表示」からも同じ内容を変えられます。</p>
+
+  <fieldset class="hs-group">
+    <legend class="hs-legend">背景</legend>
+    <div class="hs-grid">
+      <label class="hs-card"><input class="hs-in" type="radio" name="hs-bg" value="" /><span class="hs-sw hs-sw-rand" aria-hidden="true"><svg viewBox="0 0 40 24"><path d="M10 8h6v6h-6zM20 6l6 3-3 6-6-3zM28 14h5v5h-5z"/></svg></span><span class="hs-name">ランダム<small>開くたびに変わる</small></span></label>
+      {backgrounds.map((b) => <label class="hs-card"><input class="hs-in" type="radio" name="hs-bg" value={b.id} /><span class="hs-sw" aria-hidden="true"><canvas data-bg-sw={b.id} width="80" height="48"></canvas></span><span class="hs-name">{b.name}<small>固定</small></span></label>)}
+      <label class="hs-card"><input class="hs-in" type="radio" name="hs-bg" value="off" /><span class="hs-sw" aria-hidden="true"></span><span class="hs-name">なし<small>無地</small></span></label>
+    </div>
+  </fieldset>
+
+  <fieldset class="hs-group">
+    <legend class="hs-legend">記事の読み進みバー</legend>
+    <div class="hs-grid">
+      <label class="hs-card"><input class="hs-in" type="radio" name="hs-rp" value="off" /><span class="hs-sw" aria-hidden="true"></span><span class="hs-name">なし<small>出さない</small></span></label>
+      {bars.map((b) => <label class="hs-card"><input class="hs-in" type="radio" name="hs-rp" value={b.id} /><span class="hs-sw" aria-hidden="true"><svg viewBox="0 0 40 24" set:html={b.svg} /></span><span class="hs-name">{b.name}</span></label>)}
+    </div>
+  </fieldset>
+  <p class="hs-status" role="status" aria-live="polite"></p>
+</section>
+<style>
+  .hs { margin-top:calc(var(--gap) * 2); padding-top:var(--gap); border-top:1px solid var(--line); }
+  .hs-title { font-size:1.3rem; font-weight:700; margin:0 0 .3em; }
+  .hs-note { margin:0 0 1.2rem; color:var(--muted); font-size:.875rem; letter-spacing:.02em; }
+  .hs-group { margin:0 0 1.4rem; padding:0; border:0; min-width:0; }
+  .hs-legend { padding:0; margin:0 0 .5rem; font-size:.95rem; font-weight:700; }
+  .hs-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(8.5rem, 1fr)); gap:8px; }
+  @media (max-width:400px) { .hs-grid { grid-template-columns:repeat(2, minmax(0, 1fr)); gap:6px; } }
+  .hs-card { position:relative; display:flex; align-items:center; gap:.6em; min-width:0; min-height:52px; padding:6px 8px; border:1px solid var(--line); border-radius:4px; background:var(--bg); color:var(--fg); cursor:pointer;
+    transition:border-color .15s ease, background-color .15s ease, box-shadow .15s ease; }
+  .hs-card:hover { border-color:var(--muted); }
+  .hs-in { position:absolute; opacity:0; width:1px; height:1px; margin:0; pointer-events:none; }
+  .hs-card:has(.hs-in:checked) { border-color:var(--fg); box-shadow:inset 0 0 0 1px var(--fg); }
+  .hs-card:has(.hs-in:focus-visible) { outline:2px solid var(--link); outline-offset:2px; }
+  .hs-sw { flex:none; display:grid; place-items:center; width:40px; height:24px; border:1px solid var(--line); border-radius:3px; overflow:hidden; color:var(--fg); transition:transform .15s ease; }
+  .hs-card:has(.hs-in:checked) .hs-sw { transform:scale(1.06); }
+  .hs-sw svg { width:40px; height:24px; fill:none; stroke:currentColor; stroke-width:1.2; stroke-linecap:round; stroke-linejoin:round; opacity:.8; }
+  .hs-sw canvas { width:40px; height:24px; display:block; }
+  .hs-name { display:flex; flex-direction:column; min-width:0; font-size:.875rem; line-height:1.35; overflow-wrap:anywhere; }
+  .hs-name small { color:var(--muted); font-size:.72rem; }
+  .hs-status { min-height:1.4em; margin:0; color:var(--muted); font-size:.8rem; transition:opacity .2s ease; }
+  .hs-status:empty { opacity:0; }
+  @media (prefers-reduced-motion: reduce) { .hs-card, .hs-sw, .hs-status { transition:none; } .hs-card:has(.hs-in:checked) .hs-sw { transform:none; } }
+</style>
+<script is:inline>
+  (function () {
+    var d = document.documentElement.dataset, st = document.querySelector('.hs-status'), tm;
+    function get(k) { try { return localStorage.getItem(k) || ''; } catch (e) { return ''; } }
+    function set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+    function say(t) { clearTimeout(tm); st.textContent = t; tm = setTimeout(function () { st.textContent = ''; }, 2500); }
+    function name(i) { return i.closest('label').querySelector('.hs-name').firstChild.textContent; }
+    // 背景
+    var bgs = [].slice.call(document.querySelectorAll('input[name="hs-bg"]'));
+    var ids = bgs.map(function (i) { return i.value; }).filter(function (v) { return v && v !== 'off'; });
+    var m = get('bg') || (get('plum') === '0' ? 'off' : '');
+    if (m !== 'off' && ids.indexOf(m) < 0) m = '';
+    bgs.forEach(function (i) { i.checked = i.value === m; i.onchange = function () {
+      var v = i.value; set('bg', v); try { localStorage.removeItem('plum'); } catch (e) {}
+      if (v === 'off') d.bg = 'none';
+      else if (v) d.bg = v;
+      else { var o = ids.filter(function (x) { return x !== d.bg; }); if (o.length) d.bg = o[Math.floor(Math.random() * o.length)]; }
+      say('背景を「' + name(i) + '」にしました');
+    }; });
+    // バー：「なし」は rpo=off、種類を選ぶと rpo を戻して rp に保存
+    var rps = [].slice.call(document.querySelectorAll('input[name="hs-rp"]'));
+    var cur = get('rpo') === 'off' ? 'off' : get('rp');
+    if (!rps.some(function (i) { return i.value === cur; })) cur = '';
+    rps.forEach(function (i) { i.checked = i.value === cur; i.onchange = function () {
+      if (i.value === 'off') set('rpo', 'off'); else { set('rpo', ''); set('rp', i.value); }
+      say('読み進みバーを「' + name(i) + '」にしました');
+    }; });
+    // 背景の見本：各背景の描き方で、描き終わりの絵を小さく描く（配色が変わったら描き直す）
+    function prng(a) { return function () { a = (a * 1664525 + 1013904223) >>> 0; return a / 4294967296; }; }
+    function swatch() {
+      var cs = getComputedStyle(document.documentElement), fg = cs.getPropertyValue('--fg').trim() || '#555', bg = cs.getPropertyValue('--bg').trim() || '#fff';
+      document.querySelectorAll('[data-bg-sw]').forEach(function (cv) {
+        var f = (window.BG || {})[cv.dataset.bgSw], g = cv.getContext && cv.getContext('2d'); if (!f || !g) return;
+        var W = 160, H = 96; cv.width = W; cv.height = H; g.clearRect(0, 0, W, H);
+        try { var sc = f({ ctx: g, W: W, H: H, small: true, rnd: prng(7), line: fg, bg: bg }); sc.draw(Math.min(sc.dur, 25000)); } catch (e) {}
+      });
+    }
+    swatch();
+    new MutationObserver(swatch).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+  })();
+</script>
