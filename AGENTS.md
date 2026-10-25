@@ -11,8 +11,9 @@ TOEIC 学習ブログ（Astro 静的出力 → Cloudflare Workers 静的アセ�
 6. 絵文字・紫・グラデーションは使わない。落ち着いた見た目を保つ。
 
 ## 確認とデプロイ
-- `npm run build` が通ることを確認。
-- PR はドラフトで作り、マージ後に `npm run deploy`（= `astro build && wrangler deploy`）。
+- パッケージ管理は pnpm（`packageManager` で版を固定、`pnpm-lock.yaml` をコミット）。npm/yarn/bun でインストールしない。
+- `pnpm run build` が通ることを確認。
+- PR はドラフトで作り、マージ後に `pnpm run deploy`（= `astro build && wrangler deploy`）。
 - Cloudflare 認証はボックスの既存 wrangler ログインを使う。秘密の値は表示・コミットしない。
 - カスタムドメイン `blog.sol-momma.com` は `wrangler.jsonc` の `routes`（`custom_domain: true`）で設定済み。既存 DNS レコードは手で触らない。
 - 無料プランの範囲で使う。課金が必要な操作が出たら止めて相談する。
