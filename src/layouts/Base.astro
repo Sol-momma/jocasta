@@ -19,6 +19,7 @@ const { title, noindex = false, wide = false } = Astro.props;
     --ftr:44px; }
   @media (max-width:560px) { :root { --hdr:56px; --rpb:20px; --ftr:34px; } }
   * { box-sizing: border-box; }
+  img { max-width:100%; height:auto; }
   body { margin:0; background:var(--bg); color:var(--fg);
     font-family:var(--sans); line-height:1.6; font-size:16px; -webkit-font-smoothing:antialiased; font-kerning:normal; }
   .wrap { max-width: 720px; margin: 0 auto; padding: 0 20px; }
