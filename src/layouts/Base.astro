@@ -1,6 +1,7 @@
 ---
 import { newPostUrl } from '../lib/github';
-const { title, noindex = false } = Astro.props;
+// wide: 記事ページだけ PC 幅（1100px 以上）で画面の横幅いっぱいの組み方にする
+const { title, noindex = false, wide = false } = Astro.props;
 ---
 <!doctype html>
 <html lang="ja">
@@ -89,9 +90,22 @@ const { title, noindex = false } = Astro.props;
   .pair { display:grid; grid-template-columns:1fr 1fr; gap:16px; align-items:start; }
   .pair > div > .label { color:var(--muted); font-size:.78rem; margin:0 0 .3em; }
   @media (max-width:560px) { .pair { grid-template-columns:1fr; } }
+  /* 記事ページの PC 幅（1100px 以上）。参考: maggieappleton.com の「ヘッダーは画面の端から端まで・本文は中央の1列・目次は左の余白」。
+     本文は 18px × 756px で1行42字に抑える。1099px 以下（スマホ含む）は上の指定のまま変えない */
+  @media (min-width:1100px) {
+    .is-wide header .wrap, .is-wide footer .wrap { max-width:none; padding:0 40px; }
+    .is-wide main > .wrap { max-width:none; padding:0 40px; }
+    .post { display:grid; grid-template-columns:minmax(200px,1fr) minmax(0,756px) minmax(200px,1fr); column-gap:48px; }
+    .post > * { grid-column:2; }
+    .post h1 { font-size:2.4rem; line-height:1.35; margin:.2em 0 .8em; letter-spacing:.01em; }
+    .post .prose { font-size:18px; line-height:2; }
+    .post .prose h2 { font-size:1.5rem; margin:2.4em 0 .7em; }
+    /* 画像・コード・左右比較は本文より右へ広げ、横幅を活かす */
+    .post .prose img, .post .prose pre, .post .prose .pair, .post .prose table { width:calc(100% + min(240px, (100vw - 756px - 176px) / 2 - 48px)); max-width:none; }
+  }
 </style>
 </head>
-<body>
+<body class:list={[{ 'is-wide': wide }]}>
 <header><div class="wrap"><a href="/">Jocasta</a><p>いろいろなテーマの学習ノート</p></div></header>
 <main><div class="wrap"><slot /></div></main>
 <footer><div class="wrap"><span class="fn"><span class="fn-long">TOEIC の記事は問題文を掲載せず、自作の似た例文で解説しています。</span><span class="fn-short">TOEIC の問題文は載せず自作例文で解説</span></span><span class="guide-link">&nbsp;・&nbsp;<a href="/guide/">書き方</a></span><span class="gh">&nbsp;・&nbsp;<a class="gh-link" href={newPostUrl()} rel="nofollow">新しい記事</a></span></div></footer>

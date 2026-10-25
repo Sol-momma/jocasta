@@ -27,6 +27,12 @@ const items = buildToc(Astro.props.headings);
   .toc__list a { color:var(--muted); text-decoration:none; }
   .toc__list a:hover { color:var(--fg); }
   .toc__list a.is-active { color:var(--fg); font-weight:600; }
+  /* PC 幅では目次を本文の左の列に置き、スクロールしても見える位置に貼り付ける。開閉ボタンも列の上に移す */
+  @media (min-width: 1100px) {
+    .post > .toc { position:sticky; top:calc(var(--hdr) + var(--rpb) + 24px); right:auto; grid-column:1; grid-row:1 / span 20; align-self:start; justify-self:end; width:13rem; text-align:left; z-index:1; }
+    .toc__toggle { border:0; padding:0; background:none; }
+    .toc__list { margin:.6em 0 0; padding:.2em 0 .2em .9em; width:auto; max-height:calc(100vh - var(--hdr) - var(--rpb) - 96px); }
+  }
   @media (max-width: 1099px) {
     .toc__list { border:1px solid var(--line); border-radius:3px; box-shadow:0 2px 8px rgba(0,0,0,.06); }
   }
