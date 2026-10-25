@@ -3,6 +3,7 @@
 // 参考: maguro.dev の一覧（年見出し 1.25rem・灰色、年のまとまりの間 2rem、1件の上下 0.5rem、日付は等幅 0.85rem の YYYY-MM-DD を右寄せ、480px 以下は日付をタイトルの下へ）
 import { themeLabel, themeUrl } from '../lib/themes';
 import type { CollectionEntry } from 'astro:content';
+import { postMinutes } from '../lib/reading-time.mjs';
 interface Props { posts: CollectionEntry<'posts'>[]; themes: string[]; current?: string }
 const { posts, themes, current } = Astro.props;
 const fmt = (d: Date) => d.toISOString().slice(0, 10);
@@ -29,7 +30,7 @@ for (const p of posts) {
         <li>
           <a class="post-link" href={`/posts/${p.id}/`}>
             <span class="post-title">{p.data.title}{p.data.theme && !current && <span class="post-theme">{themeLabel(p.data.theme)}</span>}{p.data.sample && <span class="badge">サンプル</span>}</span>
-            <time class="post-date" datetime={p.data.date.toISOString()}>{fmt(p.data.date)}</time>
+            <span class="post-side"><span class="post-min">{postMinutes(p.body)}min</span><time class="post-date" datetime={p.data.date.toISOString()}>{fmt(p.data.date)}</time></span>
           </a>
         </li>
       ))}
@@ -50,6 +51,9 @@ for (const p of posts) {
   .post-title { font-size:1rem; overflow-wrap:anywhere; }
   .post-theme { color:var(--muted); font-size:.8rem; margin-left:.6em; white-space:nowrap; }
   .post-date { color:var(--muted); font-size:.85rem; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; flex-shrink:0; }
+  /* 日付の横の読む時間。日付より控えめに */
+  .post-side { display:flex; align-items:baseline; gap:.75rem; flex-shrink:0; }
+  .post-min { color:var(--muted); font-size:.8rem; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; white-space:nowrap; }
   /* スマホ（480px以下）は日付をタイトルの下に回す */
   @media (max-width:480px) { .post-link { flex-direction:column; gap:.25rem; } }
 </style>
