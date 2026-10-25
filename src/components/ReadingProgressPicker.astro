@@ -1,0 +1,19 @@
+---
+// 読み進みバーの見た目を選ぶ小さな切り替え。編集リンクの隣に置く。選んだ値は localStorage の rp に保存。
+---
+<label class="rp-pick">バー<select id="rp-pick">
+  <option value="">線</option><option value="ruler">目盛り</option><option value="cat">猫</option>
+  <option value="spiral">らせん</option><option value="arrow">矢印</option><option value="pct">数字</option>
+</select></label>
+<style is:global>
+  /* 押せる範囲は44px以上。目立たせない */
+  .rp-pick { display:inline-flex; align-items:center; gap:.3em; min-height:44px; margin-left:1em; color:var(--muted); font-size:.8rem; }
+  .rp-pick select { min-height:44px; min-width:44px; font:inherit; color:inherit; background:none; border:0; cursor:pointer; }
+</style>
+<script is:inline>
+  (function () {
+    var s = document.getElementById('rp-pick'), d = document.documentElement.dataset;
+    s.value = d.rp || '';
+    s.onchange = function () { d.rp = s.value; try { localStorage.setItem('rp', s.value); } catch (e) {} };
+  })();
+</script>
