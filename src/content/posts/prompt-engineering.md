@@ -1,9 +1,8 @@
 ---
-draft: true
+draft: false
 title: AIにうまく頼むコツ：プロンプトエンジニアリング入門
 slug: prompt-engineering
 date: 2026-10-26
-description: AIのまちがいを減らし、あいまいな頼み方を伝わる頼み方に変えるプロンプトエンジニアリング入門。
 tags:
   - AI
   - プロンプト
@@ -11,6 +10,7 @@ theme: ''
 part: ''
 questionType: ''
 sample: false
+description: AIのまちがいを減らし、あいまいな頼み方を伝わる頼み方に変えるプロンプトエンジニアリング入門。
 ---
 
 ## この記事でわかること
