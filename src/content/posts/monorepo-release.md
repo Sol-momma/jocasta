@@ -1,9 +1,8 @@
 ---
-draft: true
+draft: false
 title: 「どの環境に、どのバージョンが出ているか」を見失わないための入門
 slug: monorepo-release
 date: 2026-10-26
-description: たくさんの環境に出すシステムで、バージョンと配置先を見失わないための考え方と道具を紹介する入門。
 tags:
   - リリース
   - デプロイ
@@ -12,6 +11,7 @@ theme: ''
 part: ''
 questionType: ''
 sample: false
+description: たくさんの環境に出すシステムで、バージョンと配置先を見失わないための考え方と道具を紹介する入門。
 ---
 
 ## この記事でわかること
