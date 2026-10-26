@@ -1,6 +1,6 @@
 ---
 draft: false
-title: Microsoft Foundry ってなに？ はじめて触る人のための入門
+title: Microsoft Foundry
 slug: microsoft-foundry
 date: 2026-10-26
 tags:
