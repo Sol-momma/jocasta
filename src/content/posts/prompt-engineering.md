@@ -1,6 +1,6 @@
 ---
 draft: false
-title: AIにうまく頼むコツ：プロンプトエンジニアリング入門
+title: プロンプトエンジニアリング
 slug: prompt-engineering
 date: 2026-10-26
 tags:
