@@ -1,0 +1,21 @@
+---
+// 背景「魚」。細い線の小さな魚が何匹か、尾をゆらしながら画面の下のほうをゆっくり泳ぐ。
+---
+<script is:inline>
+(window.BG = window.BG || {}).fish = function (c) {
+  var fs = [], n = c.small ? 4 : 8, i; // スマホは数を減らす
+  for (i = 0; i < n; i++) fs.push({ x: c.rnd() * c.W, y: c.H * (0.5 + c.rnd() * 0.42), s: 0.7 + c.rnd() * 0.7, v: (8 + c.rnd() * 10) * (c.rnd() < 0.5 ? -1 : 1), ph: c.rnd() * 6.28 });
+  return { dur: 16000, draw: function (e) {
+    var g = c.ctx; g.strokeStyle = c.line; g.lineWidth = 1;
+    g.globalAlpha = Math.min(1, e / 1500);
+    fs.forEach(function (f) {
+      var x = ((f.x + f.v * e / 1000) % (c.W + 80) + c.W + 80) % (c.W + 80) - 40, y = f.y + Math.sin(e / 1500 + f.ph) * 4, d = f.v > 0 ? 1 : -1, s = f.s, t = Math.sin(e / 300 + f.ph) * 3 * s;
+      g.beginPath(); // 体（向きは d）と尾
+      g.moveTo(x + 14 * s * d, y); g.quadraticCurveTo(x, y - 7 * s, x - 10 * s * d, y); g.quadraticCurveTo(x, y + 7 * s, x + 14 * s * d, y);
+      g.moveTo(x - 10 * s * d, y); g.lineTo(x - 17 * s * d, y - 5 * s + t); g.lineTo(x - 17 * s * d, y + 5 * s + t); g.closePath();
+      g.stroke();
+    });
+    g.globalAlpha = 1;
+  } };
+};
+</script>

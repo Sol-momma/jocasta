@@ -1,0 +1,19 @@
+---
+// 背景「落ち葉」。葉の形の輪郭が何枚か、左右にゆれながらゆっくり落ち、下に着いたところで止まる。
+---
+<script is:inline>
+(window.BG = window.BG || {}).leaf = function (c) {
+  var ls = [], n = c.small ? 6 : 12, i;
+  for (i = 0; i < n; i++) ls.push({ x: c.rnd() * c.W, t: c.rnd() * 6000, v: 0.035 + c.rnd() * 0.03, sw: 20 + c.rnd() * 30, r: c.rnd() * 6.28, s: 0.8 + c.rnd() * 0.6 });
+  return { dur: 20000, draw: function (e) {
+    var g = c.ctx, fl = c.H - (c.foot || 0) - 8; g.strokeStyle = c.line; g.lineWidth = 1;
+    ls.forEach(function (l) {
+      var k = Math.max(0, e - l.t), y = Math.min(fl, -20 + k * l.v), on = y >= fl;
+      var x = l.x + Math.sin(k / 1300) * l.sw, a = l.r + (on ? 0 : Math.sin(k / 900) * 0.8), s = l.s;
+      g.save(); g.translate(x, y); g.rotate(on ? 1.4 + l.r * 0.1 : a); g.beginPath();
+      g.moveTo(0, -10 * s); g.quadraticCurveTo(7 * s, 0, 0, 10 * s); g.quadraticCurveTo(-7 * s, 0, 0, -10 * s); // 葉の形
+      g.moveTo(0, -8 * s); g.lineTo(0, 13 * s); g.stroke(); g.restore(); // 葉脈と柄
+    });
+  } };
+};
+</script>
