@@ -1,0 +1,84 @@
+---
+// 読み進みバーの追加の絵（電車・釣り・植木鉢・砂時計・コーヒー・紙飛行機・小籠包・ターミナル・進化）。
+// ReadingProgress.astro の .rp-head の中に置く。進み具合は --rp（0〜1）だけで描くので、動きを減らす設定でも今の状態が出る。
+// 色は currentColor（=文字色）と var(--link) だけ。絵の高さは16pxで、バーの帯（--rpb、スマホ20px）に収める。
+const ramp = (a: number, k = 12) => `opacity:clamp(0, (var(--rp) - ${a}) * ${k}, 1)`;
+---
+<svg class="rp-x rp-x-train" viewBox="0 0 30 16"><path d="M2 12V3h8v3h9V3.5h2.6V6H25l2.4 3v3z"/><path d="M4.5 5h3v2.6h-3z"/><g class="rp-wh"><circle cx="6.5" cy="13" r="1.9"/><path d="M5 13h3"/></g><g class="rp-wh"><circle cx="14" cy="13" r="1.9"/><path d="M12.5 13h3"/></g><g class="rp-wh"><circle cx="21.5" cy="13" r="1.9"/><path d="M20 13h3"/></g></svg>
+<svg class="rp-x rp-x-fish" viewBox="0 0 16 16"><path d="M8 0v5.5"/><circle class="rp-bob" cx="8" cy="3" r="1.5"/><path d="M8 5.5v3.2a1.8 1.8 0 0 1-3.6 0"/><g class="rp-fsh" style={ramp(.94, 30)}><path d="M3.5 12.5c1.8-2 5.4-2 7.6 0-2.2 2-5.8 2-7.6 0zM11.1 12.5l2.6-1.8v3.6z"/><circle cx="5.6" cy="12.2" r=".45"/></g></svg>
+<svg class="rp-x rp-x-plant" viewBox="0 0 16 16"><path d="M3.5 11h9M4.3 11l.9 4.3h5.6l.9-4.3"/><g class="rp-stem"><path d="M8 11V3"/></g><path class="rp-lf" d="M8 8.2C6 8.2 4.6 7.2 4.2 5.8c2 0 3.4 1 3.8 2.4" style={ramp(.4)}/><path class="rp-lf" d="M8 6.2c2 0 3.4-1 3.8-2.4-2 0-3.4 1-3.8 2.4" style={ramp(.66)}/><g class="rp-flw" style={ramp(.9, 15)}><circle cx="8" cy="1.4" r="1.1"/><circle cx="9.7" cy="2.9" r="1.1"/><circle cx="6.3" cy="2.9" r="1.1"/><circle class="rp-dot" cx="8" cy="2.6" r=".7"/></g></svg>
+<svg class="rp-x rp-x-sand" viewBox="0 0 12 16"><path class="rp-s rp-s-top" d="M3.7 3.2h4.6L6 7.4z"/><path class="rp-s rp-s-bot" d="M3.2 14.6h5.6L6 11.2z"/><path class="rp-flow" d="M6 7.6v6.6"/><path d="M2 1h8M2 15h8M3 1c0 4 3 5 3 7s-3 3-3 7M9 1c0 4-3 5-3 7s3 3 3 7"/></svg>
+<svg class="rp-x rp-x-coffee" viewBox="0 0 18 16"><defs><clipPath id="rp-cup"><path d="M3.6 6.6h8.8V11a2.4 2.4 0 0 1-2.4 2.4H6A2.4 2.4 0 0 1 3.6 11z"/></clipPath></defs><g clip-path="url(#rp-cup)"><rect class="rp-liq" x="3" y="6" width="10" height="8"/></g><path d="M3 6h10v5a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3zM13 7.4h1.4a1.8 1.8 0 0 1 0 3.6H13M1.5 15.4h14"/><g class="rp-stm" style={ramp(.9, 12)}><path d="M6.6 4.4c-.8-1 .8-2 0-3.2M9.6 4.4c-.8-1 .8-2 0-3.2"/></g></svg>
+<svg class="rp-x rp-x-plane" viewBox="0 0 18 12"><path d="M1 6.2 16.8 1 10.4 11 8.4 7.6zM8.4 7.6 16.8 1M8.4 7.6l-.6 2.8 1.6-1.5"/></svg>
+<svg class="rp-x rp-x-xlb" viewBox="0 0 18 16"><path d="M1.5 9.6h15M2.2 9.6v4.2c0 .8.6 1.2 1.4 1.2h10.8c.8 0 1.4-.4 1.4-1.2V9.6M2.2 12.2h13.6"/>{[[4.6, .1], [9, .4], [13.4, .7]].map(([x, a]) => <path class="rp-bao" d={`M${x - 3} 9.4c0-2.4 1.4-3.6 3-4.2.4-.2.6-.6.6-1 0 .4.2.8.6 1 1.6.6 2.8 1.8 2.8 4.2M${x - .4} 5.6 ${x - 1.2} 8.6M${x + .4} 5.6l.8 3`} style={ramp(a, 14)} />)}<g class="rp-stm" style={ramp(.92, 14)}><path d="M5 3.4c-.7-.9.7-1.8 0-2.8M13 3.4c-.7-.9.7-1.8 0-2.8"/></g></svg>
+<span class="rp-x rp-x-cur"></span>
+<svg class="rp-x rp-x-evo" viewBox="0 0 14 16"><g class="rp-evo rp-evo1"><circle cx="9.6" cy="4.6" r="1.6"/><path d="M8.6 6c-2.2.2-4.4 1.4-5.2 3.6M8.4 6.6l1.8 8.4M3.4 9.6 2.8 15M4.4 9.4 6 15M8.2 6.6 6.4 11.4"/></g><g class="rp-evo rp-evo2"><circle cx="7" cy="2.4" r="1.6"/><path d="M7 4.2v5.8M7 5.6 4.6 9M7 5.6 9.4 9M7 10l-2.2 5M7 10l2.2 5"/></g><g class="rp-evo rp-evo3"><path d="M5 1.6h4v3H5zM7 1.6V.2M4.6 5.4h4.8v4.8H4.6zM4.6 6.2 3 9.6M9.4 6.2 11 9.6M5.8 10.2V15M8.2 10.2V15"/><circle class="rp-dot" cx="6.2" cy="3.1" r=".4"/><circle class="rp-dot" cx="7.8" cy="3.1" r=".4"/></g></svg>
+<style is:global>
+  :is([data-rp=train],[data-rp=fish],[data-rp=plant],[data-rp=hourglass],[data-rp=coffee],[data-rp=plane],[data-rp=xlb],[data-rp=term],[data-rp=evo]) .rp-head {
+    display:block; position:absolute; top:0; left:calc(var(--rp) * 100%); transform:translateX(-100%); color:var(--fg); }
+  :is([data-rp=train],[data-rp=fish],[data-rp=plant],[data-rp=hourglass],[data-rp=coffee],[data-rp=plane],[data-rp=xlb],[data-rp=evo]) .reading-progress__bar { opacity:.3; height:2px; }
+  .rp-head .rp-x { display:none; height:16px; margin-top:2px; overflow:visible; }
+  .rp-x .rp-dot, .rp-x .rp-s, .rp-x .rp-x .rp-liq { fill:currentColor; stroke:none; }
+  .rp-x path, .rp-x circle { vector-effect:non-scaling-stroke; }
+  /* 電車：線路（.rp-rail）の上を走り、車輪がスクロール中だけ回る */
+  [data-rp=train] .rp-x-train { display:block; width:30px; margin-top:0; }
+  .rp-x-train .rp-wh { transform-box:fill-box; transform-origin:center; animation:rp-spin .5s linear infinite; }
+  @keyframes rp-spin { to { transform:rotate(1turn); } }
+  [data-rp=train] .reading-progress__bar { display:none; }
+  .reading-progress .rp-rail { display:none; position:absolute; left:0; right:0; top:14px; height:6px; width:100%; color:var(--fg); opacity:.45; fill:none; stroke:currentColor; stroke-width:1; }
+  [data-rp=train] .reading-progress .rp-rail { display:block; }
+  /* 釣り：バーが糸。先に浮きと針、最後に魚がかかる */
+  [data-rp=fish] .rp-head { transform:translateX(-50%); }
+  [data-rp=fish] .reading-progress__bar { height:1px; opacity:.6; }
+  [data-rp=fish] .rp-x-fish { display:block; width:16px; margin-top:0; }
+  .rp-x-fish .rp-bob { fill:var(--link); stroke:none; }
+  .rp-x-fish .rp-fsh { transform-box:fill-box; transform-origin:100% 50%; animation:rp-wig .3s ease-in-out infinite alternate; }
+  @keyframes rp-wig { from { transform:rotate(-8deg); } to { transform:rotate(8deg); } }
+  /* 植木鉢：茎が伸び、葉が2枚出て、最後に花が咲く */
+  [data-rp=plant] .rp-x-plant { display:block; width:16px; }
+  .rp-x-plant .rp-stem { transform-origin:8px 11px; transform:scaleY(calc(.08 + var(--rp) * .92)); }
+  .rp-x-plant .rp-flw { fill:none; stroke:var(--link); transform-box:fill-box; transform-origin:center; animation:rp-sway 1.4s ease-in-out infinite alternate; }
+  .rp-x-plant .rp-flw .rp-dot { fill:var(--link); }
+  .rp-x-plant .rp-lf { fill:currentColor; fill-opacity:.25; }
+  @keyframes rp-sway { from { transform:rotate(-6deg); } to { transform:rotate(6deg); } }
+  /* 砂時計：上の砂が減り、下にたまる。落ちる砂はスクロール中だけ流れる */
+  [data-rp=hourglass] .rp-x-sand { display:block; width:12px; }
+  .rp-x-sand .rp-s { fill-opacity:.55; }
+  .rp-x-sand .rp-s-top { transform-origin:6px 7.4px; transform:scale(calc(1 - var(--rp))); }
+  .rp-x-sand .rp-s-bot { transform-origin:6px 14.6px; transform:scale(var(--rp)); }
+  .rp-x-sand .rp-flow { stroke-dasharray:1 1.6; opacity:calc(min(var(--rp) * 50, (1 - var(--rp)) * 50)); animation:rp-flow .4s linear infinite; }
+  @keyframes rp-flow { to { stroke-dashoffset:-2.6; } }
+  /* コーヒー：カップにたまり、最後に湯気が立つ */
+  [data-rp=coffee] .rp-x-coffee { display:block; width:18px; }
+  .rp-x-coffee .rp-liq { fill-opacity:.55; transform-origin:0 13.6px; transform:scaleY(var(--rp)); }
+  .rp-x-coffee .rp-stm path { animation:rp-rise 1.2s ease-in-out infinite; }
+  @keyframes rp-rise { 50% { transform:translateY(-1px); opacity:.5; } }
+  /* 紙飛行機：点線の跡を残して飛ぶ */
+  [data-rp=plane] .reading-progress__bar { height:0; opacity:.5; background:none; border-top:1.5px dashed var(--fg); margin-top:8px; }
+  [data-rp=plane] .rp-x-plane { display:block; width:20px; height:14px; animation:rp-glide 1.6s ease-in-out infinite alternate; }
+  @keyframes rp-glide { from { transform:translateY(-1px) rotate(-3deg); } to { transform:translateY(1px) rotate(2deg); } }
+  /* 小籠包：せいろに1つずつ並び、最後に湯気が立つ */
+  [data-rp=xlb] .rp-x-xlb { display:block; width:18px; }
+  .rp-x-xlb .rp-bao { fill:var(--bg); }
+  .rp-x-xlb .rp-stm path { animation:rp-rise 1.2s ease-in-out infinite; }
+  /* ターミナル：プロンプトのあとに文字が打たれ、ブロックのカーソルが進む */
+  [data-rp=term] .reading-progress__bar { display:none; }
+  .rp-term { display:none; position:absolute; left:0; right:0; top:2px; height:16px; overflow:hidden; white-space:nowrap; font:11px/16px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; color:var(--fg); opacity:.75; clip-path:inset(0 calc((1 - var(--rp)) * 100%) 0 0); }
+  .rp-term b { font-weight:normal; color:var(--link); }
+  [data-rp=term] .rp-term { display:block; }
+  [data-rp=term] .rp-x-cur { display:block; width:7px; height:14px; margin-top:3px; background:var(--fg); opacity:.75; animation:rp-blink2 1s steps(1) infinite; }
+  @keyframes rp-blink2 { 50% { opacity:0; } }
+  /* 進化：アウストラロピテクス→人間→ロボット。境目は少しのあいだ重ねてそっと切り替える */
+  [data-rp=evo] .rp-x-evo { display:block; width:14px; --k:10; animation:rp-walk .5s ease-in-out infinite; }
+  .rp-x-evo .rp-evo1 { opacity:clamp(0, (.4 - var(--rp)) * var(--k), 1); }
+  .rp-x-evo .rp-evo2 { opacity:clamp(0, min((var(--rp) - .3), (.75 - var(--rp))) * var(--k), 1); }
+  .rp-x-evo .rp-evo3 { opacity:clamp(0, (var(--rp) - .65) * var(--k), 1); }
+  @media (prefers-reduced-motion: reduce) {
+    /* 動かさずに、今の段階の姿だけ（境目で重ねない） */
+    [data-rp=evo] .rp-x-evo { --k:100000; }
+    .rp-x-evo .rp-evo1 { opacity:clamp(0, (.35 - var(--rp)) * var(--k), 1); }
+    .rp-x-evo .rp-evo2 { opacity:clamp(0, min((var(--rp) - .35), (.7 - var(--rp))) * var(--k), 1); }
+    .rp-x-evo .rp-evo3 { opacity:clamp(0, (var(--rp) - .7) * var(--k), 1); }
+    .rp-x-sand .rp-flow { display:none; }
+  }
+</style>
